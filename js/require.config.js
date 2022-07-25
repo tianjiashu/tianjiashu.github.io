@@ -21,6 +21,9 @@ require.config({
         LazyLoad: 'jquery.lazyload.min',
         //-- Home Animation
         CircleMagic: 'circleMagic',
+        //-- Article Animation
+        TweenMax: 'TweenMax.min',
+        Tween: 'Tween',
         //-- Donate
         Donate: 'donate',
         //-- ProgressBar
@@ -43,15 +46,12 @@ require.config({
         Gsap: 'gsap.min',
         //-- Mouse
         Mouse: 'mouse',
-        //-- Velocity
-        Velocity: 'velocity.min',
-        VelocityUI: 'velocity.ui.min',
         //-- Base
         Base: 'base'
     },
     shim:{
         Classie: {
-            deps: ['SnapSvg']
+            deps: ['SnapSvg'],
         },
         Menu: {
             deps: [
@@ -66,14 +66,14 @@ require.config({
                 'css!' + window.config.Style.search
             ]
         },
+        Tween: {
+            deps: ['TweenMax']
+        },
         Donate: {
             deps: ['css!' + window.config.Style.donate]
         },
         Valine: {
-            deps: [
-                'LeanCloud',
-                'css!' + window.config.Style.valine
-            ]
+            deps: ['LeanCloud']
         },
         Tocbot: {
             deps: ['css!' + window.config.Style.tocbot]
