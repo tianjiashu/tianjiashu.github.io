@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2022-07-27T03:04:20.316Z</updated>
+  <updated>2022-07-27T07:29:57.979Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,48 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Git本地仓库操作</title>
+    <link href="http://example.com/post/11.html"/>
+    <id>http://example.com/post/11.html</id>
+    <published>2022-07-27T07:28:17.000Z</published>
+    <updated>2022-07-27T07:29:57.979Z</updated>
+    
+    <content type="html"><![CDATA[<p>在我们进行Git配置之后，建立了仓库。IDEA左侧目录文件颜色分为三种：<strong>黑色</strong>，<font color="green"><strong>绿色</strong></font>，<font color="red"><strong>红色</strong></font>。<strong>不同颜色代表不同状态</strong></p><ul><li>黑色：代表该文件已经提交给你Git仓库。</li><li>绿色：代表该文件已经添加到了暂存区</li><li>红色：代表该文件还没有添加到暂存区</li></ul><h1 id="加入暂存区"><a href="#加入暂存区" class="headerlink" title="加入暂存区"></a>加入暂存区</h1><p>每当创建新文件时，IDEA会提示你是否添加到暂存区。</p><img src="/image/article/Git本地仓库操作.assets/image-20220727145714913-16589050410821.png" alt="image-20220727145714913" style="zoom:67%;" /><h2 id="手动加入暂存区"><a href="#手动加入暂存区" class="headerlink" title="手动加入暂存区"></a>手动加入暂存区</h2><p>右键—&gt;Git—&gt;add【可能IDEA版本不同有一点差异，但差异不大】</p><img src="/image/article/Git本地仓库操作.assets/image-20220727145941004.png" alt="image-20220727145941004" style="zoom: 50%;" /><p>然后文件颜色会从<font color="red"><strong>红色</strong></font>变为<font color="green"><strong>绿色</strong></font>。</p><h1 id="提交到本地仓库"><a href="#提交到本地仓库" class="headerlink" title="提交到本地仓库"></a>提交到本地仓库</h1><h2 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h2><p>右键—&gt;Git—&gt;Commit File…</p><img src="/image/article/Git本地仓库操作.assets/image-20220727150243370.png" alt="image-20220727150243370" style="zoom: 50%;" /><h2 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h2><img src="/image/article/Git本地仓库操作.assets/image-20220727151113467.png" alt="image-20220727151113467" style="zoom:50%;" /><h2 id="提交"><a href="#提交" class="headerlink" title="提交"></a>提交</h2><img src="/image/article/Git本地仓库操作.assets/image-20220727150634866.png" alt="image-20220727150634866" style="zoom: 50%;" /><p>提交之后颜色从<font color="green"><strong>绿色</strong></font>变为<strong>黑色</strong></p><p>如果你一旦进行了修改，文件就从<strong>黑色</strong>变为<font color="blue"><strong>蓝色</strong></font></p><h1 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h1><p>IDEA左下角<img src="/image/article/Git%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C.assets/image-20220727151426192.png" alt="image-20220727151426192"></p><p>就会看见如下界面：</p><p><img src="/image/article/Git%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E6%93%8D%E4%BD%9C.assets/image-20220727151524295.png" alt="image-20220727151524295"></p>]]></content>
+    
+    
+    <summary type="html">Git集成IDEA</summary>
+    
+    
+    
+    <category term="Git" scheme="http://example.com/category/Git/"/>
+    
+    
+    <category term="Git" scheme="http://example.com/tag/Git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Git配置IDEA</title>
+    <link href="http://example.com/post/a99f1401.html"/>
+    <id>http://example.com/post/a99f1401.html</id>
+    <published>2022-07-27T07:18:17.000Z</published>
+    <updated>2022-07-27T07:30:08.239Z</updated>
+    
+    <content type="html"><![CDATA[<p>在IDEA中配置Git，首先你的电脑里得下载Git,<a href="https://git-scm.com/"><strong>下载链接</strong></a></p><h1 id="IDEA配置Git"><a href="#IDEA配置Git" class="headerlink" title="IDEA配置Git"></a>IDEA配置Git</h1><p>IDEA—&gt;setting—&gt;Git</p><p>配置你的Git.exe的目录，点击Test可以测试是否配置成功。然后就可以在IDEA中使用Git了。</p><p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727142723917.png" alt="image-20220727142723917"></p><h1 id="Git获取仓库"><a href="#Git获取仓库" class="headerlink" title="Git获取仓库"></a>Git获取仓库</h1><p>使用Git获取仓库有两种方式:</p><ul><li>从本地初始化仓库</li><li>从远程仓库克隆</li></ul><h2 id="从本地初始化仓库"><a href="#从本地初始化仓库" class="headerlink" title="从本地初始化仓库"></a>从本地初始化仓库</h2><p>在IDEA上侧，选择VCS(版本控制)—-&gt;Create Git Reposity…</p><img src="/image/article/Git配置IDEA.assets/image-20220727143403083.png" alt="image-20220727143403083" style="zoom: 67%;" /><p>然后选择你要初始化仓库的文件夹。</p><img src="/image/article/Git配置IDEA.assets/image-20220727143444356.png" alt="image-20220727143444356" style="zoom:50%;" /><p>初始化成功后，在原文件夹就会看见 一个**.git<strong>的</strong>隐藏文件夹**。里面存储的是仓库的信息。</p><p>上侧边栏的 VCS就会变成Git</p><p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727143721917.png" alt="image-20220727143721917"></p><h2 id="从远程仓库克隆"><a href="#从远程仓库克隆" class="headerlink" title="从远程仓库克隆"></a>从远程仓库克隆</h2><h3 id="在创建项目界面"><a href="#在创建项目界面" class="headerlink" title="在创建项目界面"></a>在创建项目界面</h3><p>选择Get from VCS </p><img src="/image/article/Git配置IDEA.assets/image-20220727143832197.png" alt="image-20220727143832197" style="zoom:67%;" /><h3 id="在主界面"><a href="#在主界面" class="headerlink" title="在主界面"></a>在主界面</h3><p>VCS—&gt;Get from VCS</p><p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727144212322.png" alt="image-20220727144212322"></p><p>然后再URL里输入你的GitHub或Gitee的仓库的URL地址。</p><img src="/image/article/Git配置IDEA.assets/image-20220727143900000.png" alt="image-20220727143900000" style="zoom:70%;" /><h1 id="gitgnore文件说明"><a href="#gitgnore文件说明" class="headerlink" title=".gitgnore文件说明"></a>.gitgnore文件说明</h1><p>它是用来说明，仓库中哪些文件不需要进行管理。在该文件夹中进行配置，可以<strong>指定哪些文件&#x2F;文件夹</strong>，在<strong>提交&#x2F;推送</strong>的时候忽略它。</p><p>例如：</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># Compiled class file</span><br><span class="line">*.class                    //忽略后缀为 class是文件</span><br><span class="line">\# Log file</span><br><span class="line">*.log</span><br><span class="line">\# BlueJ files</span><br><span class="line">*.ctxt</span><br><span class="line">\# Mobile Tools for Java (J2ME)</span><br><span class="line">.mtj.tmp/</span><br><span class="line">\# Package Files #</span><br><span class="line">*.jar</span><br><span class="line">*.war</span><br><span class="line">*.nar</span><br><span class="line">*.ear</span><br><span class="line">*.zip</span><br><span class="line">*.tar.gz</span><br><span class="line">*.rar</span><br><span class="line">\# virtual machine crash logs, see </span><br><span class="line"></span><br><span class="line">http://www.java.com/en/download/help/error_hotspot.xml</span><br><span class="line">hs_err_pid*</span><br><span class="line">.classpath</span><br><span class="line">.project</span><br><span class="line">.settings</span><br><span class="line">target    //target文件夹忽略</span><br><span class="line">.idea//.idea文件夹忽略</span><br><span class="line">*.iml</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+    <summary type="html">Git集成IDEA</summary>
+    
+    
+    
+    <category term="Git" scheme="http://example.com/category/Git/"/>
+    
+    
+    <category term="Git" scheme="http://example.com/tag/Git/"/>
+    
+  </entry>
   
   <entry>
     <title>寻找旋转排序数组的最小值</title>

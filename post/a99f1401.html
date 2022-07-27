@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Git配置IDEA
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Git配置IDEA</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-07-27
+                        </span>
+                        
+                            <span id="/post/a99f1401.html" class="leancloud_visitors" data-flag-title="Git配置IDEA">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/a99f1401.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Git</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Git</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,37 +70,100 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>在IDEA中配置Git，首先你的电脑里得下载Git,<a target="_blank" rel="noopener" href="https://git-scm.com/"><strong>下载链接</strong></a></p>
+<h1 id="IDEA配置Git"><a href="#IDEA配置Git" class="headerlink" title="IDEA配置Git"></a>IDEA配置Git</h1><p>IDEA—&gt;setting—&gt;Git</p>
+<p>配置你的Git.exe的目录，点击Test可以测试是否配置成功。然后就可以在IDEA中使用Git了。</p>
+<p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727142723917.png" alt="image-20220727142723917"></p>
+<h1 id="Git获取仓库"><a href="#Git获取仓库" class="headerlink" title="Git获取仓库"></a>Git获取仓库</h1><p>使用Git获取仓库有两种方式:</p>
+<ul>
+<li>从本地初始化仓库</li>
+<li>从远程仓库克隆</li>
+</ul>
+<h2 id="从本地初始化仓库"><a href="#从本地初始化仓库" class="headerlink" title="从本地初始化仓库"></a>从本地初始化仓库</h2><p>在IDEA上侧，选择VCS(版本控制)—-&gt;Create Git Reposity…</p>
+<img src="/image/article/Git配置IDEA.assets/image-20220727143403083.png" alt="image-20220727143403083" style="zoom: 67%;" />
+
+<p>然后选择你要初始化仓库的文件夹。</p>
+<img src="/image/article/Git配置IDEA.assets/image-20220727143444356.png" alt="image-20220727143444356" style="zoom:50%;" />
+
+<p>初始化成功后，在原文件夹就会看见 一个**.git<strong>的</strong>隐藏文件夹**。里面存储的是仓库的信息。</p>
+<p>上侧边栏的 VCS就会变成Git</p>
+<p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727143721917.png" alt="image-20220727143721917"></p>
+<h2 id="从远程仓库克隆"><a href="#从远程仓库克隆" class="headerlink" title="从远程仓库克隆"></a>从远程仓库克隆</h2><h3 id="在创建项目界面"><a href="#在创建项目界面" class="headerlink" title="在创建项目界面"></a>在创建项目界面</h3><p>选择Get from VCS </p>
+<img src="/image/article/Git配置IDEA.assets/image-20220727143832197.png" alt="image-20220727143832197" style="zoom:67%;" />
+
+<h3 id="在主界面"><a href="#在主界面" class="headerlink" title="在主界面"></a>在主界面</h3><p>VCS—&gt;Get from VCS</p>
+<p><img src="/image/article/Git%E9%85%8D%E7%BD%AEIDEA.assets/image-20220727144212322.png" alt="image-20220727144212322"></p>
+<p>然后再URL里输入你的GitHub或Gitee的仓库的URL地址。</p>
+<img src="/image/article/Git配置IDEA.assets/image-20220727143900000.png" alt="image-20220727143900000" style="zoom:70%;" />
+
+<h1 id="gitgnore文件说明"><a href="#gitgnore文件说明" class="headerlink" title=".gitgnore文件说明"></a>.gitgnore文件说明</h1><p>它是用来说明，仓库中哪些文件不需要进行管理。在该文件夹中进行配置，可以<strong>指定哪些文件&#x2F;文件夹</strong>，在<strong>提交&#x2F;推送</strong>的时候忽略它。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># Compiled class file</span><br><span class="line">*.class                    //忽略后缀为 class是文件</span><br><span class="line">\# Log file</span><br><span class="line">*.log</span><br><span class="line">\# BlueJ files</span><br><span class="line">*.ctxt</span><br><span class="line">\# Mobile Tools for Java (J2ME)</span><br><span class="line">.mtj.tmp/</span><br><span class="line">\# Package Files #</span><br><span class="line">*.jar</span><br><span class="line">*.war</span><br><span class="line">*.nar</span><br><span class="line">*.ear</span><br><span class="line">*.zip</span><br><span class="line">*.tar.gz</span><br><span class="line">*.rar</span><br><span class="line">\# virtual machine crash logs, see </span><br><span class="line"></span><br><span class="line">http://www.java.com/en/download/help/error_hotspot.xml</span><br><span class="line">hs_err_pid*</span><br><span class="line">.classpath</span><br><span class="line">.project</span><br><span class="line">.settings</span><br><span class="line">target    //target文件夹忽略</span><br><span class="line">.idea		//.idea文件夹忽略</span><br><span class="line">*.iml</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/a99f1401.html" target="_blank">Git配置IDEA</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 5 篇日志，继续加油！
+                            <a href="/category/Git/">Git</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Git/">Git</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/11.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/11.html" title="发布于 2022-07-27 03:28">Git本地仓库操作</a>
+                        <br>
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1112885395.html"><span>Hexo主题LiveForCode介绍</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/884d8d37.html" class="next-prefix">» </a> 下一篇：    <a href="/post/884d8d37.html" title="发布于 2022-07-26 04:15">寻找旋转排序数组的最小值</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -111,7 +195,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
