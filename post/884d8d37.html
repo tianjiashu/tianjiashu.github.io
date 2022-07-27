@@ -99,17 +99,17 @@
 <p>but?二分查找不是适用于顺序数组吗？这说明你还没有理解二分查找的根本思想。你还在第一层哈(～￣▽￣)～</p>
 <p>注意：这道题是 顺序数组旋转之后的。关键词：<font color="red" size=4><strong>顺序，旋转。</strong></font></p>
 <p>首先得定义两个指针</p>
-<pre class=" language-java"><code class="language-java"><span class="token keyword">int</span> left <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>right <span class="token operator">=</span> nums<span class="token punctuation">.</span>length<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>,right = nums.length-<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
 <p>然后进入循环</p>
-<pre class=" language-java"><code class="language-java"><span class="token keyword">while</span> <span class="token punctuation">(</span>left<span class="token operator">&lt;</span>right<span class="token punctuation">)</span><span class="token comment" spellcheck="true">//注意不是while (left&lt;=right)哦，这是二分查找另一种写法</span>
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (left&lt;right)<span class="comment">//注意不是while (left&lt;=right)哦，这是二分查找另一种写法</span></span><br></pre></td></tr></table></figure>
+
 <p><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html#%E6%80%9D%E8%B7%AF"><strong>二分查找另一种写法</strong></a>【&lt;—-点这可以学习二分查找另一种写法q(≧▽≦q)】</p>
 <p>关于【left,right】区间有两种情况：</p>
 <ol>
 <li><p>区间是<strong>有序的</strong></p>
-<pre class=" language-java"><code class="language-java"><span class="token keyword">if</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token operator">>=</span>nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token keyword">return</span> nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">;</span>
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(nums[right]&gt;=nums[left])<span class="keyword">return</span> nums[left];</span><br></pre></td></tr></table></figure>
+
 <p><img src="/%5Cimage%5Carticle%5C157-%E5%AF%BB%E6%89%BE%E6%97%8B%E8%BD%AC%E6%8E%92%E5%BA%8F%E6%95%B0%E7%BB%84%E4%B8%AD%E7%9A%84%E6%9C%80%E5%B0%8F%E5%80%BC.assets%5C1.PNG" alt="1"></p>
 </li>
 <li><p>区间是<strong>无序的</strong></p>
@@ -118,9 +118,8 @@
 <p>然后<font color="red" size=5><strong>最小值一直在无序的一侧</strong></font>,不信你就找几个例子试试。</p>
 <p>所以我们要在无序的一侧找最小值。</p>
 <p><strong>先判断左侧是不是有序的，如果有序则下一步的区间应该是右侧区间，否则就是左侧</strong></p>
-<pre class=" language-java"><code class="language-java"><span class="token keyword">if</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>mid<span class="token punctuation">]</span><span class="token operator">>=</span>nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span>left <span class="token operator">=</span> mid<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>
-<span class="token keyword">else</span> right <span class="token operator">=</span> mid<span class="token punctuation">;</span>
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(nums[mid]&gt;=nums[left])left = mid+<span class="number">1</span>;</span><br><span class="line"><span class="keyword">else</span> right = mid;</span><br></pre></td></tr></table></figure>
+
 <p><font color="blue"><strong>为啥 right &#x3D; mid而不是 right &#x3D; mid -1?</strong></font></p>
 <p>首先是因为 while (left&lt;right)</p>
 <p>还有是因为有一种情况是：nums[mid] 实际是最小值。</p>
@@ -141,20 +140,8 @@
 <li>在【left,right】内是无序的，但nums[mid]不是最小值，最小值在【left,mid】或【mid,right】中，比如[4,5,6,1,2]</li>
 <li>在【left,right】内是无序的，nums[mid]是最小值，比如[4,5,1,2,3]</li>
 </ul>
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><pre class=" language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">findMin</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>nums<span class="token punctuation">.</span>length<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token operator">></span>nums<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token keyword">return</span> nums<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token keyword">int</span> left <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>right <span class="token operator">=</span> nums<span class="token punctuation">.</span>length<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
-        <span class="token keyword">while</span> <span class="token punctuation">(</span>left<span class="token operator">&lt;</span>right<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-            <span class="token keyword">int</span> mid <span class="token operator">=</span> <span class="token punctuation">(</span>left<span class="token operator">+</span>right<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>right<span class="token punctuation">]</span><span class="token operator">>=</span>nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token keyword">return</span> nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            <span class="token keyword">else</span> <span class="token keyword">if</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>mid<span class="token punctuation">]</span><span class="token operator">>=</span>nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">)</span>left <span class="token operator">=</span> mid<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span>
-            <span class="token keyword">else</span> right <span class="token operator">=</span> mid<span class="token punctuation">;</span>
-        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> nums<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-</code></pre>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findMin</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(nums[nums.length-<span class="number">1</span>]&gt;nums[<span class="number">0</span>])<span class="keyword">return</span> nums[<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>,right = nums.length-<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (left&lt;right)&#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (left+right)/<span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span>(nums[right]&gt;=nums[left])<span class="keyword">return</span> nums[left];</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(nums[mid]&gt;=nums[left])left = mid+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">else</span> right = mid;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums[left];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><font size=5><strong>有什么问题欢迎评论区留言！！！(´▽&#96;ʃ♡ƪ)</strong></font></p>
 
                 
@@ -265,9 +252,7 @@
                     <div class="image-box"></div>
                 </div>
                 
-                    <a name="知乎" href="" class="" target="_blank" data=""><span class="iconfont icon-zhihu"></span></a>
-                
-                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-weibo"></span></a>
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
                 
                     <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
                 
@@ -588,17 +573,8 @@
             
                 
                     {
-                        name   : "知乎",
-                        icon   : "icon-zhihu",
-                        href   : "",
-                        class  : "",
-                        target : "_blank",
-                        image  : ""
-                    },
-                
-                    {
                         name   : "LeetCode",
-                        icon   : "icon-weibo",
+                        icon   : "icon-user-fill",
                         href   : "https://leetcode.cn/u/im-a-lucky-boy/",
                         class  : "",
                         target : "_blank",

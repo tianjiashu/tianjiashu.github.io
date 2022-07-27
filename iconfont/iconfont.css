@@ -16,6 +16,9 @@
 .icon-swimming:before {
   content: "\e605";
 }
+.icon-leetcode:before {
+  content: "\e60d";
+}
 
 .icon-swimmer:before {
   content: "\f0e9";
