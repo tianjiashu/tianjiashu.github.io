@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Redis五种常用数据类型
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Redis五种常用数据类型</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-07-28
+                        </span>
+                        
+                            <span id="/post/d2e965a3.html" class="leancloud_visitors" data-flag-title="Redis五种常用数据类型">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d2e965a3.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Redis</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Redis</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,37 +70,230 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>redis存储的是：key,value格式的数据，其中<font color="blue"><strong>key都是字符串</strong></font>，<font color="blue"><strong>value有5种不同的数据结构</strong></font></p>
+<h1 id="redis的数据结构"><a href="#redis的数据结构" class="headerlink" title="redis的数据结构"></a>redis的数据结构</h1><ul>
+<li>value的数据结构：<ol>
+<li>字符串类型 <strong>string</strong></li>
+<li>哈希类型 hash ： <strong>map格式</strong>  </li>
+<li>列表类型 list ： <strong>linkedlist格式</strong>。支持重复元素</li>
+<li>集合类型 set  ： 不允许重复元素 <strong>HashSet格式</strong></li>
+<li>有序集合类型 sortedset：<strong>不允许重复元素，且元素有顺序</strong></li>
+</ol>
+</li>
+</ul>
+<ul>
+<li><table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">存储</th>
+<th align="center">获取</th>
+<th align="center">删除</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">String</td>
+<td align="center"><strong>set <font color="blue">key</font> <font color="red">value</font></strong></td>
+<td align="center"><strong>get <font color="blue">key</font></strong></td>
+<td align="center"><strong>del <font color="blue">key</font></strong></td>
+</tr>
+<tr>
+<td align="center">hash</td>
+<td align="center"><strong>hset <font color="blue">key</font> field <font color="red">value</font></strong></td>
+<td align="center"><strong>hget <font color="blue">key</font> field &#x2F; hgetall <font color="blue">key</font></strong></td>
+<td align="center"><strong>hdel <font color="blue">key</font> field</strong></td>
+</tr>
+<tr>
+<td align="center">list</td>
+<td align="center"><strong>lpush\rpush <font color="blue">key</font> <font color="red">value</font></strong></td>
+<td align="center"><strong>lrange <font color="blue">key</font> start end</strong></td>
+<td align="center"><strong>lpop\rpop <font color="blue">key</font></strong></td>
+</tr>
+<tr>
+<td align="center">set</td>
+<td align="center"><strong>sadd <font color="blue">key</font> <font color="red">value</font></strong></td>
+<td align="center"><strong>smember <font color="blue">key</font></strong></td>
+<td align="center"><strong>srem <font color="blue">key</font> <font color="red">value</font></strong></td>
+</tr>
+<tr>
+<td align="center">sortset</td>
+<td align="center"><strong>zadd <font color="blue">key</font> score <font color="red">value</font></strong></td>
+<td align="center"><strong>zrange <font color="blue">key</font> start end [wirthscores]</strong></td>
+<td align="center"><strong>zrem <font color="blue">key</font> <font color="red">value</font></strong></td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>说明【表格装不下了，楞跻也不美观，所以在这进行说明 ≡(▔﹏▔)≡】</p>
+<ol>
+<li><h2 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h2><ol>
+<li><p>存储： </p>
+<ul>
+<li><p>设置指定的值：<font color="red" size=4><strong>set key value</strong></font></p>
+</li>
+<li><p>设置指定key的值，并将key的过期时间设为seconds秒： <font color="red" size=4><strong>setex key seconds value</strong></font></p>
+<p>例如：<code>setex city 10 Beijing</code></p>
+</li>
+<li><p>只有key不存在时设置key 的值：<font color="red" size=4><strong>setnx key value</strong></font></p>
+</li>
+</ul>
+</li>
+<li><p>获取：  <font color="red" size=4><strong>get key</strong></font></p>
+</li>
+<li><p>删除一个或多个： <font color="red" size=4><strong>del key [key …]</strong></font></p>
+</li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728183640550.png" alt="image-20220728183640550" style="zoom:70%;" />
+</li>
+<li><h2 id="哈希类型："><a href="#哈希类型：" class="headerlink" title="哈希类型："></a>哈希类型：</h2><p>类似Java的Map, <strong>field相当于Map的key,value相当于Map的value.</strong>  </p>
+<ol>
+<li>存储：<font color="red" size=4> <strong>hset</strong> key <strong>field</strong> value</font>  </li>
+<li>获取： <ul>
+<li><font color="red" size=4><strong>hget key field</strong></font>: 获取指定的field对应的值</li>
+<li><font color="red" size=4><strong>hkeys key</strong></font>: 获取哈希表中所有字段</li>
+<li><font color="red" size=4><strong>hvals key</strong></font>: 获取哈希表中所有值</li>
+<li><font color="red" size=4><strong>hgetall key</strong></font>：获取所有的field和value</li>
+</ul>
+</li>
+<li>删除一个或多个： <font color="red" size=4><strong>hdel key field [field…]</strong></font></li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728184110716.png" alt="image-20220728184110716" style="zoom:67%;" />
+</li>
+<li><h2 id="列表类型："><a href="#列表类型：" class="headerlink" title="列表类型："></a>列表类型：</h2><ol>
+<li>添加：<ul>
+<li><p><font color="red" size=4><strong>lpush key value [value…]</strong></font> : 将元素加入列表<font color="blue" size=4><strong>左边</strong></font></p>
+</li>
+<li><p><font color="red" size=4><strong>rpush key value [value…]</strong></font> ：将元素加入列表<font color="blue" size=4><strong>右边</strong></font></p>
+</li>
+</ul>
+</li>
+<li>获取：<ul>
+<li><font color="red" size=4><strong>lrange key start end</strong></font> ：范围获取 【start , end 】索引起始为0</li>
+<li><font color="red" size=4><strong>llen key</strong></font> ：获取列表长度</li>
+</ul>
+</li>
+<li>删除：<ul>
+<li><font color="red" size=4><strong>lpop key</strong></font>： 删除列表<font color="blue" size=4><strong>最左边</strong></font>的元素，并将元素返回</li>
+<li><font color="red" size=4><strong>rpop key</strong></font>： 删除列表<font color="blue" size=4><strong>最右边</strong></font>的元素，并将元素返回</li>
+</ul>
+</li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728185126513.png" alt="image-20220728185126513" style="zoom: 67%;" />
+</li>
+<li><h2 id="集合类型："><a href="#集合类型：" class="headerlink" title="集合类型："></a>集合类型：</h2><ol>
+<li><p>存储：<font color="red" size=4><strong>sadd key value [value …]</strong></font></p>
+</li>
+<li><p>获取：</p>
+<ul>
+<li><font color="red" size=4><strong>smembers key</strong></font>:获取set集合中所有元素</li>
+<li><font color="red" size=4><strong>scard key</strong></font>:获取set集合成员数</li>
+</ul>
+</li>
+<li><p>删除：<font color="red" size=4><strong>srem key value [value …]</strong></font>:删除set集合中的一个或者多个元素</p>
+</li>
+<li><p>其他：</p>
+<ul>
+<li><p><font color="red" size=4><strong>sinter key [key …]</strong></font>:返回给定所有集合的交集</p>
+<p>例如：<code>sinter city1 city2 city3</code></p>
+</li>
+<li><p><font color="red" size=4><strong>sunion key [key…]</strong></font>:返回给定所有集合的并集</p>
+</li>
+<li><p><font color="red" size=4><strong>sdiff key [key…]</strong></font>:返回给定所有集合的差集</p>
+</li>
+</ul>
+</li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728203425934.png" alt="image-20220728203425934" style="zoom:67%;" />
+</li>
+<li><h2 id="有序集合类型sortedset："><a href="#有序集合类型sortedset：" class="headerlink" title="有序集合类型sortedset："></a>有序集合类型sortedset：</h2><p>不允许重复元素，且元素有顺序.<font color ="red" size=5><strong>每个元素都会关联一个double类型的分数</strong></font>。redis正是通过分数来为集合中的成员进行从小到大的排序。</p>
+<ol>
+<li><p>存储：</p>
+<ol>
+<li><p><font color ="red" size=4><strong>zadd key score value [score value …]</strong></font>向有序集合中添加一个或多个成员，或更新已存在成员的分数</p>
+</li>
+<li><p><font color ="red" size=4><strong>zincrby key increment member</strong></font>有序集合中对指定成员的分数加上增量increment</p>
+<p>例如：<code>zincrby names 20 zhangsan</code></p>
+</li>
+</ol>
+</li>
+<li><p>获取：<font color ="red" size=4><strong>zrange key start end [withscores]</strong></font></p>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728210651009.png" alt="image-20220728210651009" style="zoom:50%;" /></li>
+<li><p>删除：<font color ="red" size=4><strong>zrem key value [value…]</strong></font></p>
+</li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728203951597.png" alt="image-20220728203951597" style="zoom:67%;" /></li>
+</ol>
+<h1 id="通用命令"><a href="#通用命令" class="headerlink" title="通用命令"></a>通用命令</h1><ol>
+<li><font color ="red" size=4><strong>keys parttern</strong> </font>: 查询所有符合给定模式（pattern）的key</li>
+<li><font color ="red" size=4><strong>type key</strong> </font>： 获取键对应的value的类型</li>
+<li><font color ="red" size=4><strong>del key [key…]</strong></font>：删除指定的key value</li>
+<li><font color ="red" size=4><strong>exists key</strong></font>：检查给定的key是否存在</li>
+<li><font color ="red" size=4><strong>ttl key [key…]</strong></font>：返回给定的key的剩余生存时间，以秒为单位。</li>
+</ol>
+<img src="/image/article/Redis五种数据类型.assets/image-20220728204310186.png" alt="image-20220728204310186" style="zoom:67%;" />
+
+<p><font size=5><strong>更多命令可以参考<a target="_blank" rel="noopener" href="http://www.redis.net.cn/">redis中文网</a></strong></font></p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/d2e965a3.html" target="_blank">Redis五种常用数据类型</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 8 篇日志，继续加油！
+                            <a href="/category/Redis/">Redis</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Redis/">Redis</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/4a17b156.html"><span>Hello World</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">01-01</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/958f52e2.html" class="next-prefix">» </a> 下一篇：    <a href="/post/958f52e2.html" title="发布于 2022-07-28 05:35">Redis简介</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -111,7 +325,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
