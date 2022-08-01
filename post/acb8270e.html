@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Linux安装Redis
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Linux安装Redis</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-01
+                        </span>
+                        
+                            <span id="/post/acb8270e.html" class="leancloud_visitors" data-flag-title="Linux安装Redis">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/acb8270e.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Linux</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Linux Redis</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,100 +70,123 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="Redis下载"><a href="#Redis下载" class="headerlink" title="Redis下载"></a>Redis下载</h1><p><a target="_blank" rel="noopener" href="https://download.redis.io/releases/">https://download.redis.io/releases/</a></p>
+<p>下载4.0.0版本【其他版本也可也】</p>
+<h1 id="Redis安装"><a href="#Redis安装" class="headerlink" title="Redis安装"></a>Redis安装</h1><p>1、将Redis安装包上传到LInux</p>
+<p>2、解压安装包，命令 <code>tar -zxvf redis-4.0.0.tar.gz -C /usr/local</code></p>
+<p>​		解压的是Redis的源码【C语言】，需要对它进行编译。</p>
+<p>3、安装Redis的依赖环境gcc，命令<code>yum install gcc-c++</code>【对C语言源码进行编译的环境】</p>
+<p>4、进入&#x2F;usr&#x2F;local&#x2F;redis-4.0.0，进行编译，命令：<code>make</code></p>
+<p>5、进入reids的src目录，进行安装，命令：<code>make install</code></p>
+<p>最后就安装完毕了</p>
+<p>在<code>redis-4.0.0/src</code>目录下，可以看到<code>redis-server</code>和<code>redis-cli</code>两个文件。</p>
+<p>在<code>redis-4.0.0</code>目录下，可以看到<code>redis-conf</code>文件，这是redis的配置文件。</p>
+<h1 id="Linux服务的启动和停止"><a href="#Linux服务的启动和停止" class="headerlink" title="Linux服务的启动和停止"></a>Linux服务的启动和停止</h1><p>Linux中redis服务启动，可以使用redis-server，默认端口号为6379</p>
+<p>在src目录下，执行<code>./redis-server</code>，就可以开启服务。</p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801150048450.png" alt="image-20220801150048450"></p>
+<p><code>Ctrl C</code>就可以停止服务。</p>
+<h2 id="后台启动redis服务"><a href="#后台启动redis服务" class="headerlink" title="后台启动redis服务"></a>后台启动redis服务</h2><p>进入<code>redis-4.0.0</code>目录，输入<code>vim redis.conf</code>来修改配置文件。</p>
+<p>输入<code>/daemonize</code> 查找daemonize</p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801150537191.png" alt="image-20220801150537191"></p>
+<p>输入<code>i</code>，进入插入模式，修改完毕后，按<code>Esc</code>，再输入<code>:wq</code>回车，保存并退出。</p>
+<p>如果要修改端口号就修改配置文件<code>redis 6379</code>,就可以。</p>
+<p>重新启动redis【在redis的根目录下，执行以下命令】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src/redis-server ./redis.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801151048138.png" alt="image-20220801151048138"></p>
+<h1 id="给redis设置密码"><a href="#给redis设置密码" class="headerlink" title="给redis设置密码"></a>给redis设置密码</h1><p>修改redis的配置文件。找到<code>requirepass foobared</code></p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801151611560.png" alt="image-20220801151611560"></p>
+<p>将这一行的注释去掉，并将<code>foobared</code> 改为你自己的密码</p>
+<p>关闭之前的redis服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis			<span class="comment">#查看redis进程</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801151926216.png" alt="image-20220801151926216"></p>
+<p>进程ID为32056【注意这个进程ID是变化的】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">kill</span> -9 32056 				<span class="comment">#杀掉这个进程</span></span><br></pre></td></tr></table></figure>
+
+<p>重新启动redis【在redis的根目录下，执行以下命令】</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src/redis-server ./redis.conf</span><br></pre></td></tr></table></figure>
+
+<h1 id="连接Redis服务"><a href="#连接Redis服务" class="headerlink" title="连接Redis服务"></a>连接Redis服务</h1><h2 id="本地连接redis服务"><a href="#本地连接redis服务" class="headerlink" title="本地连接redis服务"></a>本地连接redis服务</h2><p>在redis的根目录下，执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src/redis-cli -h localhost -p 6379 -a <span class="string">&quot;你的密码&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="远程连接redis服务"><a href="#远程连接redis服务" class="headerlink" title="远程连接redis服务"></a>远程连接redis服务</h2><p>redis默认是拒绝redis远程连接的</p>
+<p>修改配置文件</p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Redis/image-20220801152754082.png" alt="image-20220801152754082"></p>
+<p>找到<code>bind 127.0.01</code> ，并将其注释掉。保存并退出</p>
+<p>然后重启服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis			<span class="comment">#查看redis进程</span></span><br><span class="line"><span class="built_in">kill</span> -9 32056 				<span class="comment">#杀掉这个进程</span></span><br><span class="line">src/redis-server ./redis.conf</span><br></pre></td></tr></table></figure>
+
+<p>注意要关闭防火墙</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld </span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后在window在redis目录下，进入cmd</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h <span class="string">&quot;ip地址&quot;</span> -p 6379 -a <span class="string">&quot;你的密码&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后就可以远程连接redis了</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/acb8270e.html" target="_blank">Linux安装Redis</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 16 篇日志，继续加油！
+                            <a href="/category/Linux/">Linux</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/958f52e2.html"><span>Redis简介</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a362d786.html"><span>使用idea将自己的项目上传到github</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/11.html"><span>Git本地仓库操作</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a99f1401.html"><span>Git配置IDEA</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/884d8d37.html"><span>寻找旋转排序数组的最小值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-26</span>
-                                </div>
-                            </div>
-                        </div>
-                    
+                            <a href="/tag/Linux-Redis/">Linux Redis</a>
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1112885395.html"><span>Hexo主题LiveForCode介绍</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/42bdef23.html" class="next-prefix">» </a> 下一篇：    <a href="/post/42bdef23.html" title="发布于 2022-07-31 09:26">Linux安装Mysql</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/">上一页</a><a class="page-number" href="/archive/">1</a><span class="page-number current">2</span>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -174,7 +218,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     

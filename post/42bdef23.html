@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Linux安装Mysql
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Linux安装Mysql</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-07-31
+                        </span>
+                        
+                            <span id="/post/42bdef23.html" class="leancloud_visitors" data-flag-title="Linux安装Mysql">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/42bdef23.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Linux</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Linux MYSQL</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,100 +70,123 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>安装方式使用RPM, 【RPM软件包管理器，是红帽Linux用于管理和安装软件的工具】</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="检测当前系统是否安装Mysql数据库"><a href="#检测当前系统是否安装Mysql数据库" class="headerlink" title="检测当前系统是否安装Mysql数据库"></a>检测当前系统是否安装Mysql数据库</h2><p><code>rpm -qa</code>命令是查询当前系统中安装的所有软件。</p>
+<p>命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep mysql</span><br><span class="line">rpm -qa|grep mariadb</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果当前系统中已经安装mysql数据库，安装将失败。CentOS7自带mariadb，于Mysql数据库冲突。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon etc]<span class="comment"># rpm -qa|grep mysql</span></span><br><span class="line">[root@bogon etc]<span class="comment"># rpm -qa|grep mariadb</span></span><br><span class="line">mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>存在mariadb【因为我的是CentOS7】</p>
+<h2 id="卸载已安装的冲突软件"><a href="#卸载已安装的冲突软件" class="headerlink" title="卸载已安装的冲突软件"></a>卸载已安装的冲突软件</h2><p>若你在上一步查询到冲突软件，可使用以下命令来卸载，如果没有，可以跳过。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps 软件名称</span><br><span class="line"><span class="comment">#在这里我要卸载的是 mariadb,所以我的命令如下</span></span><br><span class="line">rpm -e --nodeps mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
+
+<h2 id="将Mysql安装包上传到Linux并解压"><a href="#将Mysql安装包上传到Linux并解压" class="headerlink" title="将Mysql安装包上传到Linux并解压"></a>将Mysql安装包上传到Linux并解压</h2><p>Mysql安装包：</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/17gd_kJEWj5mlqd1z0o5GtA">https://pan.baidu.com/s/17gd_kJEWj5mlqd1z0o5GtA</a><br>提取码：lugd</p>
+<p>解压命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf 待解压的文件名 -C 解压到的目录</span><br><span class="line"><span class="comment">#在这里的我解压到/usr/local/mysql</span></span><br><span class="line"><span class="built_in">mkdir</span> /usr/local/mysql                               						<span class="comment">#首先得创建目录</span></span><br><span class="line">tar -zxvf mysql-5.7.25-1.el7.x86_64.rpm-bundle.tar.gz -C /usr/local/mysql	<span class="comment">#解压</span></span><br></pre></td></tr></table></figure>
+
+<p>解压后的文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon /]<span class="comment"># cd /usr/local/mysql</span></span><br><span class="line">[root@bogon mysql]<span class="comment"># ll</span></span><br><span class="line">total 202200</span><br><span class="line">-rw-r--r--. 1 root root  25402568 Dec 24  2018 mysql-community-client-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root    280904 Dec 24  2018 mysql-community-common-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   3839640 Dec 24  2018 mysql-community-devel-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   2271668 Dec 24  2018 mysql-community-libs-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   2116628 Dec 24  2018 mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root 173130520 Dec 24  2018 mysql-community-server-5.7.25-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="按照顺序按照rpm软件包"><a href="#按照顺序按照rpm软件包" class="headerlink" title="按照顺序按照rpm软件包"></a>按照顺序按照rpm软件包</h2><p><font color="red" size=5>注意：一定要按顺序！</font></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh mysql-community-common-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-devel-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">yum install net-tools</span><br><span class="line">rpm -ivh mysql-community-server-5.7.25-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>依次执行以上命令即可</p>
+<blockquote>
+<p>说明：</p>
+<ul>
+<li>安装过程中提示缺少net-tools依赖，使用yum安装</li>
+<li>可以通过指令升级现有软件及系统内核<code>yum update</code></li>
+</ul>
+</blockquote>
+<p>然后就安装完毕啦！</p>
+<h1 id="Mysql配置"><a href="#Mysql配置" class="headerlink" title="Mysql配置"></a>Mysql配置</h1><h2 id="启动mysql"><a href="#启动mysql" class="headerlink" title="启动mysql"></a>启动mysql</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl status mysqld           	<span class="comment">#查看mysql服务状态</span></span><br><span class="line">systemctl start mysqld				<span class="comment">#启动mysql服务</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Mysql/image-20220731221221099.png" alt="image-20220731221221099"></p>
+<p>设置开启启动mysql服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> mysqld</span><br></pre></td></tr></table></figure>
+
+<p>其他命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -tunlp|grep mysql   	<span class="comment">#查看mysql是否启动</span></span><br><span class="line">ps -ef|grep mysql  				<span class="comment">#查看MySQL进程</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查阅临时密码"><a href="#查阅临时密码" class="headerlink" title="查阅临时密码"></a>查阅临时密码</h2><p>使用命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /var/log/mysqld.log|grep password</span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Mysql/image-20220731221954159.png" alt="image-20220731221954159"></p>
+<p>这就是临时密码<code>&amp;sqBTL515Ghu</code></p>
+<h2 id="登录MySQL数据库-修改密码，开放访问权限"><a href="#登录MySQL数据库-修改密码，开放访问权限" class="headerlink" title="登录MySQL数据库,修改密码，开放访问权限"></a>登录MySQL数据库,修改密码，开放访问权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p				<span class="comment">#登录mysql（使用临时密码登录）</span></span><br><span class="line"><span class="comment">#然后输入密码【密码是看不见的】</span></span><br><span class="line"><span class="comment">#修改密码</span></span><br><span class="line"><span class="built_in">set</span> global validate_password_length=4;</span><br><span class="line"><span class="built_in">set</span> global validate_password_policy=LOW;</span><br><span class="line"><span class="built_in">set</span> password=password(<span class="string">&#x27;root&#x27;</span>);</span><br><span class="line"><span class="comment">#开启访问权限</span></span><br><span class="line">grant all on *.* to <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> identified by<span class="string">&#x27;root&#x27;</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>Windows</code>连接<code>linux</code>的<code>mysql</code>。需要打开<code>linux</code>的端口号，以及关闭<code>linux</code>的防火墙【在同一局域网】</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -AINPUT -ptcp --dport 3306 -jACCEPT  	#打开3306端口号</span><br><span class="line">systemctl stop firewalld 						#关闭防火墙</span><br><span class="line">systemctl start firewalld						#开启防火墙</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/42bdef23.html" target="_blank">Linux安装Mysql</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 16 篇日志，继续加油！
+                            <a href="/category/Linux/">Linux</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/958f52e2.html"><span>Redis简介</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a362d786.html"><span>使用idea将自己的项目上传到github</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/11.html"><span>Git本地仓库操作</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a99f1401.html"><span>Git配置IDEA</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/884d8d37.html"><span>寻找旋转排序数组的最小值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-26</span>
-                                </div>
-                            </div>
-                        </div>
-                    
+                            <a href="/tag/Linux-MYSQL/">Linux MYSQL</a>
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1112885395.html"><span>Hexo主题LiveForCode介绍</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/acb8270e.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/acb8270e.html" title="发布于 2022-08-01 02:36">Linux安装Redis</a>
+                        <br>
+                    
+                    
+                        <a href="/post/c357b778.html" class="next-prefix">» </a> 下一篇：    <a href="/post/c357b778.html" title="发布于 2022-07-31 08:02">Linux安装jdk</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/">上一页</a><a class="page-number" href="/archive/">1</a><span class="page-number current">2</span>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -174,7 +218,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     

@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Linux安装jdk
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Linux安装jdk</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-07-31
+                        </span>
+                        
+                            <span id="/post/c357b778.html" class="leancloud_visitors" data-flag-title="Linux安装jdk">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c357b778.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Linux</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Linux java</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,100 +70,93 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>安装JDK,使用的Linux软件安装方式是<code>二进制发布包安装</code></p>
+<p>该安装方式，软件已经针对具体平台编译打包发布，只要解压，修改配置即可。</p>
+<p>操作步骤：</p>
+<p>1、使用上传工具将jdk的二进制发布包上传到linux。</p>
+<blockquote>
+<p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1D1Ttau-ouWFWGpZdZee6Hg">https://pan.baidu.com/s/1D1Ttau-ouWFWGpZdZee6Hg</a><br>提取码：zfxt</p>
+</blockquote>
+<p>2、解压安装包，命令为<code>tar -zxvf jdk-8u171-linux-x64.tar.gz -C /usr/local</code></p>
+<p>​		将<code>jdk-8u171-linux-x64.tar.gz</code> 解压到 <code>/usr/local</code>目录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon /]<span class="comment"># cd /usr/local</span></span><br><span class="line">[root@bogon <span class="built_in">local</span>]<span class="comment"># ll</span></span><br><span class="line">总用量 0</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 bin</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 etc</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 games</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 include</span><br><span class="line">drwxr-xr-x. 8   10  143 255 3月  29 2018 jdk1.8.0_171    解压后的jdk安装包</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 lib</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 lib64</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 libexec</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 sbin</span><br><span class="line">drwxr-xr-x. 5 root root  49 7月  28 04:01 share</span><br><span class="line">drwxr-xr-x. 2 root root   6 4月  11 2018 src</span><br></pre></td></tr></table></figure>
+
+<p>3、配置环境变量</p>
+<p>​		使用<code> vim /etc/profile</code>命令 修改<code>/etc/profile</code>文件，在文件末尾加入如下配置			</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/local/jdk1.8.0_171    <span class="comment">#解压目录</span></span><br><span class="line">PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<p>然后 <code>Esc</code> 输入 <code>:wq</code>  并回车 保存并退出。</p>
+<blockquote>
+<p>注意：等号<code>=</code>两边不能有空格，例如：<code>JAVA_HOME = /usr/local/jdk1.8.0_171 </code>是不行的。 </p>
+</blockquote>
+<p>4、重新加载profile文件，使更改的配置立即生效，<code>source /etc/profile</code></p>
+<p>5、检查安装是否成功，命令为<code>java -version</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon etc]<span class="comment"># java -version</span></span><br><span class="line">java version <span class="string">&quot;1.8.0_171&quot;</span></span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_171-b11)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.171-b11, mixed mode)</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/c357b778.html" target="_blank">Linux安装jdk</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 16 篇日志，继续加油！
+                            <a href="/category/Linux/">Linux</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/958f52e2.html"><span>Redis简介</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a362d786.html"><span>使用idea将自己的项目上传到github</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/11.html"><span>Git本地仓库操作</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a99f1401.html"><span>Git配置IDEA</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/884d8d37.html"><span>寻找旋转排序数组的最小值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-26</span>
-                                </div>
-                            </div>
-                        </div>
-                    
+                            <a href="/tag/Linux-java/">Linux java</a>
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1112885395.html"><span>Hexo主题LiveForCode介绍</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/42bdef23.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/42bdef23.html" title="发布于 2022-07-31 09:26">Linux安装Mysql</a>
+                        <br>
+                    
+                    
+                        <a href="/post/d0edc1ed.html" class="next-prefix">» </a> 下一篇：    <a href="/post/d0edc1ed.html" title="发布于 2022-07-31 07:41">Linux常用命令</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/">上一页</a><a class="page-number" href="/archive/">1</a><span class="page-number current">2</span>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -174,7 +188,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
