@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            MYSQL主从配置
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,317 +32,181 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">MYSQL主从配置</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-03
+                        </span>
+                        
+                            <span id="/post/e696a246.html" class="leancloud_visitors" data-flag-title="MYSQL主从配置">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/e696a246.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Mysql</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">MySql</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>首先你要保证，<code>windows</code>的mysql的版本和<code>linux</code>的mysql<font color="red"><strong>版本要一致！</strong></font></p>
+<p>我windows版本是<code>8.0.26</code>，linux虚拟机是CentOS7，mysql版本是<code>8.0.30</code>.</p>
+<h1 id="主库配置"><a href="#主库配置" class="headerlink" title="主库配置"></a>主库配置</h1><p>主库是在windows系统。</p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>一般是在C盘的<code>C:\ProgramData\MySQL\MySQL Server 8.0</code>,目录下有个<code>my.ini</code>配置文件。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置server-id</span></span><br><span class="line"><span class="attr">server-id</span>=<span class="number">1</span> </span><br><span class="line"><span class="comment">#开启二进制文件</span></span><br><span class="line"><span class="attr">log-bin</span>=mysql-bin </span><br></pre></td></tr></table></figure>
+
+<p>在<code>[mysqld]</code>下面，添加以上内容。<code>server-id</code>是服务器唯一id，可以是其他数字，但不能和从库的<code>server-id</code>重复!!</p>
+<p>只要不重复，啥数字都可以。</p>
+<h2 id="重启mysql服务"><a href="#重启mysql服务" class="headerlink" title="重启mysql服务"></a>重启mysql服务</h2><h3 id="方法一："><a href="#方法一：" class="headerlink" title="方法一："></a>方法一：</h3><p><code>我的电脑</code>,右键选择<code>管理</code>。</p>
+<img src="\image\article\MYSQL主从配置\image-20220803112549738.png" alt="image-20220803112549738" style="zoom:67%;" />
+
+<p>在服务名称上，右键 <code>停止</code>再<code>启动</code>。</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>以<code>管理员身份</code>运行<code>命令提示符</code>。</p>
+<img src="\image\article\MYSQL主从配置\image-20220803112728812.png" alt="image-20220803112728812" style="zoom:50%;" />
+
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span> stop mysql80   #或者<span class="built_in">net</span> stop mysql   		停止服务</span><br><span class="line"><span class="built_in">net</span> <span class="built_in">start</span> mysql80 #或者<span class="built_in">net</span> <span class="built_in">start</span> mysql		开启服务</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建从服务器的用户和权限"><a href="#创建从服务器的用户和权限" class="headerlink" title="创建从服务器的用户和权限"></a>创建从服务器的用户和权限</h2><h3 id="方法一：-1"><a href="#方法一：-1" class="headerlink" title="方法一："></a>方法一：</h3><p><code>win+R</code>输入<code>cmd</code>，进入命令行，登录mysql</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p</span><br><span class="line">#然后输入密码</span><br></pre></td></tr></table></figure>
+
+<p>然后使用命令行创建用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create user &#x27;用户名&#x27;@&#x27;%&#x27;  identified by &#x27;密码&#x27;;		#创建用户</span><br><span class="line">grant all privileges on *.* to &#x27;用户名&#x27;@&#x27;%&#x27;;			#授予权限</span><br><span class="line"></span><br><span class="line">#比如</span><br><span class="line">#create user &#x27;test_user&#x27;@&#x27;%&#x27;  identified by &#x27;123456&#x27;;</span><br><span class="line">#grant all privileges on *.* to &#x27;test_user&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二："><a href="#方法二：" class="headerlink" title="方法二："></a>方法二：</h3><p>进入<code>navicat</code>，</p>
+<img src="\image\article\MYSQL主从配置\image-20220803113429776.png" alt="image-20220803113429776" style="zoom: 67%;" />
+
+<p>按以下格式创建用户</p>
+<img src="\image\article\MYSQL主从配置\image-20220803113545220.png" alt="image-20220803113545220" style="zoom: 67%;" />
+
+<p>用户名和密码改成你自己的，其他的按照这格式就行。</p>
+<img src="\image\article\MYSQL主从配置\image-20220803113643506.png" alt="image-20220803113643506" style="zoom:50%;" />
+
+<p>服务器权限<font color="red"><strong>全选</strong></font>，因为我已经创建过了就不全选创建了。最后保存就好了。</p>
+<p>最后你可以用以下命令，试试新建的用户能不能登录</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -u &#x27;你刚创建的用户名&#x27; -p&#x27;密码&#x27;</span><br><span class="line">#比如： mysql -u test_user -p <span class="number">123456</span></span><br></pre></td></tr></table></figure>
+
+<p>能登录就是成功了。不能登录就看看你创建用户的时候，<strong>主机</strong>那块是不是<code>%</code>。<code>%</code>表示，任何服务器都可以连接。</p>
+<p><code>create user &#39;用户名&#39;@&#39;%&#39;  identified by &#39;密码&#39;;</code>是这个%哦。</p>
+<h2 id="查看主服务器状态"><a href="#查看主服务器状态" class="headerlink" title="查看主服务器状态"></a>查看主服务器状态</h2><p><code>win+R</code>输入<code>cmd</code>，进入命令行，登录mysql</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p</span><br><span class="line">#然后输入密码</span><br></pre></td></tr></table></figure>
+
+<p>输入<code>show master status;</code></p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+----------------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| File                       | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+----------------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| DESKTOP-GQI06FR-bin.<span class="number">000014</span> |      <span class="number">531</span> |              |                  |                   |</span><br><span class="line">+----------------------------+----------+--------------+------------------+-------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> <span class="built_in">set</span> (<span class="number">0</span>.<span class="number">00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>记住这个<code> DESKTOP-GQI06FR-bin.000014</code>和<code>531</code>，待会配置从库使用，而且也<font color="red"><strong>不要再有任何mysql操作了</strong></font>，否则这个是会变的。</p>
+<h1 id="从服务器配置"><a href="#从服务器配置" class="headerlink" title="从服务器配置"></a>从服务器配置</h1><p>从服务器是Linux</p>
+<h2 id="配置文件-1"><a href="#配置文件-1" class="headerlink" title="配置文件"></a>配置文件</h2><p> 修改配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/my.cnf</span><br></pre></td></tr></table></figure>
+
+<p>在[msqld]下面添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置server-id</span></span><br><span class="line">server-id=2</span><br></pre></td></tr></table></figure>
+
+<p>只要保证<code>server-id</code>是唯一的就行，与主库和其他从库id不同就行。</p>
+<h2 id="重启myql服务"><a href="#重启myql服务" class="headerlink" title="重启myql服务"></a>重启myql服务</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置从库"><a href="#配置从库" class="headerlink" title="配置从库"></a>配置从库</h2><p><code>win+R</code>输入<code>cmd</code>，进入命令行，登录mysql</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p</span><br><span class="line">#然后输入密码</span><br></pre></td></tr></table></figure>
+
+<p>然后执行以下sql</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&#x27;192.168.20.1&#x27;,master_port=3306,master_user=&#x27;test_user&#x27;,master_password=&#x27;123456&#x27;,master_log_file=&#x27;DESKTOP-GQI06FR-bin.000014&#x27;,master_log_pos=531;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>master_host</code>对应主服务器的IP地址。</li>
+<li><code>master_port</code>对应主服务器的端口。</li>
+<li><code>master_log_file</code>对应show master status显示的File列：DESKTOP-GQI06FR-bin.000014。</li>
+<li><code>master_log_pos</code>对应show master status显示的Position列：531。</li>
+</ol>
+<p>然后开启主从复制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start slave;  	#开启主从复制</span><br><span class="line">stop slave;		#关闭主从复制</span><br></pre></td></tr></table></figure>
+
+<h1 id="查看是否配置成功"><a href="#查看是否配置成功" class="headerlink" title="查看是否配置成功"></a>查看是否配置成功</h1><p>在从服务器上执行以下SQL语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show slave status;</span><br></pre></td></tr></table></figure>
+
+<p>然后能看到<code>Waiting for source to send event</code>，就表示配置成功。</p>
+<p>或者在windows，打开<code>navicat</code></p>
+<p>在<font color="red"><strong>主库</strong></font>上新建一个数据库，看从库是否也新建一个。</p>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/1112885395.html">Hexo主题LiveForCode介绍</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Hexo主题LiveForCode介绍.
-                                <a href="/post/1112885395.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2020-08-01
-                            </span>
-                            
-                                <span id="/post/1112885395.html" class="leancloud_visitors" data-flag-title="Hexo主题LiveForCode介绍">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1112885395.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/e696a246.html" target="_blank">MYSQL主从配置</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Mysql/">Mysql</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/e696a246.html">MYSQL主从配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：主库windows,从库linux虚拟机
-                                <a href="/post/e696a246.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/e696a246.html" class="leancloud_visitors" data-flag-title="MYSQL主从配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/e696a246.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/MySql/">MySql</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d09e42a4.html">乘积小于k的子数组</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：滑动窗口
-                                <a href="/post/d09e42a4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-01
-                            </span>
-                            
-                                <span id="/post/d09e42a4.html" class="leancloud_visitors" data-flag-title="乘积小于k的子数组">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d09e42a4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/714fed31.html">跳跃游戏II</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：贪心解跳跃游戏II
-                                <a href="/post/714fed31.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-01
-                            </span>
-                            
-                                <span id="/post/714fed31.html" class="leancloud_visitors" data-flag-title="跳跃游戏II">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/714fed31.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/acb8270e.html">Linux安装Redis</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-01
-                            </span>
-                            
-                                <span id="/post/acb8270e.html" class="leancloud_visitors" data-flag-title="Linux安装Redis">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/acb8270e.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/42bdef23.html">Linux安装Mysql</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux安装Mysql并配置
-                                <a href="/post/42bdef23.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/42bdef23.html" class="leancloud_visitors" data-flag-title="Linux安装Mysql">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/42bdef23.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c357b778.html">Linux安装jdk</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/c357b778.html" class="leancloud_visitors" data-flag-title="Linux安装jdk">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c357b778.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d0edc1ed.html">Linux常用命令</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux常用命令
-                                <a href="/post/d0edc1ed.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/d0edc1ed.html" class="leancloud_visitors" data-flag-title="Linux常用命令">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d0edc1ed.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/bea0af19.html">安装ssh连接工具</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：ssh连接工具的安装
-                                <a href="/post/bea0af19.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/bea0af19.html" class="leancloud_visitors" data-flag-title="安装ssh连接工具">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/bea0af19.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/3ca46669.html">Linux虚拟机网卡设置问题</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：网卡设置
-                                <a href="/post/3ca46669.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/3ca46669.html" class="leancloud_visitors" data-flag-title="Linux虚拟机网卡设置问题">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/3ca46669.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/d09e42a4.html" class="next-prefix">» </a> 下一篇：    <a href="/post/d09e42a4.html" title="发布于 2022-08-01 09:21">乘积小于k的子数组</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -368,7 +232,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     

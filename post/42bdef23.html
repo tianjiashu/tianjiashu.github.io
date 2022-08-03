@@ -59,7 +59,7 @@
                     
                     
                         
-                            <span class="tag-color">Linux MYSQL</span>
+                            <span class="tag-color">Linux</span>
                         
                     
                 </div>
@@ -75,6 +75,12 @@
             <div class="toc"></div>
             <div class="article-body">
                 <p>安装方式使用RPM, 【RPM软件包管理器，是红帽Linux用于管理和安装软件的工具】</p>
+<h1 id="下载mysql安装包"><a href="#下载mysql安装包" class="headerlink" title="下载mysql安装包"></a>下载mysql安装包</h1><p> <a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/mysql/">MySQL :: Download MySQL Community Server</a></p>
+<p>下载界面，点击进去。</p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Mysql/image-20220802204107474.png" alt="image-20220802204107474"></p>
+<p>我使用的CentOS7，选择Red Hat。这两个一样。点击下载安装包。</p>
+<p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Mysql/image-20220802204211308.png" alt="image-20220802204211308"></p>
+<p>下载的是<code>.tar</code>，结尾的压缩包，我下载的是<code>mysql-8.0.30-1.el7.x86_64.rpm-bundle.tar</code></p>
 <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="检测当前系统是否安装Mysql数据库"><a href="#检测当前系统是否安装Mysql数据库" class="headerlink" title="检测当前系统是否安装Mysql数据库"></a>检测当前系统是否安装Mysql数据库</h2><p><code>rpm -qa</code>命令是查询当前系统中安装的所有软件。</p>
 <p>命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep mysql</span><br><span class="line">rpm -qa|grep mariadb</span><br></pre></td></tr></table></figure>
@@ -88,16 +94,23 @@
 <h2 id="卸载已安装的冲突软件"><a href="#卸载已安装的冲突软件" class="headerlink" title="卸载已安装的冲突软件"></a>卸载已安装的冲突软件</h2><p>若你在上一步查询到冲突软件，可使用以下命令来卸载，如果没有，可以跳过。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps 软件名称</span><br><span class="line"><span class="comment">#在这里我要卸载的是 mariadb,所以我的命令如下</span></span><br><span class="line">rpm -e --nodeps mariadb-libs-5.5.60-1.el7_5.x86_64</span><br></pre></td></tr></table></figure>
 
-<h2 id="将Mysql安装包上传到Linux并解压"><a href="#将Mysql安装包上传到Linux并解压" class="headerlink" title="将Mysql安装包上传到Linux并解压"></a>将Mysql安装包上传到Linux并解压</h2><p>Mysql安装包：</p>
-<p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/17gd_kJEWj5mlqd1z0o5GtA">https://pan.baidu.com/s/17gd_kJEWj5mlqd1z0o5GtA</a><br>提取码：lugd</p>
-<p>解压命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf 待解压的文件名 -C 解压到的目录</span><br><span class="line"><span class="comment">#在这里的我解压到/usr/local/mysql</span></span><br><span class="line"><span class="built_in">mkdir</span> /usr/local/mysql                               						<span class="comment">#首先得创建目录</span></span><br><span class="line">tar -zxvf mysql-5.7.25-1.el7.x86_64.rpm-bundle.tar.gz -C /usr/local/mysql	<span class="comment">#解压</span></span><br></pre></td></tr></table></figure>
+<h2 id="将Mysql安装包上传到Linux并解压"><a href="#将Mysql安装包上传到Linux并解压" class="headerlink" title="将Mysql安装包上传到Linux并解压"></a>将Mysql安装包上传到Linux并解压</h2><p>解压命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf 待解压的文件名 -C 解压到的目录</span><br><span class="line"><span class="comment">#在这里的我解压到/usr/local/mysql</span></span><br><span class="line"><span class="built_in">mkdir</span> /usr/local/mysql                               						<span class="comment">#首先得创建目录</span></span><br><span class="line">tar -xvf mysql-8.0.30-1.el7.x86_64.rpm-bundle.tar -C /usr/local/mysql	<span class="comment">#解压</span></span><br></pre></td></tr></table></figure>
 
 <p>解压后的文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon /]<span class="comment"># cd /usr/local/mysql</span></span><br><span class="line">[root@bogon mysql]<span class="comment"># ll</span></span><br><span class="line">total 202200</span><br><span class="line">-rw-r--r--. 1 root root  25402568 Dec 24  2018 mysql-community-client-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root    280904 Dec 24  2018 mysql-community-common-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   3839640 Dec 24  2018 mysql-community-devel-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   2271668 Dec 24  2018 mysql-community-libs-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root   2116628 Dec 24  2018 mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 root root 173130520 Dec 24  2018 mysql-community-server-5.7.25-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon /]<span class="comment"># cd /usr/local/mysql</span></span><br><span class="line">[root@bogon mysql]<span class="comment"># ll</span></span><br><span class="line">total 839324</span><br><span class="line">-rw-r--r--. 1 7155 31415  14709160 Jul  7 16:00 mysql-community-client-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415   2632376 Jul  7 16:00 mysql-community-client-plugins-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415    660264 Jul  7 16:00 mysql-community-common-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415 481580308 Jul  7 16:01 mysql-community-debuginfo-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415   1958588 Jul  7 16:01 mysql-community-devel-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415   4217604 Jul  7 16:01 mysql-community-embedded-compat-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415   2218720 Jul  7 16:01 mysql-community-icu-data-files-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415   1582228 Jul  7 16:01 mysql-community-libs-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415    685808 Jul  7 16:02 mysql-community-libs-compat-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415  56195524 Jul  7 16:02 mysql-community-server-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415  21350292 Jul  7 16:02 mysql-community-server-debug-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">-rw-r--r--. 1 7155 31415 271649024 Jul  7 16:04 mysql-community-test-8.0.30-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
 <h2 id="按照顺序按照rpm软件包"><a href="#按照顺序按照rpm软件包" class="headerlink" title="按照顺序按照rpm软件包"></a>按照顺序按照rpm软件包</h2><p><font color="red" size=5>注意：一定要按顺序！</font></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh mysql-community-common-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-devel-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-compat-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-5.7.25-1.el7.x86_64.rpm</span><br><span class="line">yum install net-tools</span><br><span class="line">rpm -ivh mysql-community-server-5.7.25-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p>依次解压：</p>
+<ol>
+<li>common</li>
+<li>client-plugins</li>
+<li>libs</li>
+<li>client</li>
+<li>server</li>
+</ol>
+<p>它们之间存在依赖关系，必须按顺序安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh mysql-community-common-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-plugins-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh  mysql-community-client-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-icu-data-files-8.0.30-1.el7.x86_64.rpm</span><br><span class="line">yum install net-tools</span><br><span class="line">rpm -ivh mysql-community-server-8.0.30-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
 
 <p>依次执行以上命令即可</p>
 <blockquote>
@@ -117,12 +130,13 @@
 <p>其他命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">netstat -tunlp|grep mysql   	<span class="comment">#查看mysql是否启动</span></span><br><span class="line">ps -ef|grep mysql  				<span class="comment">#查看MySQL进程</span></span><br></pre></td></tr></table></figure>
 
+<p><strong><font color="red">如果你以前设置过一下内容，就不用再设置了。</font></strong></p>
 <h2 id="查阅临时密码"><a href="#查阅临时密码" class="headerlink" title="查阅临时密码"></a>查阅临时密码</h2><p>使用命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /var/log/mysqld.log|grep password</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /var/log/mysqld.log|grep localhost</span><br></pre></td></tr></table></figure>
 
 <p><img src="/image/article/Linux%E5%AE%89%E8%A3%85Mysql/image-20220731221954159.png" alt="image-20220731221954159"></p>
 <p>这就是临时密码<code>&amp;sqBTL515Ghu</code></p>
-<h2 id="登录MySQL数据库-修改密码，开放访问权限"><a href="#登录MySQL数据库-修改密码，开放访问权限" class="headerlink" title="登录MySQL数据库,修改密码，开放访问权限"></a>登录MySQL数据库,修改密码，开放访问权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p				<span class="comment">#登录mysql（使用临时密码登录）</span></span><br><span class="line"><span class="comment">#然后输入密码【密码是看不见的】</span></span><br><span class="line"><span class="comment">#修改密码</span></span><br><span class="line"><span class="built_in">set</span> global validate_password_length=4;</span><br><span class="line"><span class="built_in">set</span> global validate_password_policy=LOW;</span><br><span class="line"><span class="built_in">set</span> password=password(<span class="string">&#x27;root&#x27;</span>);</span><br><span class="line"><span class="comment">#开启访问权限</span></span><br><span class="line">grant all on *.* to <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> identified by<span class="string">&#x27;root&#x27;</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<h2 id="登录MySQL数据库-修改密码，开放访问权限"><a href="#登录MySQL数据库-修改密码，开放访问权限" class="headerlink" title="登录MySQL数据库,修改密码，开放访问权限"></a>登录MySQL数据库,修改密码，开放访问权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p				<span class="comment">#登录mysql（使用临时密码登录）</span></span><br><span class="line"><span class="comment">#然后输入密码【密码是看不见的】   如果密码总是不对，那你试试你之前的密码...</span></span><br><span class="line"><span class="comment">#修改密码</span></span><br><span class="line"><span class="built_in">set</span> global validate_password_length=4;</span><br><span class="line"><span class="built_in">set</span> global validate_password_policy=LOW;</span><br><span class="line"><span class="built_in">set</span> password=password(<span class="string">&#x27;root&#x27;</span>);</span><br><span class="line"><span class="comment">#开启访问权限</span></span><br><span class="line">grant all on *.* to <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> identified by<span class="string">&#x27;root&#x27;</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
 
 <p>使用<code>Windows</code>连接<code>linux</code>的<code>mysql</code>。需要打开<code>linux</code>的端口号，以及关闭<code>linux</code>的防火墙【在同一局域网】</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -AINPUT -ptcp --dport 3306 -jACCEPT  	#打开3306端口号</span><br><span class="line">systemctl stop firewalld 						#关闭防火墙</span><br><span class="line">systemctl start firewalld						#开启防火墙</span><br></pre></td></tr></table></figure>
@@ -162,7 +176,7 @@
                     <div class="tag">
                         标签：
                         
-                            <a href="/tag/Linux-MYSQL/">Linux MYSQL</a>
+                            <a href="/tag/Linux/">Linux</a>
                         
                     </div>
                 

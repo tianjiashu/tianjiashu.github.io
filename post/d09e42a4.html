@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签 - Linux Redis
+            乘积小于k的子数组
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签归档</h1>
+                <h1 class="header-subtitle">乘积小于k的子数组</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-01
+                        </span>
+                        
+                            <span id="/post/d09e42a4.html" class="leancloud_visitors" data-flag-title="乘积小于k的子数组">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d09e42a4.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">算法</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">LeetCode</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,37 +70,137 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>给你一个整数数组 <code>nums</code> 和一个整数 <code>k</code> ，请你返回子数组内所有元素的乘积<font color="red"><strong>严格小于 <code>k</code></strong></font> 的连续子数组的数目。</p>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：nums &#x3D; [10,5,2,6], k &#x3D; 100<br>输出：8<br>解释：8 个乘积小于 100 的子数组分别为：[10]、[5]、[2],、[6]、[10,5]、[5,2]、[2,6]、[5,2,6]。<br>需要注意的是 [10,5,2] 并不是乘积小于 100 的子数组。</p>
+</blockquote>
+<p>示例 2：</p>
+<blockquote>
+<p>输入：nums &#x3D; [1,2,3], k &#x3D; 0<br>输出：0</p>
+</blockquote>
+<p>提示: </p>
+<ul>
+<li>1 &lt;&#x3D; nums.length &lt;&#x3D; 3 * 104</li>
+<li>1 &lt;&#x3D; nums[i] &lt;&#x3D; 1000</li>
+<li>0 &lt;&#x3D; k &lt;&#x3D; 106</li>
+</ul>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/subarray-product-less-than-k">https://leetcode.cn/problems/subarray-product-less-than-k</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<p>这道题，我属实有心理阴影….在我刚开始做题的时候…</p>
+<img src="/image/article/乘积小于k的子数组/a.png" alt="a" style="zoom:67%;" />
+
+<p>一遍一遍提交，都不通过…提交的次数比这个多，只不过没有显示全【红色的】，绝望的一批 (ノ｀Д)ノ，颇有想掀桌子的冲动，然后今天又碰到这题了，虽然一次通过了，但仍心有余悸…o(≧口≦)o【仍想了挺久的】然后记录一下题解…整理一下思路</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>首先这个题要求的是<font color="red"><strong>乘积</strong></font>,就不能用<code>数组前缀乘积</code>了，因为一直乘积可能会超过int的范围，虽然可以用 长整型<code>long</code>，但不建议这么用。【这是我第一次做题的时候的思路，还是太年轻，因为每次看到<code>数组滑窗</code>，总会想到<code>前缀和</code>】</p>
+<p>既然是滑窗，就得定义窗口左右的指针</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> -<span class="number">1</span>,right = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>初始化<code>窗口的乘积</code>以及<code>连续子数组的数目</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">mult</span> <span class="operator">=</span> nums[<span class="number">0</span>];  <span class="comment">//注意，数组的长度是大于等于1的</span></span><br><span class="line"><span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>当窗口的乘积&lt;k时</p>
+<ol>
+<li>连续子数组的数目 加上  窗口的大小<code>result+=(right-left);</code>【？为什么加上窗口的大小呢，稍后图示说明，感觉这个应该算是题的一个难点吧】</li>
+<li>然后右边扩大窗口 <code>right++;mult*=nums[right];</code></li>
+</ol>
+</li>
+<li><p>当窗口乘积&gt;&#x3D;k时</p>
+<ol>
+<li><p>左边窗口缩小 <code>left++;mult/=nums[left];</code></p>
+<p>注意，有可能这个左边窗口缩小到<code>left&gt;=right</code>,那就需要扩大右边的窗口了<code>right++;mult*=nums[right];</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if(left&gt;=right)&#123;</span><br><span class="line">    right++;</span><br><span class="line">    mult*=nums[right];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ol>
+<p>以<code>nums = [10,5,2,6], k = 100</code>为例。</p>
+<img src="\image\article\乘积小于k的子数组\1.PNG" alt="1" style="zoom:50%;" />
+
+<p><code>result+=1</code>，子数组是<code>[10]</code></p>
+<img src="\image\article\乘积小于k的子数组\2.PNG" alt="2" style="zoom:50%;" />
+
+<p><code>result+=2</code>，子数组是<code>[10,5],[5]</code></p>
+<img src="\image\article\乘积小于k的子数组\3.PNG" alt="3" style="zoom:50%;" />
+
+<p>窗口子数组就没有严格小于k，缩小窗口。</p>
+<img src="\image\article\乘积小于k的子数组\4.PNG" alt="4" style="zoom:50%;" />
+
+<p><code>result+=2</code>，子数组是<code>[5,2],[2]</code></p>
+<img src="\image\article\乘积小于k的子数组\5.PNG" alt="5" style="zoom:50%;" />
+
+<p><code>result+=2</code>，子数组是<code>[5,2,6],[2,6],[6]</code></p>
+<p>由于窗口已经到达边界，所以结束，<code>result=8</code></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">numSubarrayProductLessThanK</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> -<span class="number">1</span>,right = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">mult</span> <span class="operator">=</span> nums[<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (right&lt;nums.length)&#123;</span><br><span class="line">            <span class="keyword">if</span>(mult&lt;k)&#123;</span><br><span class="line">                result+=(right-left);</span><br><span class="line">                right++;</span><br><span class="line">                mult*=nums[right];</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                left++;</span><br><span class="line">                mult/=nums[left];</span><br><span class="line">                <span class="keyword">if</span>(left&gt;=right)&#123;</span><br><span class="line">                    right++;</span><br><span class="line">                    mult*=nums[right];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但仍然有个问题，你可以把上述代码运行一下，不出意外的话，应该是出意外了。嘿嘿嘿ο(&#x3D;•ω＜&#x3D;)ρ⌒☆</p>
+<p><code>java.lang.ArrayIndexOutOfBoundsException</code>数组越界了。在循环过程中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (right&lt;nums.length)&#123;</span><br><span class="line">    <span class="keyword">if</span>(mult&lt;k)&#123;</span><br><span class="line">        result+=(right-left);  <span class="comment">//假如此时right = nums.length-1</span></span><br><span class="line">        right++;               <span class="comment">//right = nums.length</span></span><br><span class="line">        mult*=nums[right];      <span class="comment">//nums[nums.length]就会越界。</span></span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        left++;</span><br><span class="line">        <span class="keyword">if</span>(left&gt;=right)&#123;</span><br><span class="line">            right++;</span><br><span class="line">            mult*=nums[right];  <span class="comment">//这也同样</span></span><br><span class="line">        &#125;</span><br><span class="line">        mult/=nums[left];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以需要把<code>mult*=nums[right];</code>，改为<code>if(right&lt;nums.length) mult*=nums[right];</code>。</p>
+<h1 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">numSubarrayProductLessThanK</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> -<span class="number">1</span>,right = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">mult</span> <span class="operator">=</span> nums[<span class="number">0</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (right&lt;nums.length)&#123;</span><br><span class="line">            <span class="keyword">if</span>(mult&lt;k)&#123;</span><br><span class="line">                result+=(right-left);</span><br><span class="line">                right++;</span><br><span class="line">                <span class="keyword">if</span>(right&lt;nums.length) mult*=nums[right];</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                left++;</span><br><span class="line">                mult/=nums[left];</span><br><span class="line">                <span class="keyword">if</span>(left&gt;=right)&#123;</span><br><span class="line">                    right++;</span><br><span class="line">                    <span class="keyword">if</span>(right&lt;nums.length) mult*=nums[right];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/d09e42a4.html" target="_blank">乘积小于k的子数组</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            当前标签：<span class="tag">Linux Redis</span>
+                            <a href="/category/%E7%AE%97%E6%B3%95/">算法</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/LeetCode/">LeetCode</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/e696a246.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/e696a246.html" title="发布于 2022-08-03 11:05">MYSQL主从配置</a>
+                        <br>
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/acb8270e.html"><span>Linux安装Redis</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/714fed31.html" class="next-prefix">» </a> 下一篇：    <a href="/post/714fed31.html" title="发布于 2022-08-01 05:47">跳跃游戏II</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>

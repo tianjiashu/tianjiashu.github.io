@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签 - Linux java
+            跳跃游戏II
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签归档</h1>
+                <h1 class="header-subtitle">跳跃游戏II</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-01
+                        </span>
+                        
+                            <span id="/post/714fed31.html" class="leancloud_visitors" data-flag-title="跳跃游戏II">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/714fed31.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">算法</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">LeetCode</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,37 +70,103 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h1><p>给你一个非负整数数组 nums ，你最初位于数组的第一个位置。</p>
+<p>数组中的每个元素代表你在该位置可以跳跃的最大长度。</p>
+<p>你的目标是<font color="red">使用<strong>最少</strong>的跳跃次数</font>到达数组的最后一个位置。</p>
+<p>假设你总是可以到达数组的最后一个位置。</p>
+<p><strong>示例 1:</strong></p>
+<blockquote>
+<p>输入: nums &#x3D; [2,3,1,1,4]<br>输出: 2<br>解释: 跳到最后一个位置的最小跳跃数是 2。<br>     从下标为 0 跳到下标为 1 的位置，跳 1 步，然后跳 3 步到达数组的最后一个位置。</p>
+</blockquote>
+<p><strong>示例 2:</strong></p>
+<blockquote>
+<p>输入: nums &#x3D; [2,3,0,1,4]<br>输出: 2</p>
+</blockquote>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/jump-game-ii">https://leetcode.cn/problems/jump-game-ii</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><p>跳跃游戏II，可以用动态规划解，也可也用贪心解。</p>
+<p>但最优解是用贪心，而且用贪心解也更好理解！</p>
+<p>目标是：<font color="red">使用<strong>最少</strong>的跳跃次数</font>到达数组的最后一个位置。【我们总是可以到达数组的最后一个位置。】</p>
+<p>既然，总是可以到达数组最后一个位置。而且要求<code>跳跃的次数</code><font color="red"><strong>最少</strong></font></p>
+<p>那么就让我们每次跳跃的距离<font color="red"><strong>最大</strong></font>就好！</p>
+<p>拿<code>[3,4,3,1,0,7,0,3,0,2,0,3]</code>举例。</p>
+<p>用<code>pace</code>记录跳数。</p>
+<p><img src="/image/article/%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII/IMG_0395(20220801-181050).PNG" alt="IMG_0395(20220801-181050)"></p>
+<p><code>pace = 1</code></p>
+<p>第一跳能跳到<code>1(下标为3)</code>。下跳的起跳点可以是<code>3,4,3,1</code>。找下一跳的最大覆盖范围。即(<code>max(i+nums[i])</code>)</p>
+<p><img src="/image/article/%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII/IMG_0398(20220801-181528).PNG" alt="IMG_0398(20220801-181528)"></p>
+<p><img src="/image/article/%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII/IMG_0396(20220801-181338).PNG" alt="IMG_0396(20220801-181338)"></p>
+<p><code>pace = 2</code></p>
+<p>下一跳最远可以跳到<code>7(下标为5)</code>。第三次起跳点可以是<code>0,7</code>。找下一跳的最大覆盖范围。即(<code>max(i+nums[i])</code>)</p>
+<p><img src="/image/article/%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII/IMG_0399(20220801-182450).PNG" alt="IMG_0399(20220801-182450)"></p>
+<p><code>pace = 3</code></p>
+<p>第三跳最远就可以跳到数组末尾了，所以结果已经出了，最少<code>3</code>跳。</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">jump</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">            maxarea:最大范围</span></span><br><span class="line"><span class="comment">            curarea:当前所能抵达的范围</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">if</span>(nums.length==<span class="number">1</span>)<span class="keyword">return</span>  <span class="number">0</span>;<span class="comment">//应对特殊情况 [0]</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">maxarea</span> <span class="operator">=</span> nums[<span class="number">0</span>],curarea = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pace</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (maxarea&lt;nums.length-<span class="number">1</span>)&#123;<span class="comment">//如果最大范围已经可以到达末尾了</span></span><br><span class="line">            pace++;</span><br><span class="line">            <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> curarea,end = maxarea;</span><br><span class="line">            curarea = maxarea;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start;i&lt;=end;i++)&#123;<span class="comment">//注意是 左闭右闭</span></span><br><span class="line">                maxarea = Math.max(maxarea,i+nums[i]);<span class="comment">//寻找下一条最大范围</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pace;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="图解"><a href="#图解" class="headerlink" title="图解"></a>图解</h2><p><img src="/image/article/%E8%B7%B3%E8%B7%83%E6%B8%B8%E6%88%8FII/IMG_0401(20220801-194202).PNG" alt="IMG_0401(20220801-194202)"></p>
+<h1 id="有什么疑问欢迎评论区留言"><a href="#有什么疑问欢迎评论区留言" class="headerlink" title="有什么疑问欢迎评论区留言!"></a>有什么疑问欢迎评论区留言!</h1>
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/714fed31.html" target="_blank">跳跃游戏II</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            当前标签：<span class="tag">Linux java</span>
+                            <a href="/category/%E7%AE%97%E6%B3%95/">算法</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/LeetCode/">LeetCode</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/d09e42a4.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/d09e42a4.html" title="发布于 2022-08-01 09:21">乘积小于k的子数组</a>
+                        <br>
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/c357b778.html"><span>Linux安装jdk</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/acb8270e.html" class="next-prefix">» </a> 下一篇：    <a href="/post/acb8270e.html" title="发布于 2022-08-01 02:36">Linux安装Redis</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>
