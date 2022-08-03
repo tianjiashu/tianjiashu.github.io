@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            项目实现读写分离
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">项目实现读写分离</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-03
+                        </span>
+                        
+                            <span id="/post/c6ed6a2c.html" class="leancloud_visitors" data-flag-title="项目实现读写分离">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c6ed6a2c.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">读写分离</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,37 +70,100 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="为什么要实现读写分离？"><a href="#为什么要实现读写分离？" class="headerlink" title="为什么要实现读写分离？"></a>为什么要实现读写分离？</h1><p>面对日益增加的系统访问量，数据库的吞吐量面临着巨大瓶颈。对于同一时刻有大量并发读操作和较少写操作类型的应用系统来说，**将数据库拆分为<font color="red">主库</font>和<font color="red">从库</font>**。</p>
+<p><font color="red"><strong>主库</strong></font>负责处理事务性的<font color="blue"><strong>增删改操作</strong></font>。</p>
+<p><font color="red"><strong>从库</strong></font>负责处理<font color="blue"><strong>查询操作</strong></font>。</p>
+<p>能够有效的避免由数据更新导致的行锁，使得整个系统的查询性能得到极大的改善。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E9%A1%B9%E7%9B%AE%E5%AE%9E%E7%8E%B0%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%5Cimage-20220803163902754.png" alt="image-20220803163902754"></p>
+<h1 id="Sharding-JDBC介绍"><a href="#Sharding-JDBC介绍" class="headerlink" title="Sharding-JDBC介绍"></a><code>Sharding-JDBC</code>介绍</h1><p><code>Sharding-JDBC</code>定位为轻量级Java框架，在Java的<code>JDBC</code>层<strong>提供的额外服务</strong>。它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为<font color="red"><strong>增强版的JDBC驱动</strong></font>，完全兼容<code>JDBC</code>和各种<code>ORM</code>框架。<br>使用<code>Sharding-JDBC</code>可以在程序中轻松的实现数据库读写分离。</p>
+<ul>
+<li>适用于任何基于<code>JDBC</code>的<code>ORM</code>框架，如:<code>JPA</code>, <code>Hibernate,Mybatis</code>, <code>Spring JDBC Template</code>或直接使用<code>JDBC</code>。</li>
+<li>支持任何第三方的数据库连接池，如:<code>DBCP</code>,<code>C3P0</code>,<code>BoneCP</code>, <code>Druid</code>,<code> HikariCP</code>等。</li>
+<li>支持任意实现<code>JDBC</code>规范的数据库。目前支持<code>MySQL</code>，Oracle，<code>SQLServer</code>，<code>PostgreSQL</code>以及任何遵循<code>SQL92</code>标准的数据库。</li>
+</ul>
+<h1 id="实现读写分离"><a href="#实现读写分离" class="headerlink" title="实现读写分离"></a>实现读写分离</h1><p>首先需要将原来的数据库的数据导出为<code>sql</code>文件。</p>
+<p>然后配置<a target="_blank" rel="noopener" href="https://luckydog-tjs.vercel.app/post/e696a246.html"><strong>数据库的主从复制</strong></a>，看我另一篇博客。</p>
+<p>然后再将之前的<code>sql</code>文件，导入到主库中，注意啊，是<font color="red" size=5><strong>主库</strong></font>！！</p>
+<p>步骤：</p>
+<ol>
+<li><p>导入maven坐标</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shardingsphere<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sharding-jdbc-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.0-RC1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在配置文件中配置读写分离规则</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="comment">#=============================读写分离配置=====================================</span></span><br><span class="line">  <span class="attr">shardingsphere:</span></span><br><span class="line">    <span class="attr">datasource:</span></span><br><span class="line">      <span class="attr">names:</span></span><br><span class="line">        <span class="comment">#数据源名字</span></span><br><span class="line">        <span class="string">master,slave</span>	<span class="comment">#slave2...</span></span><br><span class="line">      <span class="comment"># 主数据源</span></span><br><span class="line">      <span class="attr">master:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line">        <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/reggie?characterEncoding=utf-8</span></span><br><span class="line">        <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">      <span class="comment"># 从数据源</span></span><br><span class="line">      <span class="attr">slave:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line">        <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.37.130:3306/reggie?characterEncoding=utf-8</span></span><br><span class="line">        <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">      <span class="comment">#slave2:</span></span><br><span class="line">      <span class="comment">#   tyepe:...</span></span><br><span class="line">      <span class="comment">#   .....</span></span><br><span class="line">    <span class="attr">masterslave:</span></span><br><span class="line">      <span class="comment"># 读写分离配置</span></span><br><span class="line">      <span class="attr">load-balance-algorithm-type:</span> <span class="string">round_robin</span>  <span class="comment">#负载均衡策略：轮询【从库可能有多个】</span></span><br><span class="line">      <span class="comment"># 最终的数据源名称</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">dataSource</span></span><br><span class="line">      <span class="comment"># 主库数据源名称</span></span><br><span class="line">      <span class="attr">master-data-source-name:</span> <span class="string">master</span>   <span class="comment">#主数据源名字</span></span><br><span class="line">      <span class="comment"># 从库数据源名称列表，多个逗号分隔</span></span><br><span class="line">      <span class="attr">slave-data-source-names:</span> <span class="string">slave</span>    <span class="comment">#从数据源名字</span></span><br><span class="line">    <span class="attr">props:</span></span><br><span class="line">      <span class="attr">sql:</span></span><br><span class="line">        <span class="attr">show:</span> <span class="literal">true</span> <span class="comment">#开启SQL显示，默认false</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在配置文件中允许bean定义覆盖配置项</p>
+</li>
+</ol>
+<p>当启动时，<code>DruidDataSource</code>想创建一个数据源对象<code>DataSource</code>。然后<code>sharding-jdbc</code>也想创建一个数据源对象<code>DataSource</code>，这样会产生冲突，可以配置<strong>允许bean定义覆盖配置项</strong>，这样后创建的会覆盖前面的。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">    <span class="attr">main:</span></span><br><span class="line">        <span class="attr">allow-bean-definition-overriding:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>其他代码啥也不用改。非常简单，不需要写额外的Java代码</p>
+<p>当启动项目查询数据库时，发现<code>WHERE (dish_id = ?) ORDER BY update_time DESC ::: DataSources: slave</code>，就表明配置成功。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/c6ed6a2c.html" target="_blank">项目实现读写分离</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 21 篇日志，继续加油！
+                            <a href="/category/Spring/">Spring</a>
                         
-                    </span>
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/">读写分离</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/c115a0c6.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/c115a0c6.html" title="发布于 2022-08-03 08:29">如何不用第三个变量交换值</a>
+                        <br>
                     
                     
-                        
-                            <div class="archive-title">
-                                <h2 class="archive-year">2020</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1112885395.html"><span>Hexo主题LiveForCode介绍</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/e696a246.html" class="next-prefix">» </a> 下一篇：    <a href="/post/e696a246.html" title="发布于 2022-08-03 11:05">MYSQL主从配置</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -111,7 +195,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     

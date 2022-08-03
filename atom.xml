@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2022-08-03T06:19:44.516Z</updated>
+  <updated>2022-08-03T12:47:29.245Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,48 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何不用第三个变量交换值</title>
+    <link href="http://example.com/post/c115a0c6.html"/>
+    <id>http://example.com/post/c115a0c6.html</id>
+    <published>2022-08-03T12:29:06.000Z</published>
+    <updated>2022-08-03T12:47:29.245Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天逛牛客，看见了一个面经，然后就进去看了看。突然看到一个问题：</p><p><font color="blue" size=5>int a&#x3D;5,b&#x3D;3 如何不用第三个变量，调换它俩的值</font></p><p>我第一反应，啊！啊？啊？啊o((⊙﹏⊙))o.。震惊我一百年，不用第三个变量，这怎么变？</p><p>我想到Go语言，有个语法糖，确实不需要第三个变量就可以交换值。难道Java也有？？？</p><p>然后，我就百度搜索了一个，不禁感叹，女少口阿！女少口阿！</p><p>然后特此记录以下，记录两个方法吧</p><h1 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">5</span>,b=<span class="number">3</span>;</span><br><span class="line">b = (a+b)-(a=b);</span><br></pre></td></tr></table></figure><p><code>b = (a+b)-(a=b);</code>，啊这….</p><p>代码从左向右执行，先是<code>a+b</code>，然后是把<code>b</code>赋值给<code>a</code>，最后是<code>a+b-b</code>赋值给b。</p><p>然后就交换了值。巧妙的利用了，代码的执行顺序。真是细他妈给细开门——细到家了！！！</p><h1 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h1><p>这种方法算是一种算法吧</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">5</span>;</span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line">a = b - a; <span class="comment">//b=3;a=5;--&gt;a = -2</span></span><br><span class="line">b = b - a; <span class="comment">//b=3;a=-2;--&gt;b = 5</span></span><br><span class="line">a = b + a; <span class="comment">//b=5;a=-2; ---&gt;a=3</span></span><br><span class="line"><span class="comment">//最后a = 3, b = 5 </span></span><br></pre></td></tr></table></figure><p>这也很妙啊，说不上来的妙。</p><p>这也算是一个编程小tips！我觉得还是方法一好！</p>]]></content>
+    
+    
+    <summary type="html">妙妙妙~</summary>
+    
+    
+    
+    <category term="其他" scheme="http://example.com/category/%E5%85%B6%E4%BB%96/"/>
+    
+    
+    <category term="妙" scheme="http://example.com/tag/%E5%A6%99/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>项目实现读写分离</title>
+    <link href="http://example.com/post/c6ed6a2c.html"/>
+    <id>http://example.com/post/c6ed6a2c.html</id>
+    <published>2022-08-03T08:28:28.000Z</published>
+    <updated>2022-08-03T09:10:13.356Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="为什么要实现读写分离？"><a href="#为什么要实现读写分离？" class="headerlink" title="为什么要实现读写分离？"></a>为什么要实现读写分离？</h1><p>面对日益增加的系统访问量，数据库的吞吐量面临着巨大瓶颈。对于同一时刻有大量并发读操作和较少写操作类型的应用系统来说，**将数据库拆分为<font color="red">主库</font>和<font color="red">从库</font>**。</p><p><font color="red"><strong>主库</strong></font>负责处理事务性的<font color="blue"><strong>增删改操作</strong></font>。</p><p><font color="red"><strong>从库</strong></font>负责处理<font color="blue"><strong>查询操作</strong></font>。</p><p>能够有效的避免由数据更新导致的行锁，使得整个系统的查询性能得到极大的改善。</p><p><img src="/%5Cimage%5Carticle%5C%E9%A1%B9%E7%9B%AE%E5%AE%9E%E7%8E%B0%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%5Cimage-20220803163902754.png" alt="image-20220803163902754"></p><h1 id="Sharding-JDBC介绍"><a href="#Sharding-JDBC介绍" class="headerlink" title="Sharding-JDBC介绍"></a><code>Sharding-JDBC</code>介绍</h1><p><code>Sharding-JDBC</code>定位为轻量级Java框架，在Java的<code>JDBC</code>层<strong>提供的额外服务</strong>。它使用客户端直连数据库，以jar包形式提供服务，无需额外部署和依赖，可理解为<font color="red"><strong>增强版的JDBC驱动</strong></font>，完全兼容<code>JDBC</code>和各种<code>ORM</code>框架。<br>使用<code>Sharding-JDBC</code>可以在程序中轻松的实现数据库读写分离。</p><ul><li>适用于任何基于<code>JDBC</code>的<code>ORM</code>框架，如:<code>JPA</code>, <code>Hibernate,Mybatis</code>, <code>Spring JDBC Template</code>或直接使用<code>JDBC</code>。</li><li>支持任何第三方的数据库连接池，如:<code>DBCP</code>,<code>C3P0</code>,<code>BoneCP</code>, <code>Druid</code>,<code> HikariCP</code>等。</li><li>支持任意实现<code>JDBC</code>规范的数据库。目前支持<code>MySQL</code>，Oracle，<code>SQLServer</code>，<code>PostgreSQL</code>以及任何遵循<code>SQL92</code>标准的数据库。</li></ul><h1 id="实现读写分离"><a href="#实现读写分离" class="headerlink" title="实现读写分离"></a>实现读写分离</h1><p>首先需要将原来的数据库的数据导出为<code>sql</code>文件。</p><p>然后配置<a href="https://luckydog-tjs.vercel.app/post/e696a246.html"><strong>数据库的主从复制</strong></a>，看我另一篇博客。</p><p>然后再将之前的<code>sql</code>文件，导入到主库中，注意啊，是<font color="red" size=5><strong>主库</strong></font>！！</p><p>步骤：</p><ol><li><p>导入maven坐标</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shardingsphere<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sharding-jdbc-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.0-RC1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li><li><p>在配置文件中配置读写分离规则</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="comment">#=============================读写分离配置=====================================</span></span><br><span class="line">  <span class="attr">shardingsphere:</span></span><br><span class="line">    <span class="attr">datasource:</span></span><br><span class="line">      <span class="attr">names:</span></span><br><span class="line">        <span class="comment">#数据源名字</span></span><br><span class="line">        <span class="string">master,slave</span><span class="comment">#slave2...</span></span><br><span class="line">      <span class="comment"># 主数据源</span></span><br><span class="line">      <span class="attr">master:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line">        <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/reggie?characterEncoding=utf-8</span></span><br><span class="line">        <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">      <span class="comment"># 从数据源</span></span><br><span class="line">      <span class="attr">slave:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line">        <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.37.130:3306/reggie?characterEncoding=utf-8</span></span><br><span class="line">        <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">      <span class="comment">#slave2:</span></span><br><span class="line">      <span class="comment">#   tyepe:...</span></span><br><span class="line">      <span class="comment">#   .....</span></span><br><span class="line">    <span class="attr">masterslave:</span></span><br><span class="line">      <span class="comment"># 读写分离配置</span></span><br><span class="line">      <span class="attr">load-balance-algorithm-type:</span> <span class="string">round_robin</span>  <span class="comment">#负载均衡策略：轮询【从库可能有多个】</span></span><br><span class="line">      <span class="comment"># 最终的数据源名称</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">dataSource</span></span><br><span class="line">      <span class="comment"># 主库数据源名称</span></span><br><span class="line">      <span class="attr">master-data-source-name:</span> <span class="string">master</span>   <span class="comment">#主数据源名字</span></span><br><span class="line">      <span class="comment"># 从库数据源名称列表，多个逗号分隔</span></span><br><span class="line">      <span class="attr">slave-data-source-names:</span> <span class="string">slave</span>    <span class="comment">#从数据源名字</span></span><br><span class="line">    <span class="attr">props:</span></span><br><span class="line">      <span class="attr">sql:</span></span><br><span class="line">        <span class="attr">show:</span> <span class="literal">true</span> <span class="comment">#开启SQL显示，默认false</span></span><br></pre></td></tr></table></figure></li><li><p>在配置文件中允许bean定义覆盖配置项</p></li></ol><p>当启动时，<code>DruidDataSource</code>想创建一个数据源对象<code>DataSource</code>。然后<code>sharding-jdbc</code>也想创建一个数据源对象<code>DataSource</code>，这样会产生冲突，可以配置<strong>允许bean定义覆盖配置项</strong>，这样后创建的会覆盖前面的。</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">    <span class="attr">main:</span></span><br><span class="line">        <span class="attr">allow-bean-definition-overriding:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure><p>其他代码啥也不用改。非常简单，不需要写额外的Java代码</p><p>当启动项目查询数据库时，发现<code>WHERE (dish_id = ?) ORDER BY update_time DESC ::: DataSources: slave</code>，就表明配置成功。</p>]]></content>
+    
+    
+    <summary type="html">基于Sharding-JDBC框架实现读写分离</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://example.com/category/Spring/"/>
+    
+    
+    <category term="读写分离" scheme="http://example.com/tag/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/"/>
+    
+  </entry>
   
   <entry>
     <title>MYSQL主从配置</title>
@@ -183,48 +225,6 @@
     
     
     <summary type="html">ssh连接工具的安装</summary>
-    
-    
-    
-    <category term="Linux" scheme="http://example.com/category/Linux/"/>
-    
-    
-    <category term="Linux虚拟机" scheme="http://example.com/tag/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Linux虚拟机网卡设置问题</title>
-    <link href="http://example.com/post/3ca46669.html"/>
-    <id>http://example.com/post/3ca46669.html</id>
-    <published>2022-07-31T08:38:19.000Z</published>
-    <updated>2022-07-31T10:53:09.208Z</updated>
-    
-    <content type="html"><![CDATA[<p>安装Linux虚拟机完成之后，进入linux界面。</p><p>由于启动服务器时，未加载网卡，导致IP地址初始化失败。</p><p>在Linux命令行输入：<code>ip addr</code></p><p><img src="/image/article/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E5%8D%A1%E8%AE%BE%E7%BD%AE%E9%97%AE%E9%A2%98/image-20220731164052203.png" alt="image-20220731164052203"></p><h1 id="网卡设置"><a href="#网卡设置" class="headerlink" title="网卡设置"></a>网卡设置</h1><p>修改网络初始化配置，设定网卡在系统启动时初始化。依次输入以下命令：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /<span class="comment">#进入根目录</span></span><br><span class="line"><span class="built_in">cd</span> etc<span class="comment">#进入etc目录</span></span><br><span class="line"><span class="built_in">cd</span> sysconfig<span class="comment">#进入sysconfig目录</span></span><br><span class="line"><span class="built_in">cd</span> network-scripts<span class="comment">#进入network-scripts</span></span><br><span class="line">vi ifcfg-ens33<span class="comment">#编辑ifcfg-ens33文件</span></span><br></pre></td></tr></table></figure><p>进入编辑vim界面，按 <code>i</code> 进入编辑界面。移动光标，修改配置文件。</p><p><img src="/image/article/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E5%8D%A1%E8%AE%BE%E7%BD%AE%E9%97%AE%E9%A2%98/image-20220731164915361.png" alt="image-20220731164915361"></p><p>然后按 <code>Esc</code> ，输入<code>:wq</code> ，【注意 **:**】，然后回车。</p><p>然后<font color="red"><strong>重启</strong></font>…</p><p>再一次在Linux命令行输入：<code>ip addr</code>，就能看见IP地址了</p><p><img src="/image/article/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E5%8D%A1%E8%AE%BE%E7%BD%AE%E9%97%AE%E9%A2%98/image-20220731165821505.png" alt="image-20220731165821505"></p>]]></content>
-    
-    
-    <summary type="html">网卡设置</summary>
-    
-    
-    
-    <category term="Linux" scheme="http://example.com/category/Linux/"/>
-    
-    
-    <category term="Linux虚拟机" scheme="http://example.com/tag/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Linux虚拟机安装教程</title>
-    <link href="http://example.com/post/afd438ef.html"/>
-    <id>http://example.com/post/afd438ef.html</id>
-    <published>2022-07-31T07:43:58.000Z</published>
-    <updated>2022-07-31T11:00:28.173Z</updated>
-    
-    <content type="html"><![CDATA[<p>首先下载CentOS资源镜像，和VMware安装包。</p><blockquote><p>VMware安装包：</p><p>链接：<a href="https://pan.baidu.com/s/15qfb0UVonxJ3_y7BPvLHCQ">https://pan.baidu.com/s/15qfb0UVonxJ3_y7BPvLHCQ</a><br>提取码：lohr</p></blockquote><p>VMware安装好之后打开，然后点击创建新的虚拟机。</p><img src="/image/article/Linux虚拟机安装教程/image-20220731154931073.png" alt="image-20220731154931073" style="zoom:67%;" /><p>点击进行下一步，（一般是默认第一个的，看自己所需也可以选择第二个的）</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155019296.png" alt="image-20220731155019296" style="zoom:67%;" /><p>接着安装操作系统，默认就可以，然后下一步</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155101653.png" alt="image-20220731155101653" style="zoom:67%;" /><p>然后选在操作系统，在这里我们选择Linux，然后版本选择centos 64</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155151860.png" alt="image-20220731155151860" style="zoom:67%;" /><p>接下来自定义虚拟机的名字，和安装途径，一般安装在空间大的盘</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155231678.png" alt="image-20220731155231678" style="zoom:67%;" /><p>调整虚拟机的磁盘空间大小，一般默认20G，然后下一步</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155317312.png" alt="image-20220731155317312" style="zoom:67%;" /><p>点击<strong>自定义硬件</strong></p><img src="/image/article/Linux虚拟机安装教程/image-20220731155415787.png" alt="image-20220731155415787" style="zoom:67%;" /><p>然后这里选在ISO镜像文件，没有的可以在链接里下载，然后浏览位置使用。最后点关闭就可以。</p><img src="/image/article/Linux虚拟机安装教程/image-20220731155538292.png" alt="image-20220731155538292" style="zoom:67%;" /><p>点击完成就完成了虚拟机的创建</p><img src="/image/article/Linux虚拟机安装教程/image-20220731161520167.png" alt="image-20220731161520167" style="zoom:67%;" /><p>然后打开这个虚拟机，用键盘方向键选择Install CentOS7,然后回车【它也会自己进入】</p><p><img src="/image/article/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/image-20220731161616516.png" alt="image-20220731161616516"></p><p>等待进入选择语言界面，选择中文，简体中文。</p><p>系统安装媒介选择</p><img src="/image/article/Linux虚拟机安装教程/image-20220731162146832.png" alt="image-20220731162146832" style="zoom:67%;" /><img src="/image/article/Linux虚拟机安装教程/image-20220731162226725.png" alt="image-20220731162226725" style="zoom:67%;" /><p>然后点击<code>开始安装</code>,然后就进入了安装界面，在此界面设置root密码。设置完成后，点左上角的<code>完成</code>，就又会返回。</p><img src="/image/article/Linux虚拟机安装教程/image-20220731162340115.png" alt="image-20220731162340115" style="zoom:67%;" /><p>等待安装完成即可。安装完成之后重启就好了。</p><p>另外:</p><p>我们在虚拟机的时候，鼠标光标在linux虚拟机里“出不来”，可以使用<code>Ctrl+Alt</code>脱离出来。</p>]]></content>
-    
-    
-    <summary type="html">Linux虚拟机安装教程</summary>
     
     
     
