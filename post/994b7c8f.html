@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            nginx命令和配置文件
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">nginx命令和配置文件</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-04
+                        </span>
+                        
+                            <span id="/post/994b7c8f.html" class="leancloud_visitors" data-flag-title="nginx命令和配置文件">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/994b7c8f.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Nginx</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Nginx</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,135 +70,125 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>声明：使用的<code>CentOS7</code>操作系统</p>
+<h1 id="Nginx命令"><a href="#Nginx命令" class="headerlink" title="Nginx命令"></a>Nginx命令</h1><p>执行<code>nginx</code>命令，需要在命令需要使用<code>nginx/sbin</code>目录下的<code>naginx</code>文件。可以是<font color="red"><strong>相对路径</strong></font>或者<font color="red"><strong>绝对路径</strong></font></p>
+<p>首先进入到<code>nginx/sbin</code>目录下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/nginx/sbin</span><br></pre></td></tr></table></figure>
+
+<p>配置<code>Nginx</code>环境变量，就可以在任意目录使用<code>nginx</code>命令了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/profile</span><br></pre></td></tr></table></figure>
+
+<p>在PATH后追加<code>/usr/local/nginx/sbin:</code>，然后保存退出就好了。</p>
+<p>然后<code>source /etc/profile</code>，然他立即生效。</p>
+<p><font color="blue" size=5><strong>查看版本命令:</strong></font></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nginx -v</span><br><span class="line"></span><br><span class="line">[root@bogon sbin]<span class="comment"># nginx -v</span></span><br><span class="line">nginx version: nginx/1.18.0</span><br></pre></td></tr></table></figure>
+
+<p><font color="blue" size= 5><strong>检查配置文件的正确性</strong></font></p>
+<p>在启动<code>Nginx</code>服务之前，可以先检查一下<code>conf/nginx.conf</code>配置文件是否有错误。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nginx -t   <span class="comment">#t 是 test</span></span><br><span class="line"></span><br><span class="line">[root@bogon sbin]<span class="comment"># nginx -t</span></span><br><span class="line">nginx: the configuration file /usr/local/nginx/conf/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /usr/local/nginx/conf/nginx.conf <span class="built_in">test</span> is successful</span><br></pre></td></tr></table></figure>
+
+<p><font color="blue" size= 5><strong>启动和停止</strong></font></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">niginx					<span class="comment">#启动nginx服务</span></span><br><span class="line">ngi  			<span class="comment">#停止nginx服务</span></span><br><span class="line">ps -ef|grep nginx			<span class="comment">#启动完成后查看Nginx进程</span></span><br></pre></td></tr></table></figure>
+
+<p>查看<code>nginx</code>进程,可以的看到有两个进程，第三个是我们执行这条命令对应的进程，可以忽略。<strong>主要看前面两条</strong></p>
+<p>启动完成会有两个进程，一个<code>work</code>进程和一个<code>master</code>进程，可以通过**修改配置文件[<code>conf/nginx.conf</code>]**，添加更多<code>work</code>进程。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon sbin]<span class="comment"># ps -ef|grep nginx</span></span><br><span class="line">root      96952      1  0 16:25 ?        00:00:00 nginx: master process ./nginx</span><br><span class="line">nobody    96953  96952  0 16:25 ?        00:00:00 nginx: worker process</span><br><span class="line">root      97742  88062  0 16:25 pts/0    00:00:00 grep --color=auto nginx</span><br></pre></td></tr></table></figure>
+
+<p><code>nginx</code>默认的端口号是80端口。查看本机的<code>ip</code>地址，然后在windows浏览器的地址栏中，就可以访问<code>nginx</code>的<strong>静态资源</strong>。</p>
+<p>【记得关<code>linux</code>的防火墙哦….，<code>systemctl stop firewalld</code>】</p>
+<p>就可以看到以下界面</p>
+<img src="\image\article\nginx简单命令\image-20220804163517886.png" alt="image-20220804163517886" style="zoom: 43%;" />
+
+<p>而且，启动之后，进入<code>nginx</code>根目录，可以看到很多<strong>临时目录</strong>，以<code>_temp</code>结尾的目录都是临时目录。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@bogon nginx]<span class="comment"># ll</span></span><br><span class="line">total 4</span><br><span class="line">drwx------. 2 nobody root    6 Aug  4 16:20 client_body_temp</span><br><span class="line">drwxr-xr-x. 2 root   root 4096 Aug  3 21:47 conf</span><br><span class="line">drwx------. 2 nobody root    6 Aug  4 16:20 fastcgi_temp</span><br><span class="line">drwxr-xr-x. 2 root   root   40 Aug  3 21:47 html</span><br><span class="line">drwxr-xr-x. 2 root   root   58 Aug  4 16:20 logs</span><br><span class="line">drwx------. 2 nobody root    6 Aug  4 16:20 proxy_temp</span><br><span class="line">drwxr-xr-x. 2 root   root   19 Aug  3 21:47 sbin</span><br><span class="line">drwx------. 2 nobody root    6 Aug  4 16:20 scgi_temp</span><br><span class="line">drwx------. 2 nobody root    6 Aug  4 16:20 uwsgi_temp</span><br></pre></td></tr></table></figure>
+
+<p>进入<code>logs</code>目录，就可以看到一些日志文件了</p>
+<p><font color="blue" size= 5><strong>重新加载配置文件</strong></font></p>
+<p>当修改<code>Nginx</code>配置文件后，需要重新加载才能生效，可以使用下面命令重写加载配置文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>在启动<code>Nginx</code>后，修改配置文件后，就可以直接使用上面的命令直接生效，不用重启<code>Nginx</code>。</p>
+<h1 id="Nginx配置文件整体结构"><a href="#Nginx配置文件整体结构" class="headerlink" title="Nginx配置文件整体结构"></a>Nginx配置文件整体结构</h1><p><code>Nginx</code>配置文件(<code>conf/nginx.conf</code>)整体分为三部分:</p>
+<ul>
+<li><strong>全局块</strong>			和<code>Nginx</code>运行相关的全局配置</li>
+<li><strong>events块</strong>		和网络连接相关的配置</li>
+<li><strong>http块</strong>			代理、缓存、日志记录、虚拟主机配置<ul>
+<li>http全局块</li>
+<li>Server块<ul>
+<li>Server全局块</li>
+<li>location块</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>http全局块<br>Server块<br>Server全局块location块</p>
+<blockquote>
+<p>注意: http块中可以配置多个Server块，每个Server块中可以配置多个location块。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#==================全局配置块==================</span></span><br><span class="line">worker_processes  1;</span><br><span class="line"><span class="comment">#==================全局配置块==================</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#==================events配置块==================</span></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#==================events配置块==================</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#==============================http配置块==============================</span></span><br><span class="line">http &#123;</span><br><span class="line">	<span class="comment">#==================http全局配置块==================</span></span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line">	<span class="comment">#==================http全局配置块==================</span></span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#==================Server配置块==================【可以有多个】</span></span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line">        <span class="comment">#=============location配置块============【可以有多个】</span></span><br><span class="line">        location / &#123;</span><br><span class="line">            root   html;</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">#=============location配置块============</span></span><br><span class="line"></span><br><span class="line">     </span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">  		 <span class="comment">#=============location配置块============【可以有多个】</span></span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">#=============location配置块============</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">#==================Server配置块==================</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#==============================http配置块==============================</span></span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/994b7c8f.html" target="_blank">nginx命令和配置文件</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 23 篇日志，继续加油！
+                            <a href="/category/Nginx/">Nginx</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/994b7c8f.html"><span>nginx命令和配置文件</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-04</span>
-                                </div>
-                            </div>
-                        </div>
+                            <a href="/tag/Nginx/">Nginx</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/79465e19.html"><span>初识Nginx</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-03</span>
-                                </div>
-                            </div>
-                        </div>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/c115a0c6.html"><span>如何不用第三个变量交换值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-03</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/c6ed6a2c.html"><span>项目实现读写分离</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-03</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/e696a246.html"><span>MYSQL主从配置</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-03</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/d09e42a4.html"><span>乘积小于k的子数组</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/714fed31.html"><span>跳跃游戏II</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/acb8270e.html"><span>Linux安装Redis</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/42bdef23.html"><span>Linux安装Mysql</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/c357b778.html"><span>Linux安装jdk</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/79465e19.html" class="next-prefix">» </a> 下一篇：    <a href="/post/79465e19.html" title="发布于 2022-08-03 09:58">初识Nginx</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/archive/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -209,7 +220,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
