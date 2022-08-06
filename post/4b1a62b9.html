@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            Yaml基础语法
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,322 +32,136 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">Yaml基础语法</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-06
+                        </span>
+                        
+                            <span id="/post/4b1a62b9.html" class="leancloud_visitors" data-flag-title="Yaml基础语法">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/4b1a62b9.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Yaml</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="YAML基础语法"><a href="#YAML基础语法" class="headerlink" title="YAML基础语法"></a>YAML基础语法</h1><ul>
+<li>大小写敏感</li>
+<li>数据值前边必须有空格，作为分隔符</li>
+<li>使用缩进表示层级关系</li>
+<li>缩进时<strong>不允许使用Tab键</strong>，只允许使用空格【各个系统Tab对应的空格数目可能不同，导致层次混乱】。</li>
+<li>缩进的空格数目不重要，只要相同层级的元素左侧对齐即可</li>
+<li>#表示注释，从这个字符一直到行尾，都会被解析器忽略。</li>
+</ul>
+<p><strong>核心规则：数据前面要加空格与冒号隔开</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line">  <span class="attr">address:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">name:</span> <span class="string">yamiedie</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="字面值表示方式"><a href="#字面值表示方式" class="headerlink" title="字面值表示方式"></a>字面值表示方式</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">boolean:</span> <span class="literal">TRUE</span>						<span class="comment">#TRUE ,true ,True , FALSE,false , False均可</span></span><br><span class="line"><span class="attr">float:</span> <span class="number">3.14</span>							<span class="comment">#6.8523015e+5#支持科学计数法</span></span><br><span class="line"><span class="attr">int:</span> <span class="number">123</span>							<span class="comment">#0b1010_0111_0100_1010_1110#支持二进制、八进制、十六进制</span></span><br><span class="line"><span class="attr">null:</span> <span class="string">~</span>								<span class="comment">#使用~表示null</span></span><br><span class="line"><span class="attr">string:</span> <span class="string">Helloworld</span>					<span class="comment">#字符串可以直接书写</span></span><br><span class="line"><span class="attr">string2:</span> <span class="string">&quot;Hello world&quot;</span>				<span class="comment">#可以使用双引号包裹特殊字符</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-02-17</span>					<span class="comment">#日期必须使用yyyy-MM-dd格式</span></span><br><span class="line"><span class="attr">datetime:</span> <span class="number">2022-02-17T15:02:31+08:00</span>	<span class="comment">#时间和日期之间使用T连接，最后使用+代表时区</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="YAML数据格式"><a href="#YAML数据格式" class="headerlink" title="YAML数据格式"></a>YAML数据格式</h1><ul>
+<li><p>对象(map)：键值对集合</p>
+<ul>
+<li>&#96;&#96;&#96;yaml<br>#对象形式<br>user:<br>  name: zhangsan<br>  age: 23<br>  address: xian<br>#行内写法<br>user: {name: lisi,age: 22,address: beijing}<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 数组：一组按次序排列的值</span><br><span class="line"></span><br><span class="line">  - ```yaml</span><br><span class="line">    object:</span><br><span class="line">      - JAVA			#- 和 数据用空格分离</span><br><span class="line">      - 大数据</span><br><span class="line">      - 前端</span><br><span class="line">    #行内写法</span><br><span class="line">    object: [JAVA,大数据,前端]</span><br><span class="line">    #==========================================</span><br><span class="line">    #数组对象格式</span><br><span class="line">    users:</span><br><span class="line">      -</span><br><span class="line">        name: TJS</span><br><span class="line">        age: 18</span><br><span class="line">      -</span><br><span class="line">        name: ZLX</span><br><span class="line">        age: 23</span><br><span class="line">    #对象数组缩略格式</span><br><span class="line">    users2: [&#123;name:TJS,age23&#125;,&#123;name:ZLX,age:22&#125;]</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>纯量：单个的、不可再分的值</p>
+<ul>
+<li>&#96;&#96;&#96;yaml<br>address1: “中国 \n 西安” 		#双引号  识别转义字符<br>address2: ‘中国 \n 西安’		#单引号  忽略转义字符<br>#也可以不加 引号<br>city1: “中国 西安”	#有空格就加双引号<br>city2: 中国西安<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 参数引用</span><br><span class="line"></span><br><span class="line">  使用`$&#123;变量名&#125;`，来进行变量引用</span><br><span class="line"></span><br><span class="line">  - ```yaml</span><br><span class="line">    BaseDir: D:/windows</span><br><span class="line">    SpecificDir:</span><br><span class="line">      one: $&#123;BaseDir&#125;/temp</span><br><span class="line">      two: $&#123;BaseDir&#125;/nmp</span><br><span class="line">      three : &quot;$&#123;BaseDir&#125;/temp&quot;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>其他</p>
+<p>还可以混合使用哦</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">enterprise:</span></span><br><span class="line">   <span class="attr">name :</span> <span class="string">itcast</span></span><br><span class="line">   <span class="attr">age:</span> <span class="number">16</span></span><br><span class="line">   <span class="attr">subject:</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">Java</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">前端</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">大数据</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d0edc1ed.html">Linux常用命令</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux常用命令
-                                <a href="/post/d0edc1ed.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/d0edc1ed.html" class="leancloud_visitors" data-flag-title="Linux常用命令">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d0edc1ed.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/4b1a62b9.html" target="_blank">Yaml基础语法</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/1112885395.html">Hexo主题LiveForCode介绍</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Hexo主题LiveForCode介绍.
-                                <a href="/post/1112885395.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2020-08-01
-                            </span>
-                            
-                                <span id="/post/1112885395.html" class="leancloud_visitors" data-flag-title="Hexo主题LiveForCode介绍">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1112885395.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Yaml/">Yaml</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/34ca02aa.html">SpringBoot配置文件属性提示消失解决方案</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/34ca02aa.html" class="leancloud_visitors" data-flag-title="SpringBoot配置文件属性提示消失解决方案">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/34ca02aa.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/31902768.html">SpringBoot读取Yaml配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：SpringBoot读取Yaml配置的三种方式
-                                <a href="/post/31902768.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/31902768.html" class="leancloud_visitors" data-flag-title="SpringBoot读取Yaml配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/31902768.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/4b1a62b9.html">Yaml基础语法</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Yaml的基本的书写格式
-                                <a href="/post/4b1a62b9.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/4b1a62b9.html" class="leancloud_visitors" data-flag-title="Yaml基础语法">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/4b1a62b9.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/994b7c8f.html">nginx命令和配置文件</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Nignx一些简单命令和配置文件整体结构的整体结构说明
-                                <a href="/post/994b7c8f.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-04
-                            </span>
-                            
-                                <span id="/post/994b7c8f.html" class="leancloud_visitors" data-flag-title="nginx命令和配置文件">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/994b7c8f.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/79465e19.html">初识Nginx</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Nginx介绍、下载与安装以及目录介绍
-                                <a href="/post/79465e19.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/79465e19.html" class="leancloud_visitors" data-flag-title="初识Nginx">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/79465e19.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c115a0c6.html">如何不用第三个变量交换值</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：妙妙妙~
-                                <a href="/post/c115a0c6.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/c115a0c6.html" class="leancloud_visitors" data-flag-title="如何不用第三个变量交换值">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c115a0c6.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c6ed6a2c.html">项目实现读写分离</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：基于Sharding-JDBC框架实现读写分离
-                                <a href="/post/c6ed6a2c.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/c6ed6a2c.html" class="leancloud_visitors" data-flag-title="项目实现读写分离">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c6ed6a2c.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/e696a246.html">MYSQL主从配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：主库windows,从库linux虚拟机
-                                <a href="/post/e696a246.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/e696a246.html" class="leancloud_visitors" data-flag-title="MYSQL主从配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/e696a246.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/31902768.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/31902768.html" title="发布于 2022-08-06 03:12">SpringBoot读取Yaml配置</a>
+                        <br>
+                    
+                    
+                        <a href="/post/994b7c8f.html" class="next-prefix">» </a> 下一篇：    <a href="/post/994b7c8f.html" title="发布于 2022-08-04 04:13">nginx命令和配置文件</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -373,7 +187,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     

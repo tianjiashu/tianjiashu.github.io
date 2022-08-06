@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            SpringBoot读取Yaml配置
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,322 +32,151 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">SpringBoot读取Yaml配置</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-06
+                        </span>
+                        
+                            <span id="/post/31902768.html" class="leancloud_visitors" data-flag-title="SpringBoot读取Yaml配置">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/31902768.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Sping</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Yaml</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>读取配置文件内容三种方式：</p>
+<ul>
+<li>@Value</li>
+<li>Environment</li>
+<li>@ConfigurationProperties</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#对象形式</span></span><br><span class="line"><span class="attr">user:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">zhangsan</span></span><br><span class="line">  <span class="attr">age:</span> <span class="number">23</span></span><br><span class="line">  <span class="attr">address:</span> <span class="string">xian</span></span><br><span class="line"><span class="comment">#数组格式</span></span><br><span class="line"><span class="attr">object:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">JAVA</span>			<span class="comment">#- 和 数据用空格分离</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">大数据</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">前端</span></span><br><span class="line"><span class="comment">#字面量  </span></span><br><span class="line"><span class="attr">name:</span> <span class="string">yamiedie</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Value方式"><a href="#Value方式" class="headerlink" title="@Value方式"></a>@Value方式</h1><p>需要配置SpEL表达式，<code>$&#123;一级属性名.二级属性名&#125;</code></p>
+<p>​	<img src="/%5Cimage%5Carticle%5CSpringBoot%E8%AF%BB%E5%8F%96Yaml%E9%85%8D%E7%BD%AE%5Cimage-20220806160931458.png" alt="image-20220806160931458"></p>
+<ul>
+<li><p>对象形式</p>
+<ul>
+<li>&#96;&#96;&#96;java<br>@Value(“${server.port}”)<br>private int port;<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">- 数组形式</span><br><span class="line"></span><br><span class="line">  - ```java</span><br><span class="line">    @Value(&quot;$&#123;object[1]&#125;&quot;)</span><br><span class="line">    private String object;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>普通形式</p>
+<ul>
+<li>&#96;&#96;&#96;yaml<br>@Value(“${name}”)<br>private String name;<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># Environment方式</span><br><span class="line"></span><br><span class="line">首先要进行Bean注入</span><br><span class="line"></span><br><span class="line">```java</span><br><span class="line">@Autowired</span><br><span class="line">private Environment env;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<p>SpringBoot会通过数据装配的方式把数据全部装到这一个对象里。</p>
+<p>使用<code>getProperty</code>，方法获取属性值。</p>
+<p>示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(env.getProperty(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">System.out.println(env.getProperty(<span class="string">&quot;server.port&quot;</span>));</span><br><span class="line">System.out.println(env.getProperty(<span class="string">&quot;object[1]&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="ConfigurationProperties方式"><a href="#ConfigurationProperties方式" class="headerlink" title="@ConfigurationProperties方式"></a>@ConfigurationProperties方式</h1><p>使用@ConfigurationProperties注解绑定配置信息到<strong>封装类</strong>中</p>
+<p>例如：</p>
+<p>Yaml配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">datasource:</span></span><br><span class="line">  <span class="attr">driver:</span> <span class="string">com.driver.cj.mysql</span></span><br><span class="line">  <span class="attr">url:</span> <span class="string">localhost</span></span><br><span class="line">  <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">  <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">  <span class="attr">user:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">me</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">you</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">he</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">she</span></span><br></pre></td></tr></table></figure>
+
+<p>如果有警告，可以在pom文件中，加入如下依赖。【在classpath中没有发现SpringBoot 配置注解处理器】</p>
+<p><img src="/%5Cimage%5Carticle%5CSpringBoot%E8%AF%BB%E5%8F%96Yaml%E9%85%8D%E7%BD%AE%5Cimage-20220806163710093.png" alt="image-20220806163710093"></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-configuration-processor<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<ul>
+<li>必须加<font color="gold"><strong>@Component</strong></font>注解，注入到Spring容器中。</li>
+<li>prefix属性为一级属性名</li>
+<li>类中必须有Getter和Setter方法，否则无法注入.</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties(prefix = &quot;datasource&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Mydatasource</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String driver;</span><br><span class="line">    <span class="keyword">private</span> String url;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="keyword">private</span> String[] user;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getDriver</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> driver;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setDriver</span><span class="params">(String driver)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.driver = driver;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUrl</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> url;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUrl</span><span class="params">(String url)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.url = url;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUsername</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUsername</span><span class="params">(String username)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPassword</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setPassword</span><span class="params">(String password)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String[] getUser() &#123;</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUser</span><span class="params">(String[] user)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.user = user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Mydatasource&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;driver=&#x27;&quot;</span> + driver + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, url=&#x27;&quot;</span> + url + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, username=&#x27;&quot;</span> + username + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, password=&#x27;&quot;</span> + password + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d0edc1ed.html">Linux常用命令</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux常用命令
-                                <a href="/post/d0edc1ed.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/d0edc1ed.html" class="leancloud_visitors" data-flag-title="Linux常用命令">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d0edc1ed.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/31902768.html" target="_blank">SpringBoot读取Yaml配置</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Sping/">Sping</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/1112885395.html">Hexo主题LiveForCode介绍</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Hexo主题LiveForCode介绍.
-                                <a href="/post/1112885395.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2020-08-01
-                            </span>
-                            
-                                <span id="/post/1112885395.html" class="leancloud_visitors" data-flag-title="Hexo主题LiveForCode介绍">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1112885395.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Yaml/">Yaml</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/34ca02aa.html">SpringBoot配置文件属性提示消失解决方案</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/34ca02aa.html" class="leancloud_visitors" data-flag-title="SpringBoot配置文件属性提示消失解决方案">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/34ca02aa.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/31902768.html">SpringBoot读取Yaml配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：SpringBoot读取Yaml配置的三种方式
-                                <a href="/post/31902768.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/31902768.html" class="leancloud_visitors" data-flag-title="SpringBoot读取Yaml配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/31902768.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/4b1a62b9.html">Yaml基础语法</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Yaml的基本的书写格式
-                                <a href="/post/4b1a62b9.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-06
-                            </span>
-                            
-                                <span id="/post/4b1a62b9.html" class="leancloud_visitors" data-flag-title="Yaml基础语法">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/4b1a62b9.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/994b7c8f.html">nginx命令和配置文件</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Nignx一些简单命令和配置文件整体结构的整体结构说明
-                                <a href="/post/994b7c8f.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-04
-                            </span>
-                            
-                                <span id="/post/994b7c8f.html" class="leancloud_visitors" data-flag-title="nginx命令和配置文件">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/994b7c8f.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/79465e19.html">初识Nginx</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Nginx介绍、下载与安装以及目录介绍
-                                <a href="/post/79465e19.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/79465e19.html" class="leancloud_visitors" data-flag-title="初识Nginx">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/79465e19.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c115a0c6.html">如何不用第三个变量交换值</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：妙妙妙~
-                                <a href="/post/c115a0c6.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/c115a0c6.html" class="leancloud_visitors" data-flag-title="如何不用第三个变量交换值">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c115a0c6.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c6ed6a2c.html">项目实现读写分离</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：基于Sharding-JDBC框架实现读写分离
-                                <a href="/post/c6ed6a2c.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/c6ed6a2c.html" class="leancloud_visitors" data-flag-title="项目实现读写分离">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c6ed6a2c.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/e696a246.html">MYSQL主从配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：主库windows,从库linux虚拟机
-                                <a href="/post/e696a246.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-03
-                            </span>
-                            
-                                <span id="/post/e696a246.html" class="leancloud_visitors" data-flag-title="MYSQL主从配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/e696a246.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/34ca02aa.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/34ca02aa.html" title="发布于 2022-08-06 03:42">SpringBoot配置文件属性提示消失解决方案</a>
+                        <br>
+                    
+                    
+                        <a href="/post/4b1a62b9.html" class="next-prefix">» </a> 下一篇：    <a href="/post/4b1a62b9.html" title="发布于 2022-08-06 03:11">Yaml基础语法</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -373,7 +202,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
