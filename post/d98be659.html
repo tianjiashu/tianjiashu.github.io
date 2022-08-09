@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            标签
+            直线上最多的点
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/page.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">标签</h1>
+                <h1 class="header-subtitle">直线上最多的点</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-09
+                        </span>
+                        
+                            <span id="/post/d98be659.html" class="leancloud_visitors" data-flag-title="直线上最多的点">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d98be659.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">算法</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">直线上最多的点&求最大公约数</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,22 +70,126 @@
 </div>
 <div id="container">
     
-        <!-- 独立页面 -->
-        
-            <div class="tags">
-                <div class="tags-title">
-                    目前共计 17 个标签
-                </div>
-                <div class="tags-content">
-                    <div class="tags-light">
-                        <a href="/tag/Git/" style="font-size: 25px; color: #111">Git</a> <a href="/tag/Hexo/" style="font-size: 12px; color: #ccc">Hexo</a> <a href="/tag/LeetCode/" style="font-size: 25px; color: #111">LeetCode</a> <a href="/tag/Linux/" style="font-size: 25px; color: #111">Linux</a> <a href="/tag/Linux%E5%91%BD%E4%BB%A4/" style="font-size: 12px; color: #ccc">Linux命令</a> <a href="/tag/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA/" style="font-size: 25px; color: #111">Linux虚拟机</a> <a href="/tag/MySql/" style="font-size: 12px; color: #ccc">MySql</a> <a href="/tag/Nginx/" style="font-size: 18.5px; color: #6f6f6f">Nginx</a> <a href="/tag/Redis/" style="font-size: 18.5px; color: #6f6f6f">Redis</a> <a href="/tag/Spring-Cache/" style="font-size: 12px; color: #ccc">Spring-Cache</a> <a href="/tag/Spring-Data-Redis/" style="font-size: 12px; color: #ccc">Spring-Data-Redis</a> <a href="/tag/Yaml/" style="font-size: 18.5px; color: #6f6f6f">Yaml</a> <a href="/tag/%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6/" style="font-size: 12px; color: #ccc">发送邮件</a> <a href="/tag/%E5%A6%99/" style="font-size: 12px; color: #ccc">妙</a> <a href="/tag/%E5%B1%9E%E6%80%A7%E6%8F%90%E7%A4%BA%E6%B6%88%E5%A4%B1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" style="font-size: 12px; color: #ccc">属性提示消失解决方案</a> <a href="/tag/%E7%9B%B4%E7%BA%BF%E4%B8%8A%E6%9C%80%E5%A4%9A%E7%9A%84%E7%82%B9-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0/" style="font-size: 12px; color: #ccc">直线上最多的点&求最大公约数</a> <a href="/tag/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/" style="font-size: 12px; color: #ccc">读写分离</a>
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>给你一个数组 <code>points</code> ，其中 <code>points[i] = [xi, yi]</code> 表示 <strong>X-Y</strong> 平面上的一个点。求最多有多少个点在同一条直线上【难度：<font color="red"><strong>困难</strong></font>】</p>
+<p><strong>示例：</strong></p>
+<p><img src="/%5Cimage%5Carticle%5C%E7%9B%B4%E7%BA%BF%E4%B8%8A%E6%9C%80%E5%A4%9A%E7%9A%84%E7%82%B9%5Cimage-20220809110414951.png" alt="image-20220809110414951"></p>
+<blockquote>
+<p>输入：points &#x3D; [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]<br>输出：4</p>
+</blockquote>
+<p>提示：</p>
+<ul>
+<li>1 &lt;&#x3D; <code>points.length</code> &lt;&#x3D; 300</li>
+<li><code>points[i].length</code> &#x3D;&#x3D; 2</li>
+<li>-10^4 &lt;&#x3D; <code>xi, yi</code> &lt;&#x3D; 10^4</li>
+<li><code>points</code> 中的所有点 互不相同</li>
+</ul>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/max-points-on-a-line">https://leetcode.cn/problems/max-points-on-a-line</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p>枚举所有的点，假设直线经过该点时，该直线所能经过的最多的点数。</p>
+<p>假设我们当前枚举到点<code> i</code>，如果直线同时经过另外两个不同的点<code> j</code> 和<code> k</code>，那么可以发现点 <code>i</code> 和点 <code>j</code> 所连直线的斜率恰等于点<code> i</code> 和点 <code>k</code> 所连直线的斜率。</p>
+<p>于是我们可以统计其他所有点与点 <code>i</code> 所连直线的斜率，出现次数最多的斜率即为经过点数最多的直线的斜率，其经过的点数为该斜率现的次数加一（点 <code>i</code> 自身也要被统计）。</p>
+<img src="\image\article\直线上最多的点\IMG_0411(20220809-111214).PNG" alt="IMG_0411(20220809-111214)" style="zoom: 33%;" />
+
+<p><font color="blue"><strong>关键是这个斜率如何表示？</strong></font></p>
+<p>需要注意的是，<strong>浮点数类型可能因为精度不够而无法足够精确地表示每一个斜率</strong>，因此我们需要换一种方法来记录斜率。</p>
+<p>斜率可以表示为 $$\frac{\bigtriangleup x}{\bigtriangleup y}$$,因此我们可以用分子和分母组成的二元组来代表斜率。我们可以分为以下几种情况：</p>
+<ul>
+<li><p>形如$$\frac{1}{2}和\frac{2}{4}$$这种情况</p>
+<p>虽然这样的二元组不同，但其斜率是相同的。因此我们可以将<strong>分子</strong>和<strong>分母</strong>同时除以二者绝对值的<strong>最大公约数</strong>。</p>
+<p>求最大公约数可以使用<font color="red"><strong>欧几里得算法</strong></font>【即辗转相除法】</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">gcd</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> b!=<span class="number">0</span>?gcd(b,a%b):a;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>比如：a &#x3D; 63,b&#x3D;27;【要保证a是大于b的】</p>
+<p>① b!&#x3D;0  –&gt; a &#x3D; 27,b&#x3D; 63%27 &#x3D; 9;</p>
+<p>②b!&#x3D;0   –&gt; a &#x3D; 9,b &#x3D; 27%9 &#x3D; 0;</p>
+<p>③b&#x3D;&#x3D;0  –&gt; 返回 a&#x3D;9; </p>
+</blockquote>
+</li>
+<li><p>形如$$\frac{-1}{2}和\frac{1}{-2}$$这种情况</p>
+<p>对于这种情况，可以规定。<strong>当分母为负数时，分子和分母取反。</strong>这样可以保证，分母都是正数，分子是同号的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(y&lt;<span class="number">0</span>)&#123;</span><br><span class="line">    x = -x;y=-y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>x和y中有一个为0的情况</p>
+<p>此时两数不存在数学意义上的最大公约数，因此我们直接特判这两种情况。当 <code>x==0</code> 时，我们令 y&#x3D;1；当 <code>y==0</code>时，我们令 x&#x3D;1 即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(x==<span class="number">0</span>)&#123;</span><br><span class="line">    y=<span class="number">1</span>;</span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span>(y==<span class="number">0</span>)&#123;</span><br><span class="line">    x=<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>经过上述操作之后，即可得到最终的二元组<code>(x,y)</code>。</p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maxPoints</span><span class="params">(<span class="type">int</span>[][] points)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">res</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; points.length; i++) &#123;</span><br><span class="line">            Map&lt;Integer,Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">            当我们枚举到点 i 时，我们只需要考虑编号大于 i 的点到点 i 的斜率，因为如果直线同时经过编号小于点 i 的点 j，那			 么当我们枚举到 j 时就已经考虑过该直线了；</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i+<span class="number">1</span>; j &lt; points.length; j++) &#123;</span><br><span class="line">                <span class="comment">// 计算 二元组 x,y</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> points[i][<span class="number">0</span>]-points[j][<span class="number">0</span>];</span><br><span class="line">                <span class="type">int</span> <span class="variable">y</span> <span class="operator">=</span> points[i][<span class="number">1</span>]-points[j][<span class="number">1</span>];</span><br><span class="line">                <span class="comment">//分三种情况讨论，二元组</span></span><br><span class="line">                <span class="keyword">if</span>(x==<span class="number">0</span>)&#123;                  <span class="comment">//x==0</span></span><br><span class="line">                    y=<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(y==<span class="number">0</span>)&#123;             <span class="comment">//y==0</span></span><br><span class="line">                    x=<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;                     <span class="comment">//x!=0&amp;&amp;y!=0</span></span><br><span class="line">                    <span class="keyword">if</span>(y&lt;<span class="number">0</span>)&#123;</span><br><span class="line">                        x = -x;y=-y;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="type">int</span> <span class="variable">gcd</span> <span class="operator">=</span> gcd(Math.abs(x),Math.abs(y)); <span class="comment">//求最大公约数</span></span><br><span class="line">                    x = x/gcd;</span><br><span class="line">                    y = y/gcd;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> x*<span class="number">20001</span>+y;        <span class="comment">//计算哈希表的键</span></span><br><span class="line">                map.put(val,map.getOrDefault(val,<span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//计算这次循环中，直线最大的点数</span></span><br><span class="line">            Set&lt;Map.Entry&lt;Integer, Integer&gt;&gt; entrySet = map.entrySet();</span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (Map.Entry&lt;Integer, Integer&gt; entry : entrySet) &#123;</span><br><span class="line">                num = Math.max(num,entry.getValue()+<span class="number">1</span>);<span class="comment">//这个entry.getValue()+1表示点 i 自身也要被统计</span></span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            res = Math.max(res,num);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">gcd</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> b!=<span class="number">0</span>?gcd(b,a%b):a;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在此基础上，我们还可以做如下<font color="red"><strong>优化</strong></font></p>
+<ul>
+<li><p>在点的总数量小于等于 2 的情况下，我们总可以用一条直线将所有点串联，此时我们直接返回点的总数量即可；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(points.length&lt;=<span class="number">2</span>)<span class="keyword">return</span> points.length;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当我们找到<strong>一条直线上的点数</strong>经过了<strong>图中超过半数的点</strong>时，我们即可以确定该直线即为经过最多点的直线；</p>
+</li>
+<li><p>当我们枚举到点 i（假设编号从 0 开始）时，我们至多只能找到<code> n - i</code>个点共线。假设此前找到的共线的点的数量的最大值为 k，如果有 <code>k＞= n - i</code>，那么此时我们即可停止枚举，因为不可能再找到更大的答案了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (res &gt;= n - i || res &gt; n / <span class="number">2</span>) <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="题解代码"><a href="#题解代码" class="headerlink" title="题解代码"></a>题解代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maxPoints</span><span class="params">(<span class="type">int</span>[][] points)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">res</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(points.length&lt;=<span class="number">2</span>)<span class="keyword">return</span> points.length;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; points.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span>(res&gt;=points.length-i||res&gt;points.length/<span class="number">2</span>)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            Map&lt;Integer,Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> i+<span class="number">1</span>; j &lt; points.length; j++) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> points[i][<span class="number">0</span>]-points[j][<span class="number">0</span>];</span><br><span class="line">                <span class="type">int</span> <span class="variable">y</span> <span class="operator">=</span> points[i][<span class="number">1</span>]-points[j][<span class="number">1</span>];</span><br><span class="line">                <span class="keyword">if</span>(x==<span class="number">0</span>)&#123;</span><br><span class="line">                    y=<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span>(y==<span class="number">0</span>)&#123;</span><br><span class="line">                    x=<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span>(y&lt;<span class="number">0</span>)&#123;</span><br><span class="line">                        x = -x;y=-y;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="type">int</span> <span class="variable">gcd</span> <span class="operator">=</span> gcd(Math.abs(x),Math.abs(y));</span><br><span class="line">                    x = x/gcd;</span><br><span class="line">                    y = y/gcd;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> x*<span class="number">20001</span>+y;</span><br><span class="line">                System.out.println(val+<span class="string">&quot;  &quot;</span>+x+<span class="string">&quot;  &quot;</span>+y);</span><br><span class="line">                map.put(val,map.getOrDefault(val,<span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Set&lt;Map.Entry&lt;Integer, Integer&gt;&gt; entrySet = map.entrySet();</span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (Map.Entry&lt;Integer, Integer&gt; entry : entrySet) &#123;</span><br><span class="line">                num = Math.max(num,entry.getValue()+<span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            res = Math.max(res,num);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">gcd</span><span class="params">(<span class="type">int</span> a,<span class="type">int</span> b)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> b!=<span class="number">0</span>?gcd(b,a%b):a;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/d98be659.html" target="_blank">直线上最多的点</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/%E7%AE%97%E6%B3%95/">算法</a>
+                        
                     </div>
-                    <div class="tags-dark">
-                        <a href="/tag/Git/" style="font-size: 25px; color: #eee">Git</a> <a href="/tag/Hexo/" style="font-size: 12px; color: #666">Hexo</a> <a href="/tag/LeetCode/" style="font-size: 25px; color: #eee">LeetCode</a> <a href="/tag/Linux/" style="font-size: 25px; color: #eee">Linux</a> <a href="/tag/Linux%E5%91%BD%E4%BB%A4/" style="font-size: 12px; color: #666">Linux命令</a> <a href="/tag/Linux%E8%99%9A%E6%8B%9F%E6%9C%BA/" style="font-size: 25px; color: #eee">Linux虚拟机</a> <a href="/tag/MySql/" style="font-size: 12px; color: #666">MySql</a> <a href="/tag/Nginx/" style="font-size: 18.5px; color: #aaa">Nginx</a> <a href="/tag/Redis/" style="font-size: 18.5px; color: #aaa">Redis</a> <a href="/tag/Spring-Cache/" style="font-size: 12px; color: #666">Spring-Cache</a> <a href="/tag/Spring-Data-Redis/" style="font-size: 12px; color: #666">Spring-Data-Redis</a> <a href="/tag/Yaml/" style="font-size: 18.5px; color: #aaa">Yaml</a> <a href="/tag/%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6/" style="font-size: 12px; color: #666">发送邮件</a> <a href="/tag/%E5%A6%99/" style="font-size: 12px; color: #666">妙</a> <a href="/tag/%E5%B1%9E%E6%80%A7%E6%8F%90%E7%A4%BA%E6%B6%88%E5%A4%B1%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" style="font-size: 12px; color: #666">属性提示消失解决方案</a> <a href="/tag/%E7%9B%B4%E7%BA%BF%E4%B8%8A%E6%9C%80%E5%A4%9A%E7%9A%84%E7%82%B9-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0/" style="font-size: 12px; color: #666">直线上最多的点&求最大公约数</a> <a href="/tag/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/" style="font-size: 12px; color: #666">读写分离</a>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E7%9B%B4%E7%BA%BF%E4%B8%8A%E6%9C%80%E5%A4%9A%E7%9A%84%E7%82%B9-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0/">直线上最多的点&求最大公约数</a>
+                        
                     </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/f5937762.html" class="next-prefix">» </a> 下一篇：    <a href="/post/f5937762.html" title="发布于 2022-08-08 02:15">SpringBoot发送邮件</a>
+                    
                 </div>
             </div>
+            
+    <div class="article-comments">
         
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -94,7 +219,7 @@
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
-                        <li class=" active "><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
                         <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
