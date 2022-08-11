@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            Java泛型机制（一）泛型基础
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">Java泛型机制（一）泛型基础</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-09
+                        </span>
+                        
+                            <span id="/post/474fbc8a.html" class="leancloud_visitors" data-flag-title="Java泛型机制（一）泛型基础">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/474fbc8a.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Java基础</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">泛型</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="泛型概述"><a href="#泛型概述" class="headerlink" title="泛型概述"></a>泛型概述</h1><p>泛型程序设计  意味着  **编写的代码可以被很多不同类型的对象所<font color="red">重用</font>**！</p>
+<p>Java泛型这个特性是从<code>JDK 1.5</code>开始的。因此为了兼容之前的版本，Java泛型的实现采取了“<strong>伪泛型</strong>”的策略，即Java在语法上支持泛型，但是在编译阶段会进行所谓的“<strong>类型擦除</strong>”（Type Erasure），将所有的泛型表示（尖括号中的内容）都替换为具体的类型（其对应的原生态类型），就像完全没有泛型一样。【类型擦除之后会讲解】。</p>
+<p>其实，引入泛型的意义就是为了<strong>代码复用</strong></p>
+<h2 id="为什么要使用泛型？"><a href="#为什么要使用泛型？" class="headerlink" title="为什么要使用泛型？"></a>为什么要使用泛型？</h2><p>泛型的好处是在编译的时候检查类型安全，并且所有的强制转换都是自动和隐式的，提高代码的重用率。</p>
+<ul>
+<li><p><strong>保证了类型的安全性【类型转换问题】</strong></p>
+<p>在没有泛型之前，从集合中读取到的每一个对象都必须进行类型转换，如果不小心插入了错误的类型对象，在运行时的转换处理就会出错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ArrayList</span> <span class="variable">arrayList</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ArrayList</span>();<span class="comment">//没有指定泛型，可以添加任何类型</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (Object o : arrayList) &#123;</span><br><span class="line">    <span class="comment">//那当我们取的时候只能使用Object类型接收，那我们要是使用某个类型的方法时，我们需要进行强制类型转换</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> (String) o;  <span class="comment">//你确定一定可以强制类型转换成功吗？</span></span><br><span class="line">    System.out.println(s.length());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font color="red"><strong>泛型中参数化类型不考虑继承关系</strong></font>的原因也就是因为如果考虑了继承关系，也就违背了泛型设计的初衷。</p>
+<p>【详解见Java泛型机制（二）深入理解泛型——类型擦除】</p>
+</li>
+<li><p><strong>消除强制转换</strong></p>
+<p>消除源代码中的许多强制类型转换，这使得代码更加可读，并且减少了出错机会。</p>
+</li>
+<li><p><strong>避免了不必要的装箱、拆箱操作，提高程序的性能</strong></p>
+<p>在非泛型编程中，将筒单类型作为Object传递时会引起Boxing（装箱）和Unboxing（拆箱）操作，这两个过程都是具有很大开销的。引入泛型后，就不必进行Boxing和Unboxing操作了，所以运行效率相对较高，特别在对集合操作非常频繁的系统中，这个特点带来的性能提升更加明显。</p>
+</li>
+<li><p><strong>提高了代码的重用性。</strong></p>
+</li>
+</ul>
+<h1 id="泛型的基本使用"><a href="#泛型的基本使用" class="headerlink" title="泛型的基本使用"></a>泛型的基本使用</h1><p>泛型有三种使用方式，分别为：</p>
+<ul>
+<li>泛型类</li>
+<li>泛型接口</li>
+<li>泛型方法。</li>
+</ul>
+<h2 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Generi</span>&lt;T&gt; &#123;							<span class="comment">//此处可以随便写标识符号，T是type的简称 </span></span><br><span class="line">    <span class="keyword">private</span> T str;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">getStr</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> str;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setStr</span><span class="params">(T str)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.str = str;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">(T aa)</span>&#123;</span><br><span class="line">        System.out.println(aa);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Pair</span>&lt;T,U&gt;&#123;							<span class="comment">//多元泛型</span></span><br><span class="line">    <span class="keyword">private</span> T first;</span><br><span class="line">    <span class="keyword">private</span> U second;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="泛型接口"><a href="#泛型接口" class="headerlink" title="泛型接口"></a>泛型接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Info</span>&lt;T&gt;&#123;        <span class="comment">// 在接口上定义泛型  </span></span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">getVar</span><span class="params">()</span> ; <span class="comment">// 定义抽象方法，抽象方法的返回值就是泛型类型  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="keyword">class</span> <span class="title class_">InfoImpl</span>&lt;T&gt; <span class="keyword">implements</span> <span class="title class_">Info</span>&lt;T&gt;&#123;   <span class="comment">// 定义泛型接口的子类  </span></span><br><span class="line">    <span class="keyword">private</span> T <span class="keyword">var</span> ;             <span class="comment">// 定义属性  </span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">InfoImpl</span><span class="params">(T <span class="keyword">var</span>)</span>&#123;     <span class="comment">// 通过构造方法设置属性内容  </span></span><br><span class="line">        <span class="built_in">this</span>.setVar(<span class="keyword">var</span>) ;    </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setVar</span><span class="params">(T <span class="keyword">var</span>)</span>&#123;  </span><br><span class="line">        <span class="built_in">this</span>.<span class="keyword">var</span> = <span class="keyword">var</span> ;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">getVar</span><span class="params">()</span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.<span class="keyword">var</span> ;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<h2 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Generi2</span> &#123;<span class="comment">//这个类并不是泛型类</span></span><br><span class="line">    <span class="comment">//泛型方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">show</span><span class="params">(T t)</span>&#123;</span><br><span class="line">        System.out.println(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Generi2.&lt;String&gt;show(<span class="string">&quot;asda&quot;</span>);</span><br><span class="line">Generi2.show(<span class="string">&quot;asda&quot;</span>);<span class="comment">//&lt;String&gt;  可以省略</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>关于泛型方法定义：泛型方法可以定义在<strong>普通类</strong>中，也可以定义在<strong>泛型类</strong>中。</p>
+<p>关于泛型方法调用：在调用泛型方法时，可以指定泛型，也可以不指定泛型:</p>
+<p>先定义一个简单的泛型方法，通过演示看看<strong>指定泛型</strong>和<strong>不指定泛型</strong>的区别</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//这是一个简单的泛型方法  </span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">add</span><span class="params">(T x,T y)</span>&#123;  </span><br><span class="line">	<span class="keyword">return</span> y;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>在不指定泛型的情况下，可以使用任意类型，但<strong>泛型变量的类型</strong>为该方法中的**几种类型的同一父类的<font color="red">最小级</font>**，直到Object</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">//这两个参数都是Integer，所以T为Integer类型  </span></span><br><span class="line"><span class="type">Number</span> <span class="variable">f</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="number">1.2</span>); <span class="comment">//这两个参数一个是Integer，一个是Float，所以取同一父类的最小级，为Number  </span></span><br><span class="line"><span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="string">&quot;asd&quot;</span>); <span class="comment">//这两个参数一个是Integer，一个是String，所以取同一父类的最小级，为Object  </span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在指定泛型的情况下，该方法的几种类型必须是**<font color="red">该泛型的实例的类型</font>或者<font color="red">其子类</font>**</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> Test.&lt;Integer&gt;add(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">//指定了Integer，所以只能为Integer类型或者其子类  </span></span><br><span class="line"><span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> Test.&lt;Integer&gt;add(<span class="number">1</span>, <span class="number">2.2</span>); <span class="comment">//编译错误，指定了Integer，不能为Float  </span></span><br><span class="line"><span class="type">Number</span> <span class="variable">c</span> <span class="operator">=</span> Test.&lt;Number&gt;add(<span class="number">1</span>, <span class="number">2.2</span>); <span class="comment">//指定为Number，所以可以为Integer和Float </span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<p>完整示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;  </span><br><span class="line"></span><br><span class="line">        <span class="comment">/**不指定泛型的时候*/</span>  </span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">//这两个参数都是Integer，所以T为Integer类型  </span></span><br><span class="line">        <span class="type">Number</span> <span class="variable">f</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="number">1.2</span>); <span class="comment">//这两个参数一个是Integer，一个是Float，所以取同一父类的最小级，为Number  </span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> Test.add(<span class="number">1</span>, <span class="string">&quot;asd&quot;</span>); <span class="comment">//这两个参数一个是Integer，一个是String，所以取同一父类的最小级，为Object  </span></span><br><span class="line"></span><br><span class="line">        <span class="comment">/**指定泛型的时候*/</span>  </span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> Test.&lt;Integer&gt;add(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">//指定了Integer，所以只能为Integer类型或者其子类  </span></span><br><span class="line">        <span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> Test.&lt;Integer&gt;add(<span class="number">1</span>, <span class="number">2.2</span>); <span class="comment">//编译错误，指定了Integer，不能为Float  </span></span><br><span class="line">        <span class="type">Number</span> <span class="variable">c</span> <span class="operator">=</span> Test.&lt;Number&gt;add(<span class="number">1</span>, <span class="number">2.2</span>); <span class="comment">//指定为Number，所以可以为Integer和Float  </span></span><br><span class="line">    &#125;  </span><br><span class="line"></span><br><span class="line">    <span class="comment">//这是一个简单的泛型方法  </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">add</span><span class="params">(T x,T y)</span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> y;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="类型限定"><a href="#类型限定" class="headerlink" title="类型限定"></a>类型限定</h1><p><strong>先看一个例子</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span>&#123;&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> <span class="keyword">extends</span> <span class="title class_">A</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>B是A的子类。然后定义一个方法<code>funA(A a)</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">funA</span><span class="params">(A a)</span> &#123;</span><br><span class="line">    <span class="comment">// ...          </span></span><br><span class="line">&#125;</span><br><span class="line">funA(A);</span><br><span class="line">funA(B);</span><br></pre></td></tr></table></figure>
+
+<p>以上两个调用都不会报错。那再定义一个方法<code>funA(List&lt;A&gt; listA)</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">funC</span><span class="params">(List&lt;A&gt; listA)</span> &#123;</span><br><span class="line">    <span class="comment">// ...          </span></span><br><span class="line">&#125;</span><br><span class="line">funA(<span class="keyword">new</span> <span class="title class_">List</span>&lt;A&gt;);</span><br><span class="line">funA(<span class="keyword">new</span> <span class="title class_">List</span>&lt;B&gt;);  <span class="comment">//很明显会报错 为什么呢？先说如何解决</span></span><br></pre></td></tr></table></figure>
+
+<p><font color="blue" size=5><strong>如何解决？</strong></font></p>
+<p>泛型设计初衷之一就是为了解决<strong>类型转换</strong>问题，泛型中参数化类型不考虑继承关系【不允许类型转换】，但有的时候也确实需要进行类型转换。</p>
+<p>为了解决泛型中<strong>隐含的类型转换问题</strong>，Java泛型加入了<strong>类型参数</strong>的&#x3D;&#x3D;<strong>上下边界机制</strong>&#x3D;&#x3D;。【<font color="red">注意是<strong>类型参数</strong></font>】，为类型参数添加限制的同时，对类和对象的使用也添加了限制ˋ( ° ▽、° )。详情见下 </p>
+<p><code>&lt;? extends A&gt;</code>表示	该类型参数可以是<strong>A(上边界)<strong>或者</strong>A的子类类型</strong>。你可以这样理解，【对于<code>? extends A</code>，该类型参数须是<strong>继承了A</strong>。】编译时擦除到类型A，即用A类型代替类型参数。</p>
+<p>使用<code>&lt;? extends A&gt;</code>可以解决以上的问题</p>
+<p>​	编译器知道了类型参数的范围	—&gt;	如果传入的实例类型B是在这个范围内的话	—&gt;	允许转换</p>
+<p>​	这时只要一次类型转换就可以了，运行时会把对象当做A的实例看待。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">funC</span><span class="params">(List&lt;? extends A&gt; listA)</span> &#123;</span><br><span class="line">    <span class="comment">// ...          </span></span><br><span class="line">&#125;</span><br><span class="line">funA(<span class="keyword">new</span> <span class="title class_">List</span>&lt;A&gt;);</span><br><span class="line">funA(<span class="keyword">new</span> <span class="title class_">List</span>&lt;B&gt;);  <span class="comment">//这样就不会报错</span></span><br></pre></td></tr></table></figure>
+
+<p><font color="blue" size=5><strong>为什么会报错？</strong></font></p>
+<p>类B是类A的子类。A是B的父类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">funC</span><span class="params">(List&lt;A&gt; listA)</span> &#123;</span><br><span class="line">    <span class="comment">// ...          </span></span><br><span class="line">&#125;</span><br><span class="line">funA(<span class="keyword">new</span> <span class="title class_">List</span>&lt;B&gt;);  <span class="comment">//报错</span></span><br></pre></td></tr></table></figure>
+
+<p>这相当于</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;A&gt; listA = new List&lt;B&gt;; </span><br></pre></td></tr></table></figure>
+
+<p>假如这样不会报错····	当我们从<code>listA</code>取值时，都是A类型。B类型转换为A类型【子类向上转型为父类，这是Java允许的】。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B element = (B)listA.get(0);</span><br></pre></td></tr></table></figure>
+
+<p>但这样做是没有意义的，这违背了泛型的初衷——<strong>解决类型转换问题</strong>。就像</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;Object&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;;<span class="comment">//这是Java不允许的。</span></span><br><span class="line"><span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> (String)list.get(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>我们使用了泛型，到头来，还是要自己强转，违背了泛型设计的初衷。所以<code>java</code>不允许这么干。</p>
+<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><p>常用的通配符有： <code>T，E，K，V，?</code></p>
+<p>其实也可以是A、B、C、D、E等的字母代替。使用 <code>T，E，K，V，?</code>只不过是约定俗成而已。</p>
+<p><code>T，E，K，V，?</code>  的约定如下：</p>
+<p><code>T</code>：(type) 表示具体的一个<code>java</code>类型。</p>
+<p><code>E</code>：代表Element。</p>
+<p><code>K、V</code> ：分别代表<code>java</code>键值中的Key Value。</p>
+<p><code>?</code> ：无界通配符，表示不确定的 <code>java</code> 类型</p>
+<h2 id="上下限"><a href="#上下限" class="headerlink" title="上下限"></a>上下限</h2><p>在使用泛型的时候，我们可以为传入的泛型类型实参进行上下边界的限制，如：类型实参只准传入某种类型的父类或某种类型的子类</p>
+<ul>
+<li><code>&lt;?&gt;</code> 无限制通配符</li>
+<li><code>&lt;? extends E&gt;</code>     <code>extends</code> 关键字声明了<strong>类型的上界</strong>，表示参数化的类型可能是所指定的类型，或者是&#x3D;&#x3D;此类型的<strong>子类</strong>&#x3D;&#x3D;</li>
+<li><code>&lt;? super E&gt;</code>        <code>super</code> 关键字声明了<strong>类型的下界</strong>，表示参数化的类型可能是指定的类型，或者是&#x3D;&#x3D;此类型的<strong>父类</strong>&#x3D;&#x3D;</li>
+</ul>
+<p>使用原则《Effictive Java》<br>为了获得最大限度的灵活性，要在表示 生产者或者消费者 的&#x3D;&#x3D;<strong>输入参数</strong>&#x3D;&#x3D;上使用通配符，使用的规则就是：生产者有上限、消费者有下限</p>
+<ol>
+<li>如果参数化类型表示一个 T 的生产者，使用 &lt; ? extends T&gt;;</li>
+<li>如果它表示一个 T 的消费者，就使用 &lt; ? super T&gt;；</li>
+<li>如果既是生产又是消费，那使用通配符就没什么意义了，因为你需要的是精确的参数类型。</li>
+</ol>
+<p><font size=4><strong>上边界限定通配符 &lt; ? extends E&gt;</strong></font></p>
+<p><code>&lt;T extends BoundingType&gt;</code>表示<code>T</code>应该是<code>BoundingType</code>的子类型。T和<code>BoundingType</code>可以是类，也可以是接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">demo</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        List&lt;Double&gt; doubleList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        doubleList.add(<span class="number">1.2</span>);</span><br><span class="line">        doubleList.add(<span class="number">3.13</span>);</span><br><span class="line">        show(doubleList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">show</span><span class="params">(List&lt;? extends Number&gt; list)</span>&#123;<span class="comment">//参数类型 必须是Number的子类</span></span><br><span class="line"><span class="comment">//        list.add(10.1);</span></span><br><span class="line">        <span class="keyword">for</span> (Number number : list) &#123;</span><br><span class="line">            System.out.println(number);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从以上代码可以看出，参数被限定为泛型必须是Number的子类。<font color="red" size= 5><strong>可以取出，但是不能添加</strong></font></p>
+<p><img src="/%5Cimage%5Carticle%5CJava%E6%B3%9B%E5%9E%8B%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%E6%B3%9B%E5%9E%8B%E5%9F%BA%E7%A1%80%5Cimage-20220809181958588.png" alt="image-20220809181958588"></p>
+<ul>
+<li><p>为什么不能添加呢？</p>
+<p>因为，List中的元素都是Number的子类。</p>
+<p>如果list的泛型是<code>Integer</code>类型，此时你去添加<code>Integer</code>类型的没问题。</p>
+<p>如果list的泛型是<code>Double</code>类型，此时你去添加<code>Double</code>类型的没问题。</p>
+<p>但是，现在不确定是什么类型的，只知道他是Number的子类，就能添加。</p>
+<p>如果list是<code>Integer</code>类型的,那就不能添加除<code>Integer</code>之外的，那如果是<code>Double</code>呢，也一样，所以就全都不能添加啦。</p>
+</li>
+<li><p>那为什么可以取出呢？</p>
+<p>因为我们从list中拿出来的必定是<code>Number</code>类型的，毕竟<code>Integer</code>等都去继承<code>Number</code>了，可以自动<strong>向上转型</strong></p>
+</li>
+</ul>
+<p><font size=4><strong>下边界限定通配符 &lt; ? super E&gt;</strong></font></p>
+<p>又叫<u>超类型通配符</u>。与extends特性完全相反。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">demo</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        List&lt;Integer&gt; integerList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(List&lt;? <span class="built_in">super</span> Integer&gt; list)</span>&#123;</span><br><span class="line">        list.add(<span class="number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与上限相反，<font color="red" size= 5><strong>可以添加，但是不能取出</strong></font></p>
+<ul>
+<li><p>为什么可以添加？</p>
+<p>这里定义了下限是<code>Integer</code>,也就是说这个list里面的类型都是<code>Integer</code>的父类，所以我们只能添加<code>Integer</code>和他的父类。</p>
+</li>
+<li><p>为什么不能取出？</p>
+<p>因为取的时候没法确实是<code>Interger</code>的哪个父类【没法向上转型】,最后都只能获取我们的根类<code>Object</code></p>
+</li>
+</ul>
+<blockquote>
+<p>还要说一句的是，如果既没有上限也没有下限，就既不能取出也不能添加。取出只能用根类<code>Object</code>接收，因为取出根本不知道什么类型的。里面是什么类型不知道，所以就不能放进去。</p>
+</blockquote>
+<h2 id="实际例子"><a href="#实际例子" class="headerlink" title="实际例子"></a>实际例子</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>  &lt;E <span class="keyword">extends</span> <span class="title class_">Comparable</span>&lt;? <span class="built_in">super</span> E&gt;&gt; E <span class="title function_">max</span><span class="params">(List&lt;? extends E&gt; e1)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (e1 == <span class="literal">null</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//迭代器返回的元素属于 E 的某个子类型</span></span><br><span class="line">    Iterator&lt;? <span class="keyword">extends</span> <span class="title class_">E</span>&gt; iterator = e1.iterator();</span><br><span class="line">    <span class="type">E</span> <span class="variable">result</span> <span class="operator">=</span> iterator.next();</span><br><span class="line">    <span class="keyword">while</span> (iterator.hasNext())&#123;</span><br><span class="line">        <span class="type">E</span> <span class="variable">next</span> <span class="operator">=</span> iterator.next();</span><br><span class="line">        <span class="keyword">if</span> (next.compareTo(result) &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            result = next;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有三处类型限定泛型：</p>
+<ul>
+<li><p><code>Comparable&lt;? super E&gt;</code></p>
+<p>要对 E 进行比较，即 E 的消费者，所以需要用 super</p>
+</li>
+<li><p><code>List&lt;? extends E&gt;</code></p>
+<p>我们要操作的数据的<code>E</code>，需要<strong>取出</strong>进行比较，所以使用<code>extends</code>。</p>
+</li>
+<li><p><code>&lt;E extends Comparable&lt;? super E&gt;&gt;</code></p>
+<p>要进行比较，所以 E 需要是可比较的类，因此需要 <code>extends Comparable&lt;…&gt;</code></p>
+</li>
+</ul>
+<h2 id="多个限制"><a href="#多个限制" class="headerlink" title="多个限制"></a>多个限制</h2><p>使用&amp;符号</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Client</span> &#123;</span><br><span class="line">    <span class="comment">//工资低于2500元的上斑族并且站立的乘客车票打8折</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T <span class="keyword">extends</span> <span class="title class_">Staff</span> &amp; Passenger&gt; <span class="keyword">void</span> <span class="title function_">discount</span><span class="params">(T t)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(t.getSalary()&lt;<span class="number">2500</span> &amp;&amp; t.isStanding())&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;恭喜你！您的车票打八折！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        discount(<span class="keyword">new</span> <span class="title class_">Me</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="泛型数组"><a href="#泛型数组" class="headerlink" title="泛型数组"></a>泛型数组</h1><p>泛型数组相关的申明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt;[] list11 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，非法创建 </span></span><br><span class="line">List&lt;String&gt;[] list12 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，需要强转类型 </span></span><br><span class="line">List&lt;String&gt;[] list13 = (List&lt;String&gt;[]) <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//OK，但是会有警告 </span></span><br><span class="line">List&lt;?&gt;[] list14 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，非法创建 </span></span><br><span class="line">List&lt;?&gt;[] list15 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//OK </span></span><br><span class="line">List&lt;String&gt;[] list6 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>[<span class="number">10</span>]; <span class="comment">//OK，但是会有警告</span></span><br></pre></td></tr></table></figure>
+
+<p>需要说明的是， 只是不允许创建这些数组， 而声明类型为 <code>ArrayList&lt;String&gt;[]</code> 的变量仍是合法的。<strong>不过不能用 <code>new Pair&lt;String&gt;[10]</code> 初始化这个变量。</strong></p>
+<p>因为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Pair&lt;String&gt;[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>&lt;String&gt;[<span class="number">10</span>];</span><br><span class="line"><span class="comment">//擦除之后</span></span><br><span class="line">Pair[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>[<span class="number">10</span>];</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	数组会记住他的元素类型。这是一个安全措施。对于这样的数组，将他转换为Object[]。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">Pair[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>[<span class="number">10</span>];</span><br><span class="line">Object[] objects = pairs;</span><br><span class="line">objects[<span class="number">0</span>] = <span class="string">&quot;123&quot;</span>;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">编译器不会报错，但数组会记住他的元素类型，运行后会报ArrayStoreException.</span></span><br><span class="line"><span class="comment">pairs会记得他是Pair数组，但他并不记得自己是Pair&lt;String&gt;数组还是Pair&lt;Interger&gt;数组</span></span><br><span class="line"><span class="comment">如果我们在Pair&lt;String&gt;数组中放入Pair&lt;Interget&gt;是不会得到ArrayStoreException异常，但这是不安全的。因此参数化类型的数组是完全禁止的。</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>讨巧的使用场景</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GenericsDemo30</span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span>&#123;  </span><br><span class="line">        Integer i[] = fun1(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>) ;   <span class="comment">// 返回泛型数组  </span></span><br><span class="line">        fun2(i) ;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T[] fun1(T...arg)&#123;  <span class="comment">// 接收可变参数  </span></span><br><span class="line">        <span class="keyword">return</span> arg ;            <span class="comment">// 返回泛型数组  </span></span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">fun2</span><span class="params">(T param[])</span>&#123;   <span class="comment">// 输出  </span></span><br><span class="line">        System.out.print(<span class="string">&quot;接收泛型数组：&quot;</span>) ;  </span><br><span class="line">        <span class="keyword">for</span>(T t:param)&#123;  </span><br><span class="line">            System.out.print(t + <span class="string">&quot;、&quot;</span>) ;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://pdai.tech/md/java/basic/java-basic-x-generic.html">https://pdai.tech/md/java/basic/java-basic-x-generic.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_40251892/article/details/109063161">https://blog.csdn.net/weixin_40251892/article/details/109063161</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qinjunlin/p/14721362.html">https://www.cnblogs.com/qinjunlin/p/14721362.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41701956/article/details/123473592">https://blog.csdn.net/qq_41701956/article/details/123473592</a></p>
+<p>《Java核心技术卷一》</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/474fbc8a.html" target="_blank">Java泛型机制（一）泛型基础</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Java%E5%9F%BA%E7%A1%80/">Java基础</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E6%B3%9B%E5%9E%8B/">泛型</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/ae19fff4.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/ae19fff4.html" title="发布于 2022-08-10 10:03">Java泛型机制（二）深入理解泛型——类型擦除</a>
+                        <br>
+                    
+                    
+                        <a href="/post/d98be659.html" class="next-prefix">» </a> 下一篇：    <a href="/post/d98be659.html" title="发布于 2022-08-09 11:00">直线上最多的点</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "010C3EANT8",
+            apiKey        : "c7abab9f11b79102b9aff7fe6d41447d",
+            indexName     : "Notes",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "srhKtvWPQTWYKh3qX8G8M7v0-gzGzoHsz",
+            appKey         : "8uVSP1q6UlALVC5igYfIfv2h",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
