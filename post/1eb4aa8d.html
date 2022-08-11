@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Java泛型机制（三）深入理解泛型
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Java泛型机制（三）深入理解泛型</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-11
+                        </span>
+                        
+                            <span id="/post/1eb4aa8d.html" class="leancloud_visitors" data-flag-title="Java泛型机制（三）深入理解泛型">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1eb4aa8d.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">java基础</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">泛型</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,75 +70,99 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>泛型不能万能的，有些事情，泛型真做不了。</p>
+<h1 id="泛型类型能不能实例化？"><a href="#泛型类型能不能实例化？" class="headerlink" title="泛型类型能不能实例化？"></a>泛型类型能不能实例化？</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T test = new T(); // ERROR</span><br></pre></td></tr></table></figure>
+
+<p>因为在 Java 编译期<font color="red"><strong>没法确定泛型参数化类型</strong></font>，也就<font color="red"><strong>找不到对应的类字节码文件</strong></font>，所以自然就不行了。</p>
+<p>此外由于<code>T</code> 被擦除为 <code>Object</code>，如果可以 <code>new T()</code> 则就变成了 <code>new Object()</code>，失去了本意。  </p>
+<h1 id="泛型数组"><a href="#泛型数组" class="headerlink" title="泛型数组"></a>泛型数组</h1><p>泛型数组相关的申明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt;[] list11 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，非法创建 </span></span><br><span class="line">List&lt;String&gt;[] list12 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，需要强转类型 </span></span><br><span class="line">List&lt;String&gt;[] list13 = (List&lt;String&gt;[]) <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//OK，但是会有警告 </span></span><br><span class="line">List&lt;?&gt;[] list14 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;String&gt;[<span class="number">10</span>]; <span class="comment">//编译错误，非法创建 </span></span><br><span class="line">List&lt;?&gt;[] list15 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;?&gt;[<span class="number">10</span>]; <span class="comment">//OK </span></span><br><span class="line">List&lt;String&gt;[] list6 = <span class="keyword">new</span> <span class="title class_">ArrayList</span>[<span class="number">10</span>]; <span class="comment">//OK，但是会有警告</span></span><br></pre></td></tr></table></figure>
+
+<p>因为在 Java 中是不能创建一个确切的泛型类型的数组的，除非是采用通配符的方式且要做显式类型转换才可以。</p>
+<p>需要说明的是， 只是不允许创建这些数组， 而声明类型为 <code>ArrayList&lt;String&gt;[]</code> 的变量仍是合法的。<strong>不过不能用 <code>new ArrayList&lt;String&gt;[10]</code> 初始化这个变量。</strong></p>
+<p>因为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Pair&lt;String&gt;[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>&lt;String&gt;[<span class="number">10</span>];</span><br><span class="line"><span class="comment">//擦除之后</span></span><br><span class="line">Pair[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>[<span class="number">10</span>];</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">	数组会记住他的元素类型。这是一个安全措施。对于这样的数组，将他转换为Object[]。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">Pair[] pairs = <span class="keyword">new</span> <span class="title class_">Pair</span>[<span class="number">10</span>];</span><br><span class="line">Object[] objects = pairs;</span><br><span class="line">objects[<span class="number">0</span>] = <span class="string">&quot;123&quot;</span>;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">编译器不会报错，但数组会记住他的元素类型，运行后会报ArrayStoreException.</span></span><br><span class="line"><span class="comment">pairs会记得他是Pair数组，但他并不记得自己是Pair&lt;String&gt;数组还是Pair&lt;Interger&gt;数组</span></span><br><span class="line"><span class="comment">如果我们在Pair&lt;String&gt;数组中放入Pair&lt;Interget&gt;是不会得到ArrayStoreException异常，但这是不安全的。因此参数化类型的数组是完全禁止的。</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>讨巧的使用场景</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">GenericsDemo30</span>&#123;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span>&#123;  </span><br><span class="line">        Integer i[] = fun1(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>) ;   <span class="comment">// 返回泛型数组  </span></span><br><span class="line">        fun2(i) ;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; T[] fun1(T...arg)&#123;  <span class="comment">// 接收可变参数  </span></span><br><span class="line">        <span class="keyword">return</span> arg ;            <span class="comment">// 返回泛型数组  </span></span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">fun2</span><span class="params">(T param[])</span>&#123;   <span class="comment">// 输出  </span></span><br><span class="line">        System.out.print(<span class="string">&quot;接收泛型数组：&quot;</span>) ;  </span><br><span class="line">        <span class="keyword">for</span>(T t:param)&#123;  </span><br><span class="line">            System.out.print(t + <span class="string">&quot;、&quot;</span>) ;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何实例化一个泛型类和泛型数组"><a href="#如何实例化一个泛型类和泛型数组" class="headerlink" title="如何实例化一个泛型类和泛型数组"></a>如何实例化一个泛型类和泛型数组</h1><p> 如果我们确实需要实例化一个泛型，应该如何做呢？<font color="red" size=5>反射！</font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Main</span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &lt;T&gt; T <span class="title function_">newTclass</span> <span class="params">(Class &lt; T &gt; clazz)</span> <span class="keyword">throws</span> InstantiationException, IllegalAccessException &#123;</span><br><span class="line">        <span class="type">T</span> <span class="variable">obj</span> <span class="operator">=</span> clazz.newInstance();</span><br><span class="line">        <span class="keyword">return</span> obj;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> newTclass(String.class);<span class="comment">//实例化一个泛型</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那我们如何实例化泛型数组呢？<font color="red" size=5>还是反射！</font></p>
+<p>我们可以通过使用 <code>java.lang.reflect.Array.newInstance(Class&lt;T&gt; componentType, int length)</code> 方法来创建一个具有指定类型和维度的数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ArrayWithTypeToken</span>&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> T[] array;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ArrayWithTypeToken</span><span class="params">(Class&lt;T&gt; type, <span class="type">int</span> size)</span> &#123;</span><br><span class="line">        array = (T[]) Array.newInstance(type, size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> index, T item)</span> &#123;</span><br><span class="line">        array[index] = item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T <span class="title function_">get</span><span class="params">(<span class="type">int</span> index)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> array[index];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> T[] create() &#123;</span><br><span class="line">        <span class="keyword">return</span> array;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Main</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IllegalAccessException, InstantiationException &#123;</span><br><span class="line">        ArrayWithTypeToken&lt;Integer&gt; arrayToken = <span class="keyword">new</span> <span class="title class_">ArrayWithTypeToken</span>&lt;Integer&gt;(Integer.class, <span class="number">100</span>);</span><br><span class="line">        Integer[] array = arrayToken.create();<span class="comment">//实例化一个泛型数组</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="如何理解泛型类中的静态方法和静态变量？"><a href="#如何理解泛型类中的静态方法和静态变量？" class="headerlink" title="如何理解泛型类中的静态方法和静态变量？"></a>如何理解泛型类中的静态方法和静态变量？</h1><p>泛型类中的静态方法和静态变量不可以使用泛型类所声明的泛型类型参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test2</span>&lt;T&gt; &#123;    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> T one;   <span class="comment">//编译错误    </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span>  T <span class="title function_">show</span><span class="params">(T one)</span>&#123; <span class="comment">//编译错误    </span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为泛型类中的<strong>泛型参数的实例化</strong>是在<strong>定义对象的时候指定</strong>的，而<strong>静态变量和静态方法不需要使用对象来调用。</strong></p>
+<p>对象都没有创建，如何确定这个泛型参数是何种类型，所以当然是错误的。</p>
+<p>但注意区分以下情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test2</span>&lt;T&gt; &#123;    </span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T &gt;T <span class="title function_">show</span><span class="params">(T one)</span>&#123; <span class="comment">//这是正确的    </span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为这是一个泛型方法，在泛型方法中使用的T是自己在方法中定义的 T，而不是泛型类中的T。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/1eb4aa8d.html" target="_blank">Java泛型机制（三）深入理解泛型</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 30 篇日志，继续加油！
+                            <a href="/category/java%E5%9F%BA%E7%A1%80/">java基础</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a362d786.html"><span>使用idea将自己的项目上传到github</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
+                            <a href="/tag/%E6%B3%9B%E5%9E%8B/">泛型</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/11.html"><span>Git本地仓库操作</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a99f1401.html"><span>Git配置IDEA</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/884d8d37.html"><span>寻找旋转排序数组的最小值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-26</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/ae19fff4.html" class="next-prefix">» </a> 下一篇：    <a href="/post/ae19fff4.html" title="发布于 2022-08-10 10:03">Java泛型机制（二）深入理解泛型——类型擦除</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/2022/07/">上一页</a><a class="page-number" href="/archive/2022/07/">1</a><span class="page-number current">2</span>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -149,7 +194,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
