@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Spring-Security入门
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Spring-Security入门</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-17
+                        </span>
+                        
+                            <span id="/post/15408d89.html" class="leancloud_visitors" data-flag-title="Spring-Security入门">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/15408d89.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Spring-Security</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,95 +70,90 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><strong>Spring Security</strong> 是 Spring 家族中的一个安全管理框架。相比与另外一个安全框架<strong>Shiro</strong>，它提供了更丰富的功能，社区资源也比Shiro丰富。</p>
+<p>​	一般来说中大型的项目都是使用<strong>SpringSecurity</strong> 来做安全框架。小项目有Shiro的比较多，因为相比与SpringSecurity，Shiro的上手更加的简单。</p>
+<p>​	 一般Web应用的需要进行<strong>认证</strong>和<strong>授权</strong>。</p>
+<p>​		<strong>认证：验证当前访问系统的是不是本系统的用户，并且要确认具体是哪个用户</strong></p>
+<p>​		<strong>授权：经过认证后判断当前用户是否有权限进行某个操作</strong></p>
+<p>​	而认证和授权也是SpringSecurity作为安全框架的核心功能。</p>
+<h1 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h1><p>导入坐标</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line"> 	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>创建一个SpringBoot工程，然后创建一个Controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们启动时，访问 <code>localhost:8080/hello</code>【<font color="red"><strong>注意一定要使用<code>http</code>协议，如果使用<code>https</code>协议会报错</strong></font>】</p>
+<p>会自动重定向至<code>localhost:8080/login</code></p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E5%85%A5%E9%97%A8%5Cimage-20220817234613736.png" alt="image-20220817234613736"></p>
+<p>用户名默认为<code>user</code>。密码会在控制台给出。</p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E5%85%A5%E9%97%A8%5Cimage-20220817234730431.png" alt="image-20220817234730431"></p>
+<p>输入用户名和密码就会访问到<code>localhost:8080/hello</code></p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E5%85%A5%E9%97%A8%5Cimage-20220817235027303.png" alt="image-20220817235027303"></p>
+<p>如果我们不加SpringSecurity的坐标，那我们就可以直接进行访问资源。这个登录界面是SpringSecure自带的。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/15408d89.html" target="_blank">Spring-Security入门</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 36 篇日志，继续加油！
+                            <a href="/category/Spring/">Spring</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/d2e965a3.html"><span>Redis五种常用数据类型</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
+                            <a href="/tag/Spring-Security/">Spring-Security</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/958f52e2.html"><span>Redis简介</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/e123c807.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/e123c807.html" title="发布于 2022-08-18 01:52">Spring-Security登录认证详解</a>
+                        <br>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a362d786.html"><span>使用idea将自己的项目上传到github</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-28</span>
-                                </div>
-                            </div>
-                        </div>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/11.html"><span>Git本地仓库操作</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a99f1401.html"><span>Git配置IDEA</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-27</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/884d8d37.html"><span>寻找旋转排序数组的最小值</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-26</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/a7b132c6.html" class="next-prefix">» </a> 下一篇：    <a href="/post/a7b132c6.html" title="发布于 2022-08-17 03:01">五十个Python比较好玩的代码[搬运别人的]</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/page/3/">上一页</a><a class="page-number" href="/archive/">1</a><a class="page-number" href="/archive/page/2/">2</a><a class="page-number" href="/archive/page/3/">3</a><span class="page-number current">4</span>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -169,7 +185,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
