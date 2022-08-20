@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            好玩的Python代码[摘录]（二）
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">好玩的Python代码[摘录]（二）</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-17
+                        </span>
+                        
+                            <span id="/post/e6afebad.html" class="leancloud_visitors" data-flag-title="好玩的Python代码[摘录]（二）">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/e6afebad.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Python</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Python组件</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h2 id="1、python中的format格式拼接字符串"><a href="#1、python中的format格式拼接字符串" class="headerlink" title="1、python中的format格式拼接字符串"></a>1、python中的format格式拼接字符串</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">d = &#123;<span class="string">&#x27;a&#x27;</span>: <span class="number">1</span>, <span class="string">&#x27;b&#x27;</span>: <span class="number">2</span>, <span class="string">&#x27;c&#x27;</span>: <span class="number">3</span>, <span class="string">&#x27;d&#x27;</span>: <span class="number">5</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;&#123;a&#125;,&#123;b&#125;&#x27;</span>.<span class="built_in">format</span>(**d))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;&#123;0&#125;,&#123;1&#125;,&#123;0&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;d[<span class="string">&#x27;a&#x27;</span>]&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1,2</span><br><span class="line">a,b,a</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、python控制台输出带颜色的文字方法"><a href="#2、python控制台输出带颜色的文字方法" class="headerlink" title="2、python控制台输出带颜色的文字方法"></a>2、python控制台输出带颜色的文字方法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#格式：　　设置颜色开始 ：\033[显示方式;前景色;背景色m</span></span><br><span class="line"><span class="comment">#说明：</span></span><br><span class="line">前景色            背景色           颜色</span><br><span class="line">---------------------------------------</span><br><span class="line"><span class="number">30</span>                <span class="number">40</span>              黑色</span><br><span class="line"><span class="number">31</span>                <span class="number">41</span>              红色</span><br><span class="line"><span class="number">32</span>                <span class="number">42</span>              绿色</span><br><span class="line"><span class="number">33</span>                <span class="number">43</span>              黃色</span><br><span class="line"><span class="number">34</span>                <span class="number">44</span>              蓝色</span><br><span class="line"><span class="number">35</span>                <span class="number">45</span>              紫红色</span><br><span class="line"><span class="number">36</span>                <span class="number">46</span>              青蓝色</span><br><span class="line"><span class="number">37</span>                <span class="number">47</span>              白色</span><br><span class="line">显示方式           意义</span><br><span class="line">-------------------------</span><br><span class="line"><span class="number">0</span>                终端默认设置</span><br><span class="line"><span class="number">1</span>                高亮显示</span><br><span class="line"><span class="number">4</span>                使用下划线</span><br><span class="line"><span class="number">5</span>                闪烁</span><br><span class="line"><span class="number">7</span>                反白显示</span><br><span class="line"><span class="number">8</span>                不可见</span><br><span class="line"> </span><br><span class="line"><span class="comment">#例子：</span></span><br><span class="line">\033[<span class="number">1</span>;<span class="number">31</span>;40m    &lt;!--<span class="number">1</span>-高亮显示 <span class="number">31</span>-前景色红色  <span class="number">40</span>-背景色黑色--&gt;</span><br><span class="line">\033[0m          &lt;!--采用终端默认设置，即取消颜色设置--&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">例子</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;紫红字体 \033[1;35m hello world \033[0m!&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;褐色背景绿色字体 \033[1;32;43m hello world \033[0m!&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\033[1;33;44mhello world\033[0m&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/%5Cimage%5Carticle%5C%E5%87%A0%E5%8D%81%E4%B8%AAPython%E6%AF%94%E8%BE%83%E5%A5%BD%E7%8E%A9%E7%9A%84%E4%BB%A3%E7%A0%81-%E6%90%AC%E8%BF%90%E5%88%AB%E4%BA%BA%E7%9A%84%5C20200615143709116.png" alt="在这里插入图片描述"></p>
+<h2 id="3、控制台输出白色方框"><a href="#3、控制台输出白色方框" class="headerlink" title="3、控制台输出白色方框"></a>3、控制台输出白色方框</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;█&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="4、有序字典"><a href="#4、有序字典" class="headerlink" title="4、有序字典"></a>4、有序字典</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">d1 = collections.OrderedDict()  <span class="comment"># 创建一个有序字典</span></span><br><span class="line">d1[<span class="string">&#x27;a&#x27;</span>] = <span class="string">&#x27;A&#x27;</span></span><br><span class="line">d1[<span class="string">&#x27;b&#x27;</span>] = <span class="string">&#x27;B&#x27;</span></span><br><span class="line">d1[<span class="string">&#x27;c&#x27;</span>] = <span class="string">&#x27;C&#x27;</span></span><br><span class="line">d1[<span class="string">&#x27;d&#x27;</span>] = <span class="string">&#x27;D&#x27;</span></span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> d1.items():</span><br><span class="line">    <span class="built_in">print</span>(k, v)</span><br></pre></td></tr></table></figure>
+
+<h2 id="5、Python在Windows系统下实现TTS（文字转语音）"><a href="#5、Python在Windows系统下实现TTS（文字转语音）" class="headerlink" title="5、Python在Windows系统下实现TTS（文字转语音）"></a>5、Python在Windows系统下实现TTS（文字转语音）</h2><p>导入包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pip install pypiwin32</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> win32com.client</span><br><span class="line">spk = win32com.client.Dispatch(<span class="string">&quot;SAPI.SpVoice&quot;</span>)</span><br><span class="line">spk.Speak(<span class="string">u&quot;my name is ldc,what is your name&quot;</span>)</span><br><span class="line">spk.Speak(<span class="string">u&quot;大家好&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="6、定义一个简单闹钟"><a href="#6、定义一个简单闹钟" class="headerlink" title="6、定义一个简单闹钟"></a>6、定义一个简单闹钟</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pip install pypiwin32 -i https://pypi.python.org/simple</span></span><br><span class="line"><span class="keyword">import</span> win32com.client</span><br><span class="line"><span class="keyword">import</span> time </span><br><span class="line"><span class="keyword">import</span> winsound</span><br><span class="line"></span><br><span class="line">spk = win32com.client.Dispatch(<span class="string">&quot;SAPI.SpVoice&quot;</span>)</span><br><span class="line"><span class="comment"># 定义闹钟时间</span></span><br><span class="line">clocktime = [[<span class="number">19</span>, <span class="number">19</span>], [<span class="number">11</span>, <span class="number">10</span>], [<span class="number">12</span>, <span class="number">10</span>], [<span class="number">18</span>, <span class="number">47</span>]]  </span><br><span class="line">runinghour = <span class="number">1</span>  <span class="comment"># 定义运行时间</span></span><br><span class="line">times = runinghour * <span class="number">3600</span>  <span class="comment"># 次数</span></span><br><span class="line"><span class="built_in">print</span>(times)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, times):</span><br><span class="line">    time_now = [time.localtime(time.time()).tm_hour, time.localtime(time.time()).tm_min]</span><br><span class="line">    <span class="keyword">if</span> time_now <span class="keyword">in</span> clocktime:</span><br><span class="line">        <span class="built_in">print</span>(time_now)</span><br><span class="line">        winsound.Beep(<span class="number">1000</span>, <span class="number">1000</span>)</span><br><span class="line">        spk.Speak(<span class="string">u&quot;快去看下饭好了没有？&quot;</span>)</span><br><span class="line">    time.sleep(<span class="number">60</span>)  <span class="comment"># 每分钟对比一次时间</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="7、根据年月获取当月天数"><a href="#7、根据年月获取当月天数" class="headerlink" title="7、根据年月获取当月天数"></a>7、根据年月获取当月天数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_month_days</span>(<span class="params">year, month</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    根据年份，月份信息显示此月份天数</span></span><br><span class="line"><span class="string">    :param year: 年份：</span></span><br><span class="line"><span class="string">    :param month: 月份（1～12）：</span></span><br><span class="line"><span class="string">    :return: 当月天数</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> month &gt;<span class="number">12</span> <span class="keyword">or</span> month &lt;= <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> month == <span class="number">2</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">29</span> <span class="keyword">if</span> year % <span class="number">4</span> == <span class="number">0</span> <span class="keyword">and</span> year % <span class="number">100</span> != <span class="number">0</span> <span class="keyword">or</span> year % <span class="number">400</span> == <span class="number">0</span> <span class="keyword">else</span> <span class="number">28</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> month <span class="keyword">in</span> (<span class="number">4</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">11</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="number">30</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">31</span></span><br><span class="line"></span><br><span class="line">a = <span class="string">&#x27;2020-04&#x27;</span>.split(<span class="string">&#x27;-&#x27;</span>)</span><br><span class="line">year = <span class="built_in">int</span>(a[<span class="number">0</span>])</span><br><span class="line">month = <span class="built_in">int</span>(a[<span class="number">1</span>])</span><br><span class="line"><span class="built_in">print</span>(get_month_days(year,month))</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"><span class="number">30</span>   </span><br></pre></td></tr></table></figure>
+
+<h2 id="8、获取当前时间月份的首日与最后一天"><a href="#8、获取当前时间月份的首日与最后一天" class="headerlink" title="8、获取当前时间月份的首日与最后一天"></a>8、获取当前时间月份的首日与最后一天</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> calendar</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_month_start_and_end</span>(<span class="params">date=datetime.datetime.now(<span class="params"></span>)</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    获取当前时间的月份首日与最后一天</span></span><br><span class="line"><span class="string">    :param date:</span></span><br><span class="line"><span class="string">    :return: (首日，最后一天)</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    year, month = <span class="built_in">str</span>(date).split(<span class="string">&#x27;-&#x27;</span>)[<span class="number">0</span>], <span class="built_in">str</span>(date).split(<span class="string">&#x27;-&#x27;</span>)[<span class="number">1</span>]</span><br><span class="line">    end = calendar.monthrange(<span class="built_in">int</span>(year), <span class="built_in">int</span>(month))[<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&#x27;<span class="subst">&#123;year&#125;</span>-<span class="subst">&#123;month&#125;</span>-01&#x27;</span>, <span class="string">f&#x27;<span class="subst">&#123;year&#125;</span>-<span class="subst">&#123;month&#125;</span>-<span class="subst">&#123;end&#125;</span>&#x27;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="9、-二维列表、二维数组行求和与列求和"><a href="#9、-二维列表、二维数组行求和与列求和" class="headerlink" title="9、 二维列表、二维数组行求和与列求和"></a>9、 二维列表、二维数组行求和与列求和</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> reduce</span><br><span class="line"></span><br><span class="line"><span class="comment"># 二维数组，对列和行求和</span></span><br><span class="line">a = [</span><br><span class="line">    [<span class="string">&#x27;&#x27;</span>, <span class="number">0</span>, <span class="string">&#x27;&#x27;</span>, <span class="number">1</span>, <span class="number">4.1</span>],</span><br><span class="line">    [<span class="string">&#x27;&#x27;</span>, <span class="number">0</span>, <span class="string">&#x27;&#x27;</span>, <span class="string">&#x27;&#x27;</span>, <span class="number">4</span>],</span><br><span class="line">    [<span class="string">&#x27;123&#x27;</span>, <span class="number">0</span>, <span class="string">&#x27;&#x27;</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">6</span>,<span class="number">7</span>],</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aa</span>(<span class="params">x, y</span>):</span><br><span class="line">    x = <span class="number">0</span> <span class="keyword">if</span> <span class="built_in">isinstance</span>(x, <span class="built_in">str</span>) <span class="keyword">else</span> x</span><br><span class="line">    y = <span class="number">0</span> <span class="keyword">if</span> <span class="built_in">isinstance</span>(y, <span class="built_in">str</span>) <span class="keyword">else</span> y</span><br><span class="line">    <span class="keyword">return</span> x + y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对行求和</span></span><br><span class="line">row_sum = [reduce(aa, i) <span class="keyword">for</span> i <span class="keyword">in</span> a]</span><br><span class="line"><span class="comment"># 对列求和，只能处理相同长度的子元素</span></span><br><span class="line">column_sum_1 = [reduce(aa, i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">zip</span>(*a)]</span><br><span class="line"><span class="comment"># 对列求和，可以处理不同长度的子元素</span></span><br><span class="line">column_sum_2 = <span class="built_in">list</span>(<span class="built_in">dict</span>(pd.DataFrame(a).fillna(<span class="number">0</span>).apply(<span class="keyword">lambda</span> x: <span class="string">&#x27;&#x27;</span> <span class="keyword">if</span> <span class="built_in">any</span>(<span class="built_in">isinstance</span>(d, <span class="built_in">str</span>) <span class="keyword">for</span> d <span class="keyword">in</span> x) <span class="keyword">else</span> <span class="built_in">round</span>(x.<span class="built_in">sum</span>(), <span class="number">2</span>))).values())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;行求和：&#123;&#125;\r\n列求和(相同长度)：&#123;&#125;\r\n列求和：&#123;&#125;&#x27;</span>.<span class="built_in">format</span>(row_sum, column_sum_1, column_sum_2))</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">行求和：[5.1, 4, 20]</span><br><span class="line">列求和(相同长度)：[0, 0, 0, 4, 12.1]</span><br><span class="line">列求和：[&#x27;&#x27;, 0, &#x27;&#x27;, &#x27;&#x27;, 12.1, 6.0, 7.0]</span><br></pre></td></tr></table></figure>
+
+<h2 id="10、获取时间字符串的月份数"><a href="#10、获取时间字符串的月份数" class="headerlink" title="10、获取时间字符串的月份数"></a>10、获取时间字符串的月份数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_months</span>(<span class="params">start_month_str, end_month_str</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    # 获取时间字符串中的月份数</span></span><br><span class="line"><span class="string">    :param start_month_str: 开始字符串</span></span><br><span class="line"><span class="string">    :param end_month_str: 结束字符串</span></span><br><span class="line"><span class="string">    :return: 月份数</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">    end_month_date = datetime.strptime(end_month_str, <span class="string">&#x27;%Y-%m&#x27;</span>)</span><br><span class="line">    start_month_date = datetime.strptime(start_month_str, <span class="string">&#x27;%Y-%m&#x27;</span>)</span><br><span class="line">    end_year, end_month = end_month_date.year, end_month_date.month</span><br><span class="line">    start_year, start_month = start_month_date.year, start_month_date.month</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (end_year - start_year) *<span class="number">12</span> + (end_month - start_month) + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">end_month_str = <span class="string">&#x27;2021-02&#x27;</span></span><br><span class="line">start_month_str = <span class="string">&#x27;2020-07&#x27;</span></span><br><span class="line"><span class="built_in">print</span>(get_months(start_month_str, end_month_str))</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line"><span class="number">8</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="11、字符串不足补零"><a href="#11、字符串不足补零" class="headerlink" title="11、字符串不足补零"></a>11、字符串不足补零</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;hello world&#x27;</span>.zfill(<span class="number">15</span>)) <span class="comment"># 补0</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;hello world&#x27;</span>.rjust(<span class="number">15</span>)) <span class="comment"># 右对齐，补空格</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;hello world&#x27;</span>.ljust(<span class="number">15</span>)) <span class="comment"># 左对齐，补空格</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">0000hello world</span><br><span class="line">    hello world</span><br><span class="line">hello world  </span><br></pre></td></tr></table></figure>
+
+<h2 id="12、时间戳转字符串日期"><a href="#12、时间戳转字符串日期" class="headerlink" title="12、时间戳转字符串日期"></a>12、时间戳转字符串日期</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line">t1 = time.time()</span><br><span class="line"><span class="built_in">print</span>(t1)</span><br><span class="line"><span class="built_in">print</span>(time.strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, time.localtime(t1)))</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"><span class="number">1621741567.082192</span></span><br><span class="line"><span class="number">2021</span>-05-<span class="number">23</span> <span class="number">11</span>:<span class="number">46</span>:07</span><br></pre></td></tr></table></figure>
+
+<p>使用函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">@contact: 微信 1257309054</span></span><br><span class="line"><span class="string">@file: 时间戳转日期.py</span></span><br><span class="line"><span class="string">@time: 2022/6/27 17:16</span></span><br><span class="line"><span class="string">@author: LDC</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 正确10位长度的时间戳可精确到秒，11-14位长度则是包含了毫秒</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">int_to_datetime</span>(<span class="params">intValue</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(<span class="built_in">str</span>(intValue)) == <span class="number">10</span>:</span><br><span class="line">        <span class="comment"># 精确到秒</span></span><br><span class="line">        timeValue = time.localtime(intValue)</span><br><span class="line">        tempDate = time.strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, timeValue)</span><br><span class="line">        datetimeValue = datetime.datetime.strptime(tempDate, <span class="string">&quot;%Y-%m-%d %H:%M:%S&quot;</span>)</span><br><span class="line">    <span class="keyword">elif</span> <span class="number">10</span> &lt; <span class="built_in">len</span>(<span class="built_in">str</span>(intValue)) <span class="keyword">and</span> <span class="built_in">len</span>(<span class="built_in">str</span>(intValue)) &lt; <span class="number">15</span>:</span><br><span class="line">        <span class="comment"># 精确到毫秒</span></span><br><span class="line">        k = <span class="built_in">len</span>(<span class="built_in">str</span>(intValue)) - <span class="number">10</span></span><br><span class="line">        timetamp = datetime.datetime.fromtimestamp(intValue / (<span class="number">1</span> * <span class="number">10</span> ** k))</span><br><span class="line">        datetimeValue = timetamp.strftime(<span class="string">&quot;%Y-%m-%d %H:%M:%S.%f&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> datetimeValue</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">time1 = <span class="number">1656321420</span></span><br><span class="line">time2 = <span class="number">1656321086560</span></span><br><span class="line"><span class="built_in">print</span>(int_to_datetime(time1))</span><br><span class="line"><span class="built_in">print</span>(int_to_datetime(time2))</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">输出：</span></span><br><span class="line"><span class="string">2022-06-27 17:17:00</span></span><br><span class="line"><span class="string">2022-06-27 17:11:26.560000</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="13、列表转字符串"><a href="#13、列表转字符串" class="headerlink" title="13、列表转字符串"></a>13、列表转字符串</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;,&#x27;</span>.join(<span class="built_in">map</span>(<span class="built_in">str</span>,a)))</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">`<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>`</span><br></pre></td></tr></table></figure>
+
+<h2 id="14、pip国内镜像源"><a href="#14、pip国内镜像源" class="headerlink" title="14、pip国内镜像源"></a>14、pip国内镜像源</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pip install 库名 -i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">清华：-i https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line"></span><br><span class="line">阿里云：-i http://mirrors.aliyun.com/pypi/simple/</span><br><span class="line"></span><br><span class="line">中国科技大学 -i https://pypi.mirrors.ustc.edu.cn/simple/</span><br><span class="line"></span><br><span class="line">华中理工大学：-i http://pypi.hustunique.com/</span><br><span class="line"></span><br><span class="line">山东理工大学：-i http://pypi.sdutlinux.org/ </span><br><span class="line"></span><br><span class="line">豆瓣：-i http://pypi.douban.com/simple/</span><br></pre></td></tr></table></figure>
+
+<h2 id="15、python把时间字符串转换成刚刚、1天前、3个月前、1年前"><a href="#15、python把时间字符串转换成刚刚、1天前、3个月前、1年前" class="headerlink" title="15、python把时间字符串转换成刚刚、1天前、3个月前、1年前"></a>15、python把时间字符串转换成刚刚、1天前、3个月前、1年前</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">date_interval</span>(<span class="params">date_str</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    获取时间间隔</span></span><br><span class="line"><span class="string">    1分钟前，2分钟前，10分钟前，1小时前，2小时前，1天前，2天前，3天前，1个月前，3个月前，1年前，3年前</span></span><br><span class="line"><span class="string">    :param date_str: 时间字符串</span></span><br><span class="line"><span class="string">    :return: 字符串</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    date_str = time.strptime(date_str, <span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">    <span class="comment"># 将时间元组转换为时间戳</span></span><br><span class="line">    t = time.mktime(date_str)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 当前时间</span></span><br><span class="line">    seconds = time.time() - t</span><br><span class="line"></span><br><span class="line">    years = <span class="built_in">int</span>(seconds // (<span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">365</span>))</span><br><span class="line">    <span class="keyword">if</span> years:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#123;&#125;年前&#x27;</span>.<span class="built_in">format</span>(years)</span><br><span class="line">    months = <span class="built_in">int</span>(seconds // (<span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">30</span>))</span><br><span class="line">    <span class="keyword">if</span> months:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#123;&#125;月前&#x27;</span>.<span class="built_in">format</span>(months)</span><br><span class="line">    days = <span class="built_in">int</span>(seconds // (<span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>))</span><br><span class="line">    <span class="keyword">if</span> days:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#123;&#125;天前&#x27;</span>.<span class="built_in">format</span>(days)</span><br><span class="line">    hours = <span class="built_in">int</span>(seconds // (<span class="number">60</span> * <span class="number">60</span>))</span><br><span class="line">    <span class="keyword">if</span> hours:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#123;&#125;小时前&#x27;</span>.<span class="built_in">format</span>(hours)</span><br><span class="line">    minutes = <span class="built_in">int</span>(seconds // (<span class="number">60</span>))</span><br><span class="line">    <span class="keyword">if</span> minutes:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&#123;&#125;分钟前&#x27;</span>.<span class="built_in">format</span>(minutes)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;刚刚&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    date1 = <span class="string">&#x27;2019-07-10 15:27:51&#x27;</span></span><br><span class="line">    date2 = <span class="string">&#x27;2021-07-10 15:27:51&#x27;</span></span><br><span class="line">    date3 = <span class="string">&#x27;2021-08-10 15:27:51&#x27;</span></span><br><span class="line">    date4 = <span class="string">&#x27;2021-08-12 11:01:51&#x27;</span></span><br><span class="line">    date5 = datetime.datetime.now() + datetime.timedelta(seconds=-<span class="number">3</span>)</span><br><span class="line">    date5 = date5.strftime(<span class="string">&#x27;%Y-%m-%d %H:%M:%S&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(date_interval(date1))</span><br><span class="line">    <span class="built_in">print</span>(date_interval(date2))</span><br><span class="line">    <span class="built_in">print</span>(date_interval(date3))</span><br><span class="line">    <span class="built_in">print</span>(date_interval(date4))</span><br><span class="line">    <span class="built_in">print</span>(date_interval(date5))</span><br></pre></td></tr></table></figure>
+
+<h2 id="16、python获取电脑磁盘、CPU、内存使用情况"><a href="#16、python获取电脑磁盘、CPU、内存使用情况" class="headerlink" title="16、python获取电脑磁盘、CPU、内存使用情况"></a>16、python获取电脑磁盘、CPU、内存使用情况</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> psutil</span><br><span class="line"><span class="comment">#  pip install psutil</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取本机磁盘使用率和剩余空间G信息</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_disk_info</span>():</span><br><span class="line">    <span class="comment"># 循环磁盘分区</span></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> disk <span class="keyword">in</span> psutil.disk_partitions():</span><br><span class="line">        <span class="comment"># 读写方式 光盘 or 有效磁盘类型</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&#x27;cdrom&#x27;</span> <span class="keyword">in</span> disk.opts <span class="keyword">or</span> disk.fstype == <span class="string">&#x27;&#x27;</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        disk_name_arr = disk.device.split(<span class="string">&#x27;:&#x27;</span>)</span><br><span class="line">        disk_name = disk_name_arr[<span class="number">0</span>]</span><br><span class="line">        disk_info = psutil.disk_usage(disk.device)</span><br><span class="line">        <span class="comment"># 磁盘剩余空间，单位G</span></span><br><span class="line">        free_disk_size = disk_info.free//<span class="number">1024</span>//<span class="number">1024</span>//<span class="number">1024</span></span><br><span class="line">        <span class="comment"># 当前磁盘使用率和剩余空间G信息</span></span><br><span class="line">        info = <span class="string">&quot;&#123;&#125;盘使用率：&#123;&#125;%%， 剩余空间：&#123;&#125;G &quot;</span>.<span class="built_in">format</span>(disk_name, <span class="built_in">str</span>(disk_info.percent), free_disk_size)</span><br><span class="line">        <span class="comment"># 拼接多个磁盘的信息</span></span><br><span class="line">        content = content + info</span><br><span class="line">    <span class="built_in">print</span>(content)</span><br><span class="line"></span><br><span class="line"><span class="comment"># cpu信息</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_cpu_info</span>():</span><br><span class="line">    cpu_percent = psutil.cpu_percent(interval=<span class="number">1</span>)</span><br><span class="line">    cpu_info = <span class="string">&quot;CPU使用率：%i%%&quot;</span> % cpu_percent</span><br><span class="line">    <span class="built_in">print</span>(cpu_info)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 内存信息</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_memory_info</span>():</span><br><span class="line">    virtual_memory = psutil.virtual_memory()</span><br><span class="line">    used_memory = virtual_memory.used/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span></span><br><span class="line">    free_memory = virtual_memory.free/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span></span><br><span class="line">    memory_percent = virtual_memory.percent</span><br><span class="line">    memory_info = <span class="string">&quot;内存使用：%0.2fG，使用率%0.1f%%，剩余内存：%0.2fG&quot;</span> % (used_memory, memory_percent, free_memory)</span><br><span class="line">    <span class="built_in">print</span>(memory_info)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    get_disk_info()</span><br><span class="line">    get_cpu_info()</span><br><span class="line">    get_memory_info()</span><br></pre></td></tr></table></figure>
+
+<h2 id="17、max比较字典列表"><a href="#17、max比较字典列表" class="headerlink" title="17、max比较字典列表"></a>17、max比较字典列表</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">使用max函数比较字典列表对象</span></span><br><span class="line"><span class="string">需求：找出用户组最大id的字典</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">com_id</span>(<span class="params">f</span>):</span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    比较用用户ids列表</span></span><br><span class="line"><span class="string">    :param f: 字典</span></span><br><span class="line"><span class="string">    :return: 返回最大的用户id</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">max</span>(f[<span class="string">&#x27;user_ids&#x27;</span>])</span><br><span class="line"></span><br><span class="line">friends_added = [</span><br><span class="line">        &#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-01-01&#x27;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">3</span>, <span class="number">6</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-01-02&#x27;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">2</span>, <span class="number">1</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-02-02&#x27;</span>&#125;,</span><br><span class="line">        &#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">4</span>, <span class="number">1</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-02-02&#x27;</span>&#125;,</span><br><span class="line">    ]</span><br><span class="line"><span class="comment"># max函数中使用key参数，指定自定义函数来比较</span></span><br><span class="line">item = <span class="built_in">max</span>(friends_added, key=com_id)</span><br><span class="line">item_1 = <span class="built_in">max</span>(friends_added, key=<span class="keyword">lambda</span> f: <span class="built_in">max</span>(f[<span class="string">&#x27;user_ids&#x27;</span>])) <span class="comment"># com_id可以转成lambda函数</span></span><br><span class="line"><span class="built_in">print</span>(item)</span><br><span class="line"><span class="built_in">print</span>(item_1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">3</span>, <span class="number">6</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-01-02&#x27;</span>&#125;</span><br><span class="line">&#123;<span class="string">&#x27;user_ids&#x27;</span>: [<span class="number">3</span>, <span class="number">6</span>], <span class="string">&#x27;create_at&#x27;</span>: <span class="string">&#x27;2020-01-02&#x27;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="18、-列表取奇数下标值"><a href="#18、-列表取奇数下标值" class="headerlink" title="18、 列表取奇数下标值"></a>18、 列表取奇数下标值</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">list1=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;奇数下标值&#x27;</span>,list1[<span class="number">1</span>::<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">奇数下标值 [<span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;d&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="19、列表取偶数下标值"><a href="#19、列表取偶数下标值" class="headerlink" title="19、列表取偶数下标值"></a>19、列表取偶数下标值</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">list1=[<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;偶数下标值&#x27;</span>,list1[::<span class="number">2</span>])</span><br><span class="line">偶数下标值 [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;e&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="20、列表相同元素分类、分组"><a href="#20、列表相同元素分类、分组" class="headerlink" title="20、列表相同元素分类、分组"></a>20、列表相同元素分类、分组</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"></span><br><span class="line">data = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>]</span><br><span class="line">a =[<span class="built_in">list</span>(group) <span class="keyword">for</span> key, group <span class="keyword">in</span> itertools.groupby(data)]</span><br><span class="line"><span class="built_in">print</span>(a)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">[[<span class="number">1</span>], [<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>], [<span class="number">1</span>], [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>]]</span><br></pre></td></tr></table></figure>
+
+<h2 id="21、numpy二维数组获取某一列"><a href="#21、numpy二维数组获取某一列" class="headerlink" title="21、numpy二维数组获取某一列"></a>21、numpy二维数组获取某一列</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">a = [</span><br><span class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],</span><br><span class="line">    [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>],</span><br><span class="line">    [<span class="number">13.2</span>, <span class="number">14.8</span>, <span class="number">15.9</span>, <span class="number">16.10</span>, <span class="number">16.11</span>, <span class="number">17.12</span>],</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">a_np = np.array(a)  <span class="comment"># 把二维列表转成numpy数组</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;第一行&#x27;</span>, a_np[<span class="number">0</span>].tolist())  <span class="comment"># 获取第一行</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;第一列&#x27;</span>, a_np[:, <span class="number">0</span>].tolist())  <span class="comment"># 获取第一列</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">第一行 [<span class="number">1.0</span>, <span class="number">2.0</span>, <span class="number">3.0</span>, <span class="number">4.0</span>, <span class="number">5.0</span>, <span class="number">6.0</span>]</span><br><span class="line">第一列 [<span class="number">1.0</span>, <span class="number">7.0</span>, <span class="number">13.2</span>]</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/e6afebad.html" target="_blank">好玩的Python代码[摘录]（二）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Python/">Python</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Python%E7%BB%84%E4%BB%B6/">Python组件</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/15408d89.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/15408d89.html" title="发布于 2022-08-17 11:35">Spring-Security入门</a>
+                        <br>
+                    
+                    
+                        <a href="/post/a7b132c6.html" class="next-prefix">» </a> 下一篇：    <a href="/post/a7b132c6.html" title="发布于 2022-08-17 03:01">好玩的Python代码[摘录]（一）</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
