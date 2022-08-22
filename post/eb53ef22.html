@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            Spring-Security授权
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">Spring-Security授权</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-20
+                        </span>
+                        
+                            <span id="/post/eb53ef22.html" class="leancloud_visitors" data-flag-title="Spring-Security授权">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/eb53ef22.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Spring-Security</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="授权系统的作用"><a href="#授权系统的作用" class="headerlink" title="授权系统的作用"></a>授权系统的作用</h1><p>例如一个学校图书馆的管理系统，如果是普通学生登录就能看到借书还书相关的功能，不可能让他看到并且去使用添加书籍信息，删除书籍信息等功能。但是如果是一个图书馆管理员的账号登录了，应该就能看到并使用添加书籍信息，删除书籍信息等功能。</p>
+<p>​	总结起来就是<font color="red"><strong>不同的用户可以使用不同的功能</strong></font>。这就是权限系统要去实现的效果。</p>
+<p>​	我们不能只依赖前端去判断用户的权限来选择显示哪些菜单哪些按钮。因为如果只是这样，如果有人知道了对应功能的接口地址就可以不通过前端，直接去发送请求来实现相关功能操作。</p>
+<p>​	所以我们还需要在后台进行用户权限的判断，判断当前用户是否有相应的权限，必须具有所需权限才能进行相应的操作。</p>
+<h1 id="授权的基本流程"><a href="#授权的基本流程" class="headerlink" title="授权的基本流程"></a>授权的基本流程</h1><p><img src="/%5Cimage%5Carticle%5CSpring-Security%E6%8E%88%E6%9D%83%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
+<p>在<code>SpringSecurity</code>中，会使用默认的<font color="blue"><code>FilterSecurityInterceptor</code></font>来进行权限校验。在<code>FilterSecurityInterceptor</code>中会从<code>SecurityContextHolder</code>获取其中的<code>Authentication</code>，然后获取其中的权限信息。当前用户是否拥有访问当前资源所需的权限。</p>
+<p>所以我们在项目中<strong>只需要把当前登录用户的权限信息</strong>也存入<code>Authentication</code>。</p>
+<p>然后设置我们的资源所需要的权限即可。</p>
+<p>在讲解<a target="_blank" rel="noopener" href="https://luckydog-tjs.vercel.app/post/e123c807.html"><strong>登录认证详解</strong></a>时，我们有一些遗留代码没有写，都是关于权限的。如下：</p>
+<ul>
+<li><p>在<code>UserDetailsService</code>接口的实现时，遗留了查询用户的权限，并封装到<code>UserDetails</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserDetailsService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService service;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MenuMapper menuMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> UserDetails <span class="title function_">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException &#123;</span><br><span class="line">        <span class="comment">//根据传入了Passward查询用户</span></span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper.eq(User::getUserName,username);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> service.getOne(queryWrapper);</span><br><span class="line">        <span class="comment">//如果没有查询到用户就抛出异常</span></span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(user))&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;1111&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UsernameNotFoundException</span>(<span class="string">&quot;用户名不存在&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// TODO 查询对应的权限</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">LoginUser</span>(user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在实现认证过滤器时，遗留了获取权限信息封装到<code>Authentication</code>中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JwtAuthenticationTokenFilter</span> <span class="keyword">extends</span> <span class="title class_">OncePerRequestFilter</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisCache redisCache;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doFilterInternal</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        <span class="comment">//首先需要获取token</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> httpServletRequest.getHeader(<span class="string">&quot;token&quot;</span>);</span><br><span class="line">        <span class="comment">//判断token是否为Null</span></span><br><span class="line">        <span class="keyword">if</span>(!StringUtils.hasText(token)) &#123;</span><br><span class="line">            filterChain.doFilter(httpServletRequest, httpServletResponse);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如何不为空，解析token，获得了UserId</span></span><br><span class="line">        String userId;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Claims</span> <span class="variable">claims</span> <span class="operator">=</span> JwtUtil.parseJWT(token);</span><br><span class="line">            userId = claims.getSubject();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;toen非法&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//根据UserId查redis获取用户数据</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> <span class="string">&quot;login:&quot;</span>+userId;</span><br><span class="line">        <span class="type">LoginUser</span> <span class="variable">LoginUser</span> <span class="operator">=</span> redisCache.getCacheObject(key);</span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(LoginUser))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;用户未登录&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//然后封装Authentication对象存入SecurityContextHolder</span></span><br><span class="line">        <span class="comment">// TODO 获取权限信息封装到Authentication中</span></span><br><span class="line">        <span class="type">UsernamePasswordAuthenticationToken</span> <span class="variable">authenticationToken</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UsernamePasswordAuthenticationToken</span>(LoginUser,<span class="literal">null</span>,<span class="literal">null</span>);</span><br><span class="line">        SecurityContextHolder.getContext().setAuthentication(authenticationToken);</span><br><span class="line"></span><br><span class="line">        filterChain.doFilter(httpServletRequest,httpServletResponse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<p>在<code>SpringSecurity</code>中，用什么表示权限？</p>
+<p>权限其实就是 <font color="blue"><strong>带有特殊意义的字符串</strong></font>。</p>
+</blockquote>
+<h1 id="RBAC权限模型"><a href="#RBAC权限模型" class="headerlink" title="RBAC权限模型"></a>RBAC权限模型</h1><p><code>RBAC</code>权限模型（Role-Based Access Control）即：<font color="red"><strong>基于角色的权限控制</strong></font>。这是目前最常被开发者使用也是相对易用、通用权限模型。</p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E6%8E%88%E6%9D%83%5Cimage-20220821202618630.png" alt="image-20220821202618630"></p>
+<p>基本表：</p>
+<ul>
+<li>sys_user：用户表，记录用户的基本信息。</li>
+<li>sys_role：角色表，记录一些角色信息，比如 项目经理、程序员，项目组组长….</li>
+<li>sys_menu：权限表，记录一些权限信息，比如，删除权限，更新权限等等…</li>
+</ul>
+<p>关系表：</p>
+<ul>
+<li>sys_user_role：用户和角色是多对多的关系，一个用户可以有多个角色，一个角色可以被多个用户所拥有【这个表描述，一个用户有哪些角色】</li>
+<li>sys_role_menu：角色和权限也是多对多关系【这个表描述，一个角色有哪些权限】</li>
+</ul>
+<p>这样就可以描述了 一个用户有哪些权限了。</p>
+<p>当我们要查询一个用户有哪些权限时，<code>SQL</code>语句如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SELECT </span><br><span class="line">	DISTINCT m.`perms`</span><br><span class="line">FROM</span><br><span class="line">	sys_user_role ur</span><br><span class="line">	LEFT JOIN `sys_role` r ON ur.`role_id` = r.`id`</span><br><span class="line">	LEFT JOIN `sys_role_menu` rm ON ur.`role_id` = rm.`role_id`</span><br><span class="line">	LEFT JOIN `sys_menu` m ON m.`id` = rm.`menu_id`</span><br><span class="line">WHERE</span><br><span class="line">	user_id = 2</span><br><span class="line">	AND r.`status` = 0</span><br><span class="line">	AND m.`status` = 0</span><br></pre></td></tr></table></figure>
+
+<h1 id="授权过程"><a href="#授权过程" class="headerlink" title="授权过程"></a>授权过程</h1><h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>建表语句</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line">SET NAMES utf8mb4;</span><br><span class="line">SET FOREIGN_KEY_CHECKS = 0;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for sys_menu</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `sys_menu`;</span><br><span class="line">CREATE TABLE `sys_menu`  (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `menu_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT &#x27;NULL&#x27; COMMENT &#x27;菜单名&#x27;,</span><br><span class="line">  `path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;路由地址&#x27;,</span><br><span class="line">  `component` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;组件路径&#x27;,</span><br><span class="line">  `visible` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT &#x27;0&#x27; COMMENT &#x27;菜单状态（0显示 1隐藏）&#x27;,</span><br><span class="line">  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT &#x27;0&#x27; COMMENT &#x27;菜单状态（0正常 1停用）&#x27;,</span><br><span class="line">  `perms` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;权限标识&#x27;,</span><br><span class="line">  `icon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT &#x27;#&#x27; COMMENT &#x27;菜单图标&#x27;,</span><br><span class="line">  `create_by` bigint NULL DEFAULT NULL,</span><br><span class="line">  `create_time` datetime NULL DEFAULT NULL,</span><br><span class="line">  `update_by` bigint NULL DEFAULT NULL,</span><br><span class="line">  `update_time` datetime NULL DEFAULT NULL,</span><br><span class="line">  `del_flag` int NULL DEFAULT 0 COMMENT &#x27;是否删除（0未删除 1已删除）&#x27;,</span><br><span class="line">  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;备注&#x27;,</span><br><span class="line">  PRIMARY KEY (`id`) USING BTREE</span><br><span class="line">) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = &#x27;菜单表&#x27; ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of sys_menu</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `sys_menu` VALUES (2, &#x27;部门管理&#x27;, &#x27;dept&#x27;, &#x27;system/dept/index&#x27;, &#x27;0&#x27;, &#x27;0&#x27;, &#x27;system:dept:index&#x27;, &#x27;#&#x27;, NULL, NULL, NULL, NULL, 0, NULL);</span><br><span class="line">INSERT INTO `sys_menu` VALUES (3, &#x27;测试&#x27;, &#x27;test&#x27;, &#x27;system/test/index&#x27;, &#x27;0&#x27;, &#x27;0&#x27;, &#x27;system:test:index&#x27;, &#x27;#&#x27;, NULL, NULL, NULL, NULL, 0, NULL);</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for sys_role</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `sys_role`;</span><br><span class="line">CREATE TABLE `sys_role`  (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,</span><br><span class="line">  `role_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;角色权限字符串&#x27;,</span><br><span class="line">  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT &#x27;0&#x27; COMMENT &#x27;角色状态（0正常 1停用）&#x27;,</span><br><span class="line">  `del_flag` int NULL DEFAULT 0 COMMENT &#x27;del_flag&#x27;,</span><br><span class="line">  `create_by` bigint NULL DEFAULT NULL,</span><br><span class="line">  `create_time` datetime NULL DEFAULT NULL,</span><br><span class="line">  `update_by` bigint NULL DEFAULT NULL,</span><br><span class="line">  `update_time` datetime NULL DEFAULT NULL,</span><br><span class="line">  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;备注&#x27;,</span><br><span class="line">  PRIMARY KEY (`id`) USING BTREE</span><br><span class="line">) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = &#x27;角色表&#x27; ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of sys_role</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `sys_role` VALUES (3, &#x27;CEO&#x27;, &#x27;ceo&#x27;, &#x27;0&#x27;, 0, NULL, NULL, NULL, NULL, NULL);</span><br><span class="line">INSERT INTO `sys_role` VALUES (4, &#x27;Coder&#x27;, &#x27;coder&#x27;, &#x27;0&#x27;, 0, NULL, NULL, NULL, NULL, NULL);</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for sys_role_menu</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `sys_role_menu`;</span><br><span class="line">CREATE TABLE `sys_role_menu`  (</span><br><span class="line">  `role_id` bigint NOT NULL AUTO_INCREMENT COMMENT &#x27;角色ID&#x27;,</span><br><span class="line">  `menu_id` bigint NOT NULL DEFAULT 0 COMMENT &#x27;菜单id&#x27;,</span><br><span class="line">  PRIMARY KEY (`role_id`, `menu_id`) USING BTREE,</span><br><span class="line">  INDEX `menu_id`(`menu_id`) USING BTREE,</span><br><span class="line">  CONSTRAINT `menu_id` FOREIGN KEY (`menu_id`) REFERENCES `sys_menu` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,</span><br><span class="line">  CONSTRAINT `role_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT</span><br><span class="line">) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of sys_role_menu</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `sys_role_menu` VALUES (3, 2);</span><br><span class="line">INSERT INTO `sys_role_menu` VALUES (3, 3);</span><br><span class="line">INSERT INTO `sys_role_menu` VALUES (4, 3);</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for sys_user</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `sys_user`;</span><br><span class="line">CREATE TABLE `sys_user`  (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT COMMENT &#x27;主键&#x27;,</span><br><span class="line">  `user_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT &#x27;NULL&#x27; COMMENT &#x27;用户名&#x27;,</span><br><span class="line">  `nick_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT &#x27;NULL&#x27; COMMENT &#x27;昵称&#x27;,</span><br><span class="line">  `password` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT &#x27;NULL&#x27; COMMENT &#x27;密码&#x27;,</span><br><span class="line">  `status` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT &#x27;0&#x27; COMMENT &#x27;账号状态（0正常 1停用）&#x27;,</span><br><span class="line">  `email` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;邮箱&#x27;,</span><br><span class="line">  `phonenumber` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;手机号&#x27;,</span><br><span class="line">  `sex` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;用户性别（0男，1女，2未知）&#x27;,</span><br><span class="line">  `avatar` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT &#x27;头像&#x27;,</span><br><span class="line">  `user_type` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT &#x27;1&#x27; COMMENT &#x27;用户类型（0管理员，1普通用户）&#x27;,</span><br><span class="line">  `create_by` bigint NULL DEFAULT NULL COMMENT &#x27;创建人的用户id&#x27;,</span><br><span class="line">  `create_time` datetime NULL DEFAULT NULL COMMENT &#x27;创建时间&#x27;,</span><br><span class="line">  `update_by` bigint NULL DEFAULT NULL COMMENT &#x27;更新人&#x27;,</span><br><span class="line">  `update_time` datetime NULL DEFAULT NULL COMMENT &#x27;更新时间&#x27;,</span><br><span class="line">  `del_flag` int NULL DEFAULT 0 COMMENT &#x27;删除标志（0代表未删除，1代表已删除）&#x27;,</span><br><span class="line">  PRIMARY KEY (`id`) USING BTREE</span><br><span class="line">) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = &#x27;用户表&#x27; ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of sys_user</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `sys_user` VALUES (3, &#x27;TJS&#x27;, &#x27;111&#x27;, &#x27;$2a$10$1s.BtZ6Ay/nU7VB/cgaTv.PiYezHYWOLntRsUqFgter/hsMDViZ0K&#x27;, &#x27;0&#x27;, NULL, NULL, NULL, NULL, &#x27;1&#x27;, NULL, NULL, NULL, NULL, 0);</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Table structure for sys_user_role</span><br><span class="line">-- ----------------------------</span><br><span class="line">DROP TABLE IF EXISTS `sys_user_role`;</span><br><span class="line">CREATE TABLE `sys_user_role`  (</span><br><span class="line">  `user_id` bigint NOT NULL AUTO_INCREMENT COMMENT &#x27;用户id&#x27;,</span><br><span class="line">  `role_id` bigint NOT NULL DEFAULT 0 COMMENT &#x27;角色id&#x27;,</span><br><span class="line">  PRIMARY KEY (`user_id`, `role_id`) USING BTREE,</span><br><span class="line">  INDEX `rold_id`(`role_id`) USING BTREE,</span><br><span class="line">  CONSTRAINT `rold_id` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,</span><br><span class="line">  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT</span><br><span class="line">) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line">-- ----------------------------</span><br><span class="line">-- Records of sys_user_role</span><br><span class="line">-- ----------------------------</span><br><span class="line">INSERT INTO `sys_user_role` VALUES (3, 3);</span><br><span class="line"></span><br><span class="line">SET FOREIGN_KEY_CHECKS = 1;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>创建<font color="red"><strong>权限实体类</strong></font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@TableName(value=&quot;sys_menu&quot;)</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@JsonInclude(JsonInclude.Include.NON_NULL)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Menu</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> -<span class="number">54979041104113736L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableId</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String menuName;<span class="comment">//菜单名</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String path;<span class="comment">//路由地址</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String component;<span class="comment">//组件路径</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String visible;<span class="comment">//菜单状态（0显示 1隐藏）</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String status;<span class="comment">//菜单状态（0正常 1停用）</span></span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> String perms;<span class="comment">//权限标识</span></span><br><span class="line">   </span><br><span class="line">    <span class="keyword">private</span> String icon; <span class="comment">//菜单图标</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long createBy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Date createTime;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long updateBy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Date updateTime;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> Integer delFlag;<span class="comment">//是否删除（0未删除 1已删除）</span></span><br><span class="line">   </span><br><span class="line">    <span class="keyword">private</span> String remark;<span class="comment">//备注</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="从数据库查询权限信息"><a href="#从数据库查询权限信息" class="headerlink" title="从数据库查询权限信息"></a>从数据库查询权限信息</h2><p>我们只需要根据<font color="red"><strong>用户id去查询到其所对应的权限信息</strong></font>即可。</p>
+<p>定义一个<font color="blue"><code>MenuMapper</code></font>，在Mapper包下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">MenuMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Menu&gt; &#123;</span><br><span class="line">    List&lt;String&gt; <span class="title function_">selectPermsByUserId</span><span class="params">(Long id)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置文件在 resources&#x2F;Mapper下创建<code>MenuMapper.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.Mapper.MenuMapper&quot;</span>&gt;</span><span class="comment">&lt;!--注意这个命名空间别出错--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectPermsByUserId&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;java.lang.String&quot;</span>&gt;</span></span><br><span class="line">        SELECT</span><br><span class="line">            DISTINCT m.`perms`</span><br><span class="line">        FROM</span><br><span class="line">            sys_user_role ur</span><br><span class="line">                LEFT JOIN `sys_role` r ON ur.`role_id` = r.`id`</span><br><span class="line">                LEFT JOIN `sys_role_menu` rm ON ur.`role_id` = rm.`role_id`</span><br><span class="line">                LEFT JOIN `sys_menu` m ON m.`id` = rm.`menu_id`</span><br><span class="line">        WHERE</span><br><span class="line">            user_id = #&#123;userid&#125;				<span class="comment">&lt;!--user_id需要使用占位符--&gt;</span></span><br><span class="line">          AND r.`status` = 0</span><br><span class="line">          AND m.`status` = 0</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在配置文件中，配置如下</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mybatis-plus:</span></span><br><span class="line">  <span class="attr">mapper-locations:</span> <span class="string">classpath*:/Mapper/**/*.xml</span></span><br><span class="line">  <span class="comment">#这表明 classpath下，Mapper包中，任意层级包，任意以xml为结尾的文件。</span></span><br></pre></td></tr></table></figure>
+
+<p>然后我们要修改UserDetails的实现类</p>
+<p>因为我们要把权限信息封装进去。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="comment">//@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoginUser</span> <span class="keyword">implements</span> <span class="title class_">UserDetails</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; permissions;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//存储SpringSecurity所需要的权限信息的集合</span></span><br><span class="line">    <span class="meta">@JSONField(serialize = false)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;SimpleGrantedAuthority&gt; authorities;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LoginUser</span><span class="params">(User user, List&lt;String&gt; permissions)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.user = user;</span><br><span class="line">        <span class="built_in">this</span>.permissions = permissions;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Collection&lt;? <span class="keyword">extends</span> <span class="title class_">GrantedAuthority</span>&gt; getAuthorities() &#123;</span><br><span class="line">        <span class="keyword">if</span>(!Objects.isNull(authorities))<span class="keyword">return</span> authorities;</span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(permissions))<span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        authorities = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (String permission : permissions) &#123;</span><br><span class="line">            <span class="type">SimpleGrantedAuthority</span> <span class="variable">authority</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleGrantedAuthority</span>(permission);</span><br><span class="line">            authorities.add(authority);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> authorities;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPassword</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> user.getPassword();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUsername</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> user.getUserName() ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isAccountNonExpired</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isAccountNonLocked</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isCredentialsNonExpired</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEnabled</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要说明的是：</p>
+<ul>
+<li><p><code>private List&lt;String&gt; permissions;</code>代表权限字符串集合。</p>
+</li>
+<li><p><code>private List&lt;SimpleGrantedAuthority&gt; authorities;</code>代表权限集合，我们要把<code>LoginUser</code>存入到<code>Redis</code>当中，默认情况下不会将<code>SimpleGrantedAuthority</code>进行序列化的，到时候会出问题报异常，因此需要使用<code>@JSONField(serialize = false)</code>禁止让他序列化。</p>
+</li>
+<li><p><code>getAuthorities()</code>：这个方法是用来获取权限信息，需要返回权限信息的集合。</p>
+<p>方法体内就是<font color="red"><strong>把<code>List&lt;String&gt;</code>转换为<code>List&lt;SimpleGrantedAuthority&gt;</code>。</strong></font></p>
+</li>
+<li><p><code>SimpleGrantedAuthority</code>：这个类是<code>GrantedAuthority</code>接口的实现类，<strong>构造方法是传入一个字符串</strong>。</p>
+</li>
+<li><p>还新增了一个构造方法。<code>public LoginUser(User user, List&lt;String&gt; permissions)</code>。</p>
+</li>
+</ul>
+<p>在<code>UserDetailsService</code>接口的实现时，查询用户的权限，并封装到<code>UserDetails</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserDetailsService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService service;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MenuMapper menuMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> UserDetails <span class="title function_">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException &#123;</span><br><span class="line">        <span class="comment">//根据传入了Passward查询用户</span></span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper.eq(User::getUserName,username);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> service.getOne(queryWrapper);</span><br><span class="line">        <span class="comment">//如果没有查询到用户就抛出异常</span></span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(user))&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;1111&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UsernameNotFoundException</span>(<span class="string">&quot;用户名不存在&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// TODO 查询对应的权限</span></span><br><span class="line">        List&lt;String&gt; list = menuMapper.selectPermsByUserId(user.getId());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">LoginUser</span>(user,list);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="封装权限信息到Authentication中。"><a href="#封装权限信息到Authentication中。" class="headerlink" title="封装权限信息到Authentication中。"></a>封装权限信息到<code>Authentication</code>中。</h2><p>此时，<code>UserDetails</code>【实现类是<code>LoginUser</code>】中已经有了全新信息。因此只需要从中获取即可。<code>LoginUser.getAuthorities()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JwtAuthenticationTokenFilter</span> <span class="keyword">extends</span> <span class="title class_">OncePerRequestFilter</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisCache redisCache;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doFilterInternal</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        <span class="comment">//首先需要获取token</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> httpServletRequest.getHeader(<span class="string">&quot;token&quot;</span>);</span><br><span class="line">        <span class="comment">//判断token是否为Null</span></span><br><span class="line">        <span class="keyword">if</span>(!StringUtils.hasText(token)) &#123;</span><br><span class="line">            filterChain.doFilter(httpServletRequest, httpServletResponse);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//如何不为空，解析token，获得了UserId</span></span><br><span class="line">        String userId;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Claims</span> <span class="variable">claims</span> <span class="operator">=</span> JwtUtil.parseJWT(token);</span><br><span class="line">            userId = claims.getSubject();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;toen非法&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//根据UserId查redis获取用户数据</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> <span class="string">&quot;login:&quot;</span>+userId;</span><br><span class="line">        <span class="type">LoginUser</span> <span class="variable">LoginUser</span> <span class="operator">=</span> redisCache.getCacheObject(key);</span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(LoginUser))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;用户未登录&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//然后封装Authentication对象存入SecurityContextHolder</span></span><br><span class="line">        <span class="comment">// TODO 获取权限信息封装到Authentication中</span></span><br><span class="line">        <span class="type">UsernamePasswordAuthenticationToken</span> <span class="variable">authenticationToken</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UsernamePasswordAuthenticationToken</span>(LoginUser,<span class="literal">null</span>,LoginUser.getAuthorities());</span><br><span class="line">        SecurityContextHolder.getContext().setAuthentication(authenticationToken);</span><br><span class="line"></span><br><span class="line">        filterChain.doFilter(httpServletRequest,httpServletResponse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="限制访问资源所需权限"><a href="#限制访问资源所需权限" class="headerlink" title="限制访问资源所需权限"></a>限制访问资源所需权限</h2><p><code>SpringSecurity</code>为我们提供了基于注解的权限控制方案，这也是我们项目中主要采用的方式。我们可以使用注解去指定访问对应的资源所需的权限。</p>
+<p>但是要使用它我们需要先开启相关配置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br></pre></td></tr></table></figure>
+
+<p>然后就可以使用对应的注解。<font color="gold"><strong>@PreAuthorize</strong></font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="meta">@PreAuthorize(&quot;hasAuthority(&#x27;system:test:index&#x27;)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>权限表</p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E6%8E%88%E6%9D%83%5Cimage-20220821210526692.png" alt="image-20220821210526692"></p>
+<h1 id="权限控制方案"><a href="#权限控制方案" class="headerlink" title="权限控制方案"></a>权限控制方案</h1><h2 id="基于注解的权限控制方案"><a href="#基于注解的权限控制方案" class="headerlink" title="基于注解的权限控制方案"></a>基于注解的权限控制方案</h2><p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35067322/article/details/124207162">https://blog.csdn.net/qq_35067322/article/details/124207162</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9f1aab4440d2">https://www.jianshu.com/p/9f1aab4440d2</a></li>
+</ul>
+<p><strong>Spring Security</strong>默认是关闭方法注解的，开启它只需要通过引入<font color="gold"><code>@EnableGlobalMethodSecurity</code></font>注解即可:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">	<span class="comment">//... </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@EnableGlobalMethodSecurity</code> 提供了以下三种方式:</p>
+<ul>
+<li><code>prePostEnabled</code>：基于表达式的注解</li>
+<li><code>securedEnabled</code>：开启基于角色的注解</li>
+<li><code>jsr250Enabled</code>：开启对JSR250的注解。</li>
+</ul>
+<p>可以根据需要选择使用这三种的一种或者其中几种。</p>
+<p>下面我们大概了解一下</p>
+<h3 id="prePostEnabled-true"><a href="#prePostEnabled-true" class="headerlink" title="prePostEnabled = true"></a><code>prePostEnabled = true</code></h3><p>开启后支持<strong>Spring EL表达式</strong>，如果没有访问方法的权限，会抛出<code>AccessDeniedException</code>，启用了如下注解：</p>
+<ul>
+<li><p><font color="gold"><strong>@PreAuthorize</strong></font>：进入<font color="red"><strong>方法之前</strong></font>验证授权</p>
+<p>可以使用SPEL表达式或者调用自带的方法，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PreAuthorize(&quot;#userId == authentication.principal.userId or hasAuthority(‘ADMIN’)&quot;)</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">changePassword</span><span class="params">(<span class="type">long</span> userId )</span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>表示在<code>changePassword</code>方法执行之前，判断方法参数<code>userId</code>的值是否等于<code>principal</code>中保存的当前用户的<code>userId</code>，或者当前用户是否具有<code>ROLE_ADMIN</code>权限，两种符合其一，就可以访问该 方法。</p>
+<p>使用方法进行校验：</p>
+<ul>
+<li><p><code>hasAuthority</code>：只能传入一个权限，只有用户有这个权限才可以访问资源。</p>
+</li>
+<li><p><code>hasAnyAuthority</code>：可以传入多个权限，只有用户有其中任意一个权限都可以访问对应资源。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PreAuthorize(&quot;hasAnyAuthority(&#x27;admin&#x27;,&#x27;test&#x27;,&#x27;system:dept:list&#x27;)&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>hasRole</code>：要求有对应的角色才可以访问，但是它内部会把我们传入的参数拼接上 <strong>ROLE_</strong> 后再去比较。所以这种情况下要用用户对应的权限也要有 <strong>ROLE_</strong> 这个前缀才可以。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PreAuthorize(&quot;hasRole(&#x27;system:dept:list&#x27;)&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>用户有<code>system:dept:list</code>权限是无法访问的，得有<code>ROLE_system:dept:list</code>权限才可以。</p>
+</blockquote>
+</li>
+<li><p><code>hasAnyRole</code>：有任意的角色就可以访问。</p>
+</li>
+</ul>
+</li>
+<li><p><font color="gold"><strong>@PostAuthorize</strong></font>：检查授权<font color="red"><strong>方法之后</strong></font>才被执行并且可以影响执行方法的返回值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostAuthorize(&quot;returnObject.username == authentication.principal.nickName&quot;)</span></span><br><span class="line"><span class="keyword">public</span> CustomUser <span class="title function_">loadUserDetail</span><span class="params">(String username)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> userRoleRepository.loadUserByUserName(username);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><font color="gold"><strong>@PostFilter</strong></font>：在方法执行之后执行，而且这里可以调用方法的返回值，然后对返回值进行过滤或处理或修改并返回</p>
+</li>
+<li><p><font color="gold"><strong>@PreFilter</strong></font>：在方法执行之前执行，而且这里可以调用方法的参数，然后对参数值进行过滤或处理或修改</p>
+</li>
+</ul>
+<h3 id="securedEnabled-true"><a href="#securedEnabled-true" class="headerlink" title="securedEnabled=true"></a><code>securedEnabled=true</code></h3><p>主要开启了<font color="gold"><strong>@Secured</strong></font></p>
+<p>注解规定了访问访方法的角色列表，在列表中最少指定一种角色</p>
+<p><code>@Secured</code>在方法上指定安全性，要求 角色&#x2F;权限等 只有对应 角色&#x2F;权限 的用户才可以调用这些方法。 如果有人试图调用一个方法，但是不拥有所需的 角色&#x2F;权限，那会将会拒绝访问将引发异常</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Secured(&quot;ROLE_VIEWER&quot;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">getUsername</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">SecurityContext</span> <span class="variable">securityContext</span> <span class="operator">=</span> SecurityContextHolder.getContext();</span><br><span class="line">    <span class="keyword">return</span> securityContext.getAuthentication().getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Secured(&#123; &quot;ROLE_DBA&quot;, &quot;ROLE_ADMIN&quot; &#125;)</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">getUsername2</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Secured(&quot;ROLE_VIEWER&quot;)</code> 表示只有拥有<code>ROLE_VIEWER</code>角色的用户，才能够访问<code>getUsername()</code>方法。</p>
+<p><code>@Secured(&#123; &quot;ROLE_DBA&quot;, &quot;ROLE_ADMIN&quot; &#125;)</code> 表示用户拥有”<code>ROLE_DBA&quot;, &quot;ROLE_ADMIN&quot;</code> 两个角色中的任意一个角色，均可访问 <code>getUsername2</code> 方法。</p>
+<blockquote>
+<p>@Secured,不支持Spring EL表达式</p>
+</blockquote>
+<h3 id="jsr250Enabled-true"><a href="#jsr250Enabled-true" class="headerlink" title="jsr250Enabled = true"></a><code>jsr250Enabled = true</code></h3><ol>
+<li><font color="gold"><strong>@DenyAll</strong></font>：拒绝所有权限</li>
+<li><font color="gold"><strong>@RolesAllowed</strong></font>：在功能及使用方法上与 <code>@Secured</code> 完全相同</li>
+<li><font color="gold"><strong>@PermitAll</strong></font>：接受所有权限</li>
+</ol>
+<h2 id="基于配置文件的权限控制方案"><a href="#基于配置文件的权限控制方案" class="headerlink" title="基于配置文件的权限控制方案"></a>基于配置文件的权限控制方案</h2><p> 使用配置文件进行权限控制方案，适合对<strong>静态资源</strong>进行配置。</p>
+<p>在权限可以在配置类中进行配置。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">	</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">         http.authorizeRequests().antMatchers(<span class="string">&quot;/hello&quot;</span>).hasAuthority(<span class="string">&quot;system:test:index&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置案例：</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Shair911/article/details/104181917/">https://blog.csdn.net/Shair911/article/details/104181917/</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//任何用户都可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).permitAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;permitAll&quot;</span>);]</span><br><span class="line"></span><br><span class="line"><span class="comment">//任何用户都不能访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).denyAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;denyAll&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).authenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;authenticated&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证，记住我）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).fullyAuthenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;fullyAuthenticated&quot;</span>);</span><br><span class="line">		</span><br><span class="line"><span class="comment">//记住我的认证可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).rememberMe();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;rememberMe&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//匿名用户可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).anonymous();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;anonymous&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasAuthority(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasAuthority(&#x27;user&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有任意一个权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyAuthority(<span class="string">&quot;update&quot;</span>, <span class="string">&quot;delete&quot;</span>, <span class="string">&quot;insert&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyAuthority(&#x27;update&#x27;,&#x27;delete&#x27;,&#x27;insert&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//spring security中的role并非是一个或多个权限的集合，而是权限的一种，通常以ROLE_开头</span></span><br><span class="line"><span class="comment">//role就是ROLE_开头的权限</span></span><br><span class="line"><span class="comment">//注意：hasRole、hasAnyRole里面的role不需要以ROLE_开头，否则会报异常</span></span><br><span class="line"><span class="comment">//注意：如果在access里面使用hasRole、hasAnyRole则ROLE_前缀可加，可不加</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasRole(<span class="string">&quot;GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasRole(&#x27;GUEST&#x27;)&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).hasAuthority(<span class="string">&quot;ROLE_GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyRole(<span class="string">&quot;GUEST&quot;</span>, <span class="string">&quot;USER&quot;</span>, <span class="string">&quot;ADMIN&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyRole(&#x27;ROLE_GUEST&#x27;,&#x27;ROLE_USER&#x27;,&#x27;ROLE_ADMIN&#x27;)&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="hasAuthority-源码解读"><a href="#hasAuthority-源码解读" class="headerlink" title="hasAuthority 源码解读"></a>hasAuthority 源码解读</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">SecurityExpressionRoot</span> <span class="keyword">implements</span> <span class="title class_">SecurityExpressionOperations</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SecurityExpressionRoot</span><span class="params">(Authentication authentication)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (authentication == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Authentication object cannot be null&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.authentication = authentication;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">hasAuthority</span><span class="params">(String authority)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.hasAnyAuthority(authority);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">hasAnyAuthority</span><span class="params">(String... authorities)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.hasAnyAuthorityName((String)<span class="literal">null</span>, authorities);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到 <code>hasAuthority() </code>方法存在于<code>SecurityExpressionRoot</code>类中，返回的是布尔类型。</p>
+<p>它调用了<code>hasAnyAuthority()</code>方法。而它又进一步调用了<code>this.hasAnyAuthorityName((String)null, authorities)</code>。</p>
+<p><code>hasAnyAuthorityName</code>源码如下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">boolean</span> <span class="title function_">hasAnyAuthorityName</span><span class="params">(String prefix, String... roles)</span> &#123;</span><br><span class="line">    Set&lt;String&gt; roleSet = <span class="built_in">this</span>.getAuthoritySet();</span><br><span class="line">    String[] var4 = roles;</span><br><span class="line">    <span class="type">int</span> <span class="variable">var5</span> <span class="operator">=</span> roles.length;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">var6</span> <span class="operator">=</span> <span class="number">0</span>; var6 &lt; var5; ++var6) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">role</span> <span class="operator">=</span> var4[var6];</span><br><span class="line">        <span class="type">String</span> <span class="variable">defaultedRole</span> <span class="operator">=</span> getRoleWithDefaultPrefix(prefix, role);</span><br><span class="line">        <span class="keyword">if</span> (roleSet.contains(defaultedRole)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>传入了两个参数：<strong>前缀字符串</strong> 和 **权限字符串(可变参数)**。</p>
+<ol>
+<li><code>Set&lt;String&gt; roleSet = this.getAuthoritySet();</code>获取权限集合，也就是访问该接口，需要哪些权限。</li>
+<li><code>String[] var4 = roles;</code>，这是我们传入的权限，代表用户具有哪些权限。</li>
+<li>然后遍历该权限数组<ol>
+<li><code>String role = var4[var6]</code>获取权限。</li>
+<li><code>String defaultedRole = getRoleWithDefaultPrefix(prefix, role);</code>将前缀和权限名拼接，由于传进来的前缀字符串为null,所以拼接之后不变。</li>
+<li><code>if (roleSet.contains(defaultedRole))return true</code>，如果所需权限集合包含该权限返回true。</li>
+</ol>
+</li>
+<li><code>return false;</code></li>
+</ol>
+<blockquote>
+<p> 由此可见，它内部其实是调用<code>authentication</code>的<code>getAuthorities</code>方法获取用户的权限列表。然后判断我们存入的方法参数数据在权限列表中。</p>
+</blockquote>
+<h2 id="自定义权限校验方法"><a href="#自定义权限校验方法" class="headerlink" title="自定义权限校验方法"></a>自定义权限校验方法</h2><p>如果要自定义权限校验方法</p>
+<p>只需要定义一个类，该类<font color="red"><strong>使用注解注入到Spring容器中</strong></font>。</p>
+<p>然后在类中定义一个方法，让它的<font color="red"><strong>返回值为布尔类型</strong></font>即可。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component(&quot;ex&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SGExpressionRoot</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">hasAuthority</span><span class="params">(String authority)</span>&#123;</span><br><span class="line">        <span class="comment">//获取当前用户的权限</span></span><br><span class="line">        <span class="type">Authentication</span> <span class="variable">authentication</span> <span class="operator">=</span> SecurityContextHolder.getContext().getAuthentication();</span><br><span class="line">        <span class="type">LoginUser</span> <span class="variable">loginUser</span> <span class="operator">=</span> (LoginUser) authentication.getPrincipal();</span><br><span class="line">        List&lt;String&gt; permissions = loginUser.getPermissions();</span><br><span class="line">        <span class="comment">//判断用户权限集合中是否存在authority</span></span><br><span class="line">        <span class="keyword">return</span> permissions.contains(authority);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们使用时，需要使用<code>SPEL</code>表达式，</p>
+<p><font color="blue"><code>@Bean的名字</code></font>就可以获取容器中的Bean，然后就可以使用当中的方法。</p>
+<p><font color="blue"><code>@Component(&quot;ex&quot;)</code></font>可以指定Bean的名字。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;/hello&quot;)</span></span><br><span class="line"><span class="meta">@PreAuthorize(&quot;@ex.hasAuthority(&#x27;system:dept:list&#x27;)&quot;)</span><span class="comment">//@ex相当于获取容器中bean的名字为ex的对象</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/eb53ef22.html" target="_blank">Spring-Security授权</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Spring-Security/">Spring-Security</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/6e466a9f.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/6e466a9f.html" title="发布于 2022-08-21 09:38">SpringSecurity中的异常处理</a>
+                        <br>
+                    
+                    
+                        <a href="/post/e123c807.html" class="next-prefix">» </a> 下一篇：    <a href="/post/e123c807.html" title="发布于 2022-08-18 01:52">Spring-Security登录认证详解</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

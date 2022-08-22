@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            SpringSecurity中的异常处理
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">SpringSecurity中的异常处理</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-21
+                        </span>
+                        
+                            <span id="/post/6e466a9f.html" class="leancloud_visitors" data-flag-title="SpringSecurity中的异常处理">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/6e466a9f.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Spring-Security</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,135 +70,128 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>在<strong>认证失败</strong>或者是<strong>授权失败</strong>的情况下也能和我们的接口一样返回相同结构的<code>json</code>。</p>
+<p>这样可以让前端能对响应进行统一的处理。要实现这个功能我们需要知道<code>SpringSecurity</code>的异常处理机制。</p>
+<p>例如：当我们登录时</p>
+<p>如果登录失败，返回的<code>JSON</code>如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;timestamp&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2022-08-21T14:00:09.643+00:00&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;status&quot;</span><span class="punctuation">:</span> <span class="number">403</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;error&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Forbidden&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;message&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;/user/login&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果登录成功，返回的<code>JSON</code>如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">200</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;登陆成功&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;token&quot;</span><span class="punctuation">:</span> <span class="string">&quot;eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzYjg0MDEzZTk4MjA0OWViYmQwMTUxZTVlYTViMjllYSIsInN1YiI6IjMiLCJpc3MiOiJzZyIsImlhdCI6MTY2MTA5MDUzNCwiZXhwIjoxNjYxMDk0MTM0fQ.4gxXmtTBqpIE7TpuTGnpCxlkSOw7ikOagzLypc2pQPU&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>为了统一<code>JSON</code>的格式</p>
+<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E6%8E%88%E6%9D%83%5Cimage-20211214144425527-16611501787821.png" alt="image-20211214144425527"></p>
+<p>在<code>SpringSecurity</code>中，如果我们在认证或者授权的过程中出现了异常会被<code>ExceptionTranslationFilter</code>捕获到。在<code>ExceptionTranslationFilter</code>中会去判断是认证失败还是授权失败出现的异常。</p>
+<blockquote>
+<p>注意：在认证授权的过程中发生的任何异常都会被抛出，也就是说在控制台是看不见的。当程序在认证授权过程中出问题时，需要DEBUG去查看，然后<code>try...catch</code>捕获异常，看看是什么原因报错。</p>
+</blockquote>
+<ul>
+<li><p>如果是<strong>认证过程</strong>中出现的异常会被封装成<code>AuthenticationException</code>然后调用<font color="blue"><code>AuthenticationEntryPoint</code></font>对象的方法去进行异常处理。</p>
+</li>
+<li><p>如果是<strong>授权过程</strong>中出现的异常会被封装成<code>AccessDeniedException</code>然后调用<font color="blue"><code>AccessDeniedHandler</code></font>对象的方法去进行异常处理。</p>
+</li>
+</ul>
+<h3 id="自定义异常处理"><a href="#自定义异常处理" class="headerlink" title="自定义异常处理"></a>自定义异常处理</h3><p>如果我们需要自定义异常处理，我们只需要自定义<font color="blue"><code>AuthenticationEntryPoint</code></font>和<font color="blue"><code>AccessDeniedHandler</code></font>然后配置给<code>SpringSecurity</code>即可。</p>
+<ol>
+<li><p>创建一个包 <code>handler</code></p>
+</li>
+<li><p>自定义实现类</p>
+<ol>
+<li><p>实现<font color="blue"><code>AuthenticationEntryPoint</code></font>接口【处理认证过程中】</p>
+<ol>
+<li><p>首先需要定义一个响应对象，<code>new ResponseResult(403, &quot;权限不足&quot;);</code></p>
+<p>认证失败响应码可以是401，或者是<code>HttpStatus.UNAUTHORIZED.value()</code>。</p>
+</li>
+<li><p>将对象序列化为<code>JSON</code>字符串<code>JSON.toJSONString()</code></p>
+</li>
+<li><p>使用<code>WebUtils</code>工具类，将字符串写到<code>response</code>中</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AuthenticationEntryPointImpl</span> <span class="keyword">implements</span> <span class="title class_">AuthenticationEntryPoint</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">commence</span><span class="params">(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)</span> <span class="keyword">throws</span> IOException, ServletException &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="type">ResponseResult</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ResponseResult</span>(<span class="number">401</span>, <span class="string">&quot;认证失败请重新登录&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> JSON.toJSONString(result);</span><br><span class="line">        WebUtils.renderString(response,json);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>实现<font color="blue"><code>AccessDeniedHandler</code></font>接口【处理授权过程中】</p>
+<p>过程和上面一样</p>
+<p>权限不足响应码可以是403，或者是<code>HttpStatus.FORBIDDEN.value()</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AccessDeniedHandlerImpl</span> <span class="keyword">implements</span> <span class="title class_">AccessDeniedHandler</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e)</span> <span class="keyword">throws</span> IOException, ServletException &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">ResponseResult</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ResponseResult</span>(<span class="number">403</span>, <span class="string">&quot;权限不足&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">jsonString</span> <span class="operator">=</span> JSON.toJSONString(result);</span><br><span class="line">        WebUtils.renderString(httpServletResponse,jsonString);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p>配置<code>SpringSecurity</code>工具类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AccessDeniedHandler accessDeniedHandler;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AuthenticationEntryPoint authenticationEntryPoint;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> PasswordEncoder <span class="title function_">passwordEncoder</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">BCryptPasswordEncoder</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">       </span><br><span class="line"></span><br><span class="line">        <span class="comment">//配置异常处理器。</span></span><br><span class="line">        http.exceptionHandling()</span><br><span class="line">            .authenticationEntryPoint(authenticationEntryPoint)</span><br><span class="line">            .accessDeniedHandler(accessDeniedHandler);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><code>WebUtils</code>工具类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebUtils</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将字符串渲染到客户端</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 渲染对象</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> string 待渲染的字符串</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title function_">renderString</span><span class="params">(HttpServletResponse response, String string)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            response.setStatus(<span class="number">200</span>);</span><br><span class="line">            response.setContentType(<span class="string">&quot;application/json&quot;</span>);</span><br><span class="line">            response.setCharacterEncoding(<span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">            response.getWriter().print(string);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (IOException e)</span><br><span class="line">        &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>还拿之前的举例</p>
+<p>例如：当我们登录时</p>
+<p>如果登录失败，返回的<code>JSON</code>如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">403</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;认证失败请重新登录&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果登录成功，返回的<code>JSON</code>如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;code&quot;</span><span class="punctuation">:</span> <span class="number">200</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;msg&quot;</span><span class="punctuation">:</span> <span class="string">&quot;登陆成功&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;data&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;token&quot;</span><span class="punctuation">:</span> <span class="string">&quot;eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzYjg0MDEzZTk4MjA0OWViYmQwMTUxZTVlYTViMjllYSIsInN1YiI6IjMiLCJpc3MiOiJzZyIsImlhdCI6MTY2MTA5MDUzNCwiZXhwIjoxNjYxMDk0MTM0fQ.4gxXmtTBqpIE7TpuTGnpCxlkSOw7ikOagzLypc2pQPU&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/6e466a9f.html" target="_blank">SpringSecurity中的异常处理</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 39 篇日志，继续加油！
+                            <a href="/category/Spring/">Spring</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/6e466a9f.html"><span>SpringSecurity中的异常处理</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-21</span>
-                                </div>
-                            </div>
-                        </div>
+                            <a href="/tag/Spring-Security/">Spring-Security</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/eb53ef22.html"><span>Spring-Security授权</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-20</span>
-                                </div>
-                            </div>
-                        </div>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/e123c807.html"><span>Spring-Security登录认证详解</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-18</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/15408d89.html"><span>Spring-Security入门</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-17</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/e6afebad.html"><span>好玩的Python代码[摘录]（二）</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-17</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/a7b132c6.html"><span>好玩的Python代码[摘录]（一）</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-17</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/e530945c.html"><span>Java-IO流</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-16</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/aa5a87da.html"><span>Java-Socket编程——TCP</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-15</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/7d13d7e5.html"><span>Python-Socket编程 —— TCP</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-15</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/1eb4aa8d.html"><span>Java泛型机制（三）深入理解泛型</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-11</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/eb53ef22.html" class="next-prefix">» </a> 下一篇：    <a href="/post/eb53ef22.html" title="发布于 2022-08-20 06:04">Spring-Security授权</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/archive/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -209,7 +223,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
