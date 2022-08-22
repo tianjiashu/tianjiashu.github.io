@@ -230,8 +230,106 @@
 <p>例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">	</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">         http.authorizeRequests().antMatchers(<span class="string">&quot;/hello&quot;</span>).hasAuthority(<span class="string">&quot;system:test:index&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>配置案例：</p>
-<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/Shair911/article/details/104181917/">https://blog.csdn.net/Shair911/article/details/104181917/</a></p>
+<h3 id="权限配置"><a href="#权限配置" class="headerlink" title="权限配置"></a>权限配置</h3><blockquote>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41865652/article/details/123685248">https://blog.csdn.net/qq_41865652/article/details/123685248</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Shair911/article/details/104181917/">https://blog.csdn.net/Shair911/article/details/104181917/</a></p>
+</blockquote>
+<p><code>http.authorizeRequests()</code>主要是对<code>url</code>进行访问权限控制，通过这个方法来实现<code>url</code>授权操作。</p>
+<ul>
+<li><p><code>anyRequest()</code>，表示匹配所有的<code>url</code>请求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">        <span class="comment">// 匹配所有的请求，并且所有请求都需要登录认证</span></span><br><span class="line">        .anyRequest().authenticated();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>antMatcher(String regx)</code>，传递一个<code>ant</code>表达式参数，表示匹配所有满足<code>ant</code>表达式的请求</p>
+<ul>
+<li><p><strong>ant表达式中特殊字符解释</strong></p>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>解释说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>？</td>
+<td>匹配一个字符</td>
+</tr>
+<tr>
+<td>*</td>
+<td>匹配0个或多个字符</td>
+</tr>
+<tr>
+<td>**</td>
+<td>匹配0个或多个目录</td>
+</tr>
+</tbody></table>
+<p>配置类代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">        <span class="comment">// 允许登录页面匿名访问</span></span><br><span class="line">        .antMatchers(<span class="string">&quot;/showLogin&quot;</span>, <span class="string">&quot;/errPage&quot;</span>).anonymous()</span><br><span class="line">        <span class="comment">// 所有的静态资源允许匿名访问</span></span><br><span class="line">        .antMatchers(</span><br><span class="line">                <span class="string">&quot;/css/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/js/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/images/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/fonts/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/favicon.ico&quot;</span></span><br><span class="line">                ).anonymous()</span><br><span class="line">        <span class="comment">// 其他所有的请求都需要登录认证</span></span><br><span class="line">        .anyRequest().authenticated();</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><code>antMatcher(HttpMethod.*, String regx)</code>，传递一个请求方法类型参数加ant表达式参数，表示匹配所有满足ant表达式的指定请求方式的<code>url</code></p>
+<p>请求方式的枚举类如下：</p>
+<p><img src="/%5Cimage%5Carticle%5CSpringSecurity%E9%85%8D%E7%BD%AE%E7%B1%BB%5Cimage-20220822175402125.png" alt="image-20220822175402125"></p>
+<p>配置类代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">    <span class="comment">// 允许GET请求登录页面匿名访问</span></span><br><span class="line">    .antMatchers(HttpMethod.GET, <span class="string">&quot;/showLogin&quot;</span>, <span class="string">&quot;/errPage&quot;</span>).anonymous();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="访问控制方法"><a href="#访问控制方法" class="headerlink" title="访问控制方法"></a>访问控制方法</h3><table>
+<thead>
+<tr>
+<th align="center">方法名称</th>
+<th align="center">方法作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>permitAll()</code></td>
+<td align="center">表示所匹配的URL任何人都允许访问</td>
+</tr>
+<tr>
+<td align="center"><code>anonymous()</code></td>
+<td align="center">表示可以<strong>匿名访问</strong>匹配的URL。和<code>permitAll()</code>效果类似，只是设置为<code>anonymous()</code>的url会执行<code>filterChain</code>中的filter</td>
+</tr>
+<tr>
+<td align="center"><code>denyAll()</code></td>
+<td align="center">表示所匹配的URL都不允许被访问。</td>
+</tr>
+<tr>
+<td align="center"><code>authenticated()</code></td>
+<td align="center">表示所匹配的URL都需要被认证才能访问</td>
+</tr>
+<tr>
+<td align="center"><code>rememberMe()</code></td>
+<td align="center">允许通过remember-me登录的用户访问</td>
+</tr>
+<tr>
+<td align="center"><code>access()</code></td>
+<td align="center"><code>SpringEl</code>表达式结果为true时可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>fullyAuthenticated()</code></td>
+<td align="center">用户完全认证可以访问（非remember-me下自动登录）</td>
+</tr>
+<tr>
+<td align="center"><code>hasRole()</code></td>
+<td align="center">如果有参数，参数表示角色，则其角色可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAnyRole()</code></td>
+<td align="center">如果有参数，参数表示角色，则其中任何一个角色可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAuthority()</code></td>
+<td align="center">如果有参数，参数表示权限，则其权限可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAnyAuthority()</code></td>
+<td align="center">如果有参数，参数表示权限，则其中任何一个权限可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasIpAddress()</code></td>
+<td align="center">如果有参数，参数表示<code>IP</code>地址，如果用户<code>IP</code>和参数匹配，则可以访问</td>
+</tr>
+</tbody></table>
+<p>配置案例示例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//任何用户都可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).permitAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;permitAll&quot;</span>);]</span><br><span class="line"></span><br><span class="line"><span class="comment">//任何用户都不能访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).denyAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;denyAll&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).authenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;authenticated&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证，记住我）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).fullyAuthenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;fullyAuthenticated&quot;</span>);</span><br><span class="line">		</span><br><span class="line"><span class="comment">//记住我的认证可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).rememberMe();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;rememberMe&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//匿名用户可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).anonymous();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;anonymous&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasAuthority(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasAuthority(&#x27;user&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有任意一个权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyAuthority(<span class="string">&quot;update&quot;</span>, <span class="string">&quot;delete&quot;</span>, <span class="string">&quot;insert&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyAuthority(&#x27;update&#x27;,&#x27;delete&#x27;,&#x27;insert&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//spring security中的role并非是一个或多个权限的集合，而是权限的一种，通常以ROLE_开头</span></span><br><span class="line"><span class="comment">//role就是ROLE_开头的权限</span></span><br><span class="line"><span class="comment">//注意：hasRole、hasAnyRole里面的role不需要以ROLE_开头，否则会报异常</span></span><br><span class="line"><span class="comment">//注意：如果在access里面使用hasRole、hasAnyRole则ROLE_前缀可加，可不加</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasRole(<span class="string">&quot;GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasRole(&#x27;GUEST&#x27;)&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).hasAuthority(<span class="string">&quot;ROLE_GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyRole(<span class="string">&quot;GUEST&quot;</span>, <span class="string">&quot;USER&quot;</span>, <span class="string">&quot;ADMIN&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyRole(&#x27;ROLE_GUEST&#x27;,&#x27;ROLE_USER&#x27;,&#x27;ROLE_ADMIN&#x27;)&quot;</span>);</span><br></pre></td></tr></table></figure>
 
 <h2 id="hasAuthority-源码解读"><a href="#hasAuthority-源码解读" class="headerlink" title="hasAuthority 源码解读"></a>hasAuthority 源码解读</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">SecurityExpressionRoot</span> <span class="keyword">implements</span> <span class="title class_">SecurityExpressionOperations</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SecurityExpressionRoot</span><span class="params">(Authentication authentication)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (authentication == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;Authentication object cannot be null&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.authentication = authentication;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">hasAuthority</span><span class="params">(String authority)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.hasAnyAuthority(authority);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">hasAnyAuthority</span><span class="params">(String... authorities)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">this</span>.hasAnyAuthorityName((String)<span class="literal">null</span>, authorities);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

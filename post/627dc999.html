@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            SpringSecurity配置类
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">SpringSecurity配置类</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-22
+                        </span>
+                        
+                            <span id="/post/627dc999.html" class="leancloud_visitors" data-flag-title="SpringSecurity配置类">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/627dc999.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">Spring-Security</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>在学习这门课的时候，实现各种功能时进行了各种配置。我想将各种配置综合讲述一下。</p>
+<p>首先自定义配置类，需要继承<code>WebSecurityConfigurerAdapter</code>这个类。</p>
+<p>在这个类里面做了一些<strong>默认配置</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">	....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font size=5><strong>更改<code>PasswordEncoder</code>的实现为<code>BCryptPasswordEncoder</code>。</strong></font></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> PasswordEncoder <span class="title function_">passwordEncoder</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">BCryptPasswordEncoder</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><font size=5><strong>注入<code>AuthenticationManager</code>,用它的方法进行认证</strong></font></p>
+<p><code>authenticationManager.authenticate()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> AuthenticationManager <span class="title function_">authenticationManagerBean</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">super</span>.authenticationManagerBean();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="安全过滤器链配置方法HttpSecurity-http配置方法"><a href="#安全过滤器链配置方法HttpSecurity-http配置方法" class="headerlink" title="安全过滤器链配置方法HttpSecurity http配置方法"></a><code>安全过滤器链配置方法HttpSecurity http</code>配置方法</h2><h2 id="默认配置"><a href="#默认配置" class="headerlink" title="默认配置"></a>默认配置</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="built_in">super</span>.configure(http);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>super.configure(http);</code>使用了父类中一些<font color="red"><strong>默认配置</strong></font>。查看源代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    ((HttpSecurity)((HttpSecurity)((AuthorizedUrl)http.authorizeRequests().anyRequest()).authenticated()</span><br><span class="line">                    .and()).</span><br><span class="line">     				formLogin()</span><br><span class="line">     				.and())</span><br><span class="line">    				.httpBasic();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>http.authorizeRequests().anyRequest().authenticated()</code>表示<strong>对任何请求都要进行权限认证</strong></p>
+<p><code>http.formLogin()</code>，加入了<code>UsernamePasswordAuthenticationFilter</code>过滤器。</p>
+<p>默认配置：</p>
+<ul>
+<li>所有的请求访问都需要被授权。</li>
+<li>使用 form 表单进行登陆(默认路径为&#x2F;login)，也就是前几篇我们见到的登录页。</li>
+<li>防止 <code>CSRF</code> 攻击、<code>XSS</code>攻击。</li>
+<li>启用 HTTP Basic 认证</li>
+</ul>
+<h2 id="自定义配置"><a href="#自定义配置" class="headerlink" title="自定义配置"></a>自定义配置</h2><p>关闭防止<code>csrf</code>攻击</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http.csrf().disable()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>为什么要关闭防止<code>csrf</code>攻击?</p>
+<p><code>CSRF</code>是指跨站请求伪造（Cross-site request forgery），是web常见的攻击之一。</p>
+<p>​	<a target="_blank" rel="noopener" href="https://blog.csdn.net/freeking101/article/details/86537087">https://blog.csdn.net/freeking101/article/details/86537087</a></p>
+<p><code>SpringSecurity</code>去防止<code>CSRF</code>攻击的方式就是通过<code>csrf_token</code>。后端会生成一个<code>csrf_token</code>，前端发起请求的时候需要携带这个<code>csrf_token</code>,后端会有过滤器进行校验，如果没有携带或者是伪造的就不允许访问。</p>
+<p>但是在前后端分离的项目中我们的认证信息其实是token，而token并不是存储中cookie中，并且需要前端代码去把token设置到请求头中才可以，所以<code>CSRF</code>攻击也就不用担心了。</p>
+<p>因此使用token是天然防止<code>csrf</code>攻击的。</p>
+</blockquote>
+<p>不通过<code>Session</code>获取<code>SecurityContext</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br></pre></td></tr></table></figure>
+
+<h3 id="权限配置"><a href="#权限配置" class="headerlink" title="权限配置"></a>权限配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/user/login&quot;</span>).anonymous()</span><br><span class="line">                        .anyRequest().authenticated();</span><br></pre></td></tr></table></figure>
+
+<p>对于登录接口 允许匿名访问除上面外的所有请求全部需要鉴权认证</p>
+<blockquote>
+<p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41865652/article/details/123685248">https://blog.csdn.net/qq_41865652/article/details/123685248</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Shair911/article/details/104181917/">https://blog.csdn.net/Shair911/article/details/104181917/</a></p>
+</blockquote>
+<p><code>http.authorizeRequests()</code>主要是对<code>url</code>进行访问权限控制，通过这个方法来实现<code>url</code>授权操作。</p>
+<ul>
+<li><p><code>anyRequest()</code>，表示匹配所有的<code>url</code>请求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">        <span class="comment">// 匹配所有的请求，并且所有请求都需要登录认证</span></span><br><span class="line">        .anyRequest().authenticated();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>antMatcher(String regx)</code>，传递一个<code>ant</code>表达式参数，表示匹配所有满足<code>ant</code>表达式的请求</p>
+<ul>
+<li><p><strong>ant表达式中特殊字符解释</strong></p>
+<table>
+<thead>
+<tr>
+<th>规则</th>
+<th>解释说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>？</td>
+<td>匹配一个字符</td>
+</tr>
+<tr>
+<td>*</td>
+<td>匹配0个或多个字符</td>
+</tr>
+<tr>
+<td>**</td>
+<td>匹配0个或多个目录</td>
+</tr>
+</tbody></table>
+<p>配置类代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">        <span class="comment">// 允许登录页面匿名访问</span></span><br><span class="line">        .antMatchers(<span class="string">&quot;/showLogin&quot;</span>, <span class="string">&quot;/errPage&quot;</span>).anonymous()</span><br><span class="line">        <span class="comment">// 所有的静态资源允许匿名访问</span></span><br><span class="line">        .antMatchers(</span><br><span class="line">                <span class="string">&quot;/css/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/js/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/images/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/fonts/**&quot;</span>,</span><br><span class="line">                <span class="string">&quot;/favicon.ico&quot;</span></span><br><span class="line">                ).anonymous()</span><br><span class="line">        <span class="comment">// 其他所有的请求都需要登录认证</span></span><br><span class="line">        .anyRequest().authenticated();</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><code>antMatcher(HttpMethod.*, String regx)</code>，传递一个请求方法类型参数加ant表达式参数，表示匹配所有满足ant表达式的指定请求方式的<code>url</code></p>
+<p>请求方式的枚举类如下：</p>
+<p><img src="/%5Cimage%5Carticle%5CSpringSecurity%E9%85%8D%E7%BD%AE%E7%B1%BB%5Cimage-20220822175402125.png" alt="image-20220822175402125"></p>
+<p>配置类代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http.authorizeRequests()</span><br><span class="line">    <span class="comment">// 允许GET请求登录页面匿名访问</span></span><br><span class="line">    .antMatchers(HttpMethod.GET, <span class="string">&quot;/showLogin&quot;</span>, <span class="string">&quot;/errPage&quot;</span>).anonymous();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="访问控制方法"><a href="#访问控制方法" class="headerlink" title="访问控制方法"></a>访问控制方法</h3><table>
+<thead>
+<tr>
+<th align="center">方法名称</th>
+<th align="center">方法作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>permitAll()</code></td>
+<td align="center">表示所匹配的URL任何人都允许访问</td>
+</tr>
+<tr>
+<td align="center"><code>anonymous()</code></td>
+<td align="center">表示可以<strong>匿名访问</strong>匹配的URL。和<code>permitAll()</code>效果类似，只是设置为<code>anonymous()</code>的url会执行<code>filterChain</code>中的filter</td>
+</tr>
+<tr>
+<td align="center"><code>denyAll()</code></td>
+<td align="center">表示所匹配的URL都不允许被访问。</td>
+</tr>
+<tr>
+<td align="center"><code>authenticated()</code></td>
+<td align="center">表示所匹配的URL都需要被认证才能访问</td>
+</tr>
+<tr>
+<td align="center"><code>rememberMe()</code></td>
+<td align="center">允许通过remember-me登录的用户访问</td>
+</tr>
+<tr>
+<td align="center"><code>access()</code></td>
+<td align="center"><code>SpringEl</code>表达式结果为true时可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>fullyAuthenticated()</code></td>
+<td align="center">用户完全认证可以访问（非remember-me下自动登录）</td>
+</tr>
+<tr>
+<td align="center"><code>hasRole()</code></td>
+<td align="center">如果有参数，参数表示角色，则其角色可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAnyRole()</code></td>
+<td align="center">如果有参数，参数表示角色，则其中任何一个角色可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAuthority()</code></td>
+<td align="center">如果有参数，参数表示权限，则其权限可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasAnyAuthority()</code></td>
+<td align="center">如果有参数，参数表示权限，则其中任何一个权限可以访问</td>
+</tr>
+<tr>
+<td align="center"><code>hasIpAddress()</code></td>
+<td align="center">如果有参数，参数表示<code>IP</code>地址，如果用户<code>IP</code>和参数匹配，则可以访问</td>
+</tr>
+</tbody></table>
+<p>配置案例示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//任何用户都可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).permitAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;permitAll&quot;</span>);]</span><br><span class="line"></span><br><span class="line"><span class="comment">//任何用户都不能访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).denyAll();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;denyAll&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).authenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;authenticated&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//认证用户可以访问（除了匿名认证，记住我）</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).fullyAuthenticated();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;fullyAuthenticated&quot;</span>);</span><br><span class="line">		</span><br><span class="line"><span class="comment">//记住我的认证可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).rememberMe();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;rememberMe&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//匿名用户可以访问</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).anonymous();</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).access(<span class="string">&quot;anonymous&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasAuthority(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasAuthority(&#x27;user&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//是否有任意一个权限</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyAuthority(<span class="string">&quot;update&quot;</span>, <span class="string">&quot;delete&quot;</span>, <span class="string">&quot;insert&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyAuthority(&#x27;update&#x27;,&#x27;delete&#x27;,&#x27;insert&#x27;)&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//spring security中的role并非是一个或多个权限的集合，而是权限的一种，通常以ROLE_开头</span></span><br><span class="line"><span class="comment">//role就是ROLE_开头的权限</span></span><br><span class="line"><span class="comment">//注意：hasRole、hasAnyRole里面的role不需要以ROLE_开头，否则会报异常</span></span><br><span class="line"><span class="comment">//注意：如果在access里面使用hasRole、hasAnyRole则ROLE_前缀可加，可不加</span></span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).hasRole(<span class="string">&quot;GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/index&quot;</span>).access(<span class="string">&quot;hasRole(&#x27;GUEST&#x27;)&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/admin&quot;</span>).hasAuthority(<span class="string">&quot;ROLE_GUEST&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).hasAnyRole(<span class="string">&quot;GUEST&quot;</span>, <span class="string">&quot;USER&quot;</span>, <span class="string">&quot;ADMIN&quot;</span>);</span><br><span class="line">http.authorizeRequests().antMatchers(<span class="string">&quot;/home&quot;</span>).access(<span class="string">&quot;hasAnyRole(&#x27;ROLE_GUEST&#x27;,&#x27;ROLE_USER&#x27;,&#x27;ROLE_ADMIN&#x27;)&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加过滤器到过滤器链"><a href="#添加过滤器到过滤器链" class="headerlink" title="添加过滤器到过滤器链"></a>添加过滤器到过滤器链</h3><p>先将获取过滤器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;</span><br></pre></td></tr></table></figure>
+
+<p>然后配置到过滤器链中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);</span><br><span class="line"><span class="comment">//将jwtAuthenticationTokenFilter 过滤器放到UsernamePasswordAuthenticationFilter过滤器前。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>addFilterBefore()</code>：将过滤器放到 **过滤器之前。</p>
+</li>
+<li><p><code>addFilter()</code>：将过滤器放到过滤器链最后。</p>
+</li>
+<li><p><code>addFilterAfter()</code>：将过滤器放到 **过滤器之后。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http.addFilterAfter(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);</span><br><span class="line"><span class="comment">//将jwtAuthenticationTokenFilter 过滤器放到UsernamePasswordAuthenticationFilter过滤器后。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>addFilterAt</code>：将过滤器放在**过滤的位置。并不是取代。</p>
+</li>
+</ul>
+<h3 id="配置异常处理器"><a href="#配置异常处理器" class="headerlink" title="配置异常处理器"></a>配置异常处理器</h3><p>先获取异常处理器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> AccessDeniedHandler accessDeniedHandler;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> AuthenticationEntryPoint authenticationEntryPoint;</span><br></pre></td></tr></table></figure>
+
+<p>然后进行配置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)</span><br><span class="line">        .accessDeniedHandler(accessDeniedHandler);</span><br></pre></td></tr></table></figure>
+
+<h3 id="表单登录配置"><a href="#表单登录配置" class="headerlink" title="表单登录配置"></a>表单登录配置</h3><p>取消默认的自带的表单登录配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http.formLogin().disable();</span><br></pre></td></tr></table></figure>
+
+<p>配置演示</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span> &#123;</span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception  &#123;</span><br><span class="line">		http</span><br><span class="line">			.formLogin()<span class="comment">//开启formLogin默认配置			        </span></span><br><span class="line">				.loginPage(<span class="string">&quot;/login/auth&quot;</span>).permitAll()<span class="comment">//请求时未登录跳转接口</span></span><br><span class="line">		                .failureUrl(<span class="string">&quot;/login/fail&quot;</span>)<span class="comment">//用户密码错误跳转接口</span></span><br><span class="line">				.defaultSuccessUrl(<span class="string">&quot;/login/success&quot;</span>,<span class="literal">true</span>)<span class="comment">//登录成功跳转接口</span></span><br><span class="line">				.loginProcessingUrl(<span class="string">&quot;/login&quot;</span>)<span class="comment">//post登录接口，登录验证由系统实现</span></span><br><span class="line">				.usernameParameter(<span class="string">&quot;username&quot;</span>)	<span class="comment">//要认证的用户参数名，默认username</span></span><br><span class="line">				.passwordParameter(<span class="string">&quot;password&quot;</span>)	<span class="comment">//要认证的密码参数名，默认password</span></span><br><span class="line">				.and()</span><br><span class="line">			.logout()<span class="comment">//配置注销</span></span><br><span class="line">				.logoutUrl(<span class="string">&quot;/logout&quot;</span>)<span class="comment">//注销接口</span></span><br><span class="line">				.logoutSuccessUrl(<span class="string">&quot;/login/logout&quot;</span>).permitAll()<span class="comment">//注销成功跳转接口</span></span><br><span class="line">				.deleteCookies(<span class="string">&quot;myCookie&quot;</span>) <span class="comment">//删除自定义的cookie</span></span><br><span class="line">				.and()</span><br><span class="line">			.csrf().disable();           <span class="comment">//禁用csrf</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>formLogin()</code>就会添加如下过滤器</p>
+<ul>
+<li><code>UsernamePasswordAuthenticationFilter</code></li>
+<li><code>DefaultLoginPageGeneratingFilter</code></li>
+<li><code>DefaultLogoutPageGeneratingFilter</code></li>
+</ul>
+<p><strong>添加认证成功处理器和认证失败处理器</strong></p>
+<p>先获取认证成功处理器和认证失败处理器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> AuthenticationSuccessHandler successHandler;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> AuthenticationFailureHandler failureHandler;</span><br></pre></td></tr></table></figure>
+
+<p>然后再进行配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> http.formLogin()</span><br><span class="line"><span class="comment">//                配置认证成功处理器</span></span><br><span class="line">      .successHandler(successHandler)</span><br><span class="line"><span class="comment">//                配置认证失败处理器</span></span><br><span class="line">      .failureHandler(failureHandler);</span><br></pre></td></tr></table></figure>
+
+<h1 id="总的配置代码"><a href="#总的配置代码" class="headerlink" title="总的配置代码"></a>总的配置代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AccessDeniedHandler accessDeniedHandler;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AuthenticationEntryPoint authenticationEntryPoint;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> PasswordEncoder <span class="title function_">passwordEncoder</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">BCryptPasswordEncoder</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> AuthenticationManager <span class="title function_">authenticationManagerBean</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">super</span>.authenticationManagerBean();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        http</span><br><span class="line">                <span class="comment">//关闭csrf</span></span><br><span class="line">                .csrf().disable()</span><br><span class="line">                <span class="comment">//不通过Session获取SecurityContext</span></span><br><span class="line">                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br><span class="line">                .and()</span><br><span class="line">                .authorizeRequests()</span><br><span class="line">                <span class="comment">// 对于登录接口 允许匿名访问</span></span><br><span class="line">                .antMatchers(<span class="string">&quot;/user/login&quot;</span>).anonymous()</span><br><span class="line">                <span class="comment">// 除上面外的所有请求全部需要鉴权认证</span></span><br><span class="line">                .anyRequest().authenticated();</span><br><span class="line"></span><br><span class="line">        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//配置异常处理器。</span></span><br><span class="line">        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)</span><br><span class="line">                .accessDeniedHandler(accessDeniedHandler);</span><br><span class="line"></span><br><span class="line">        http.authorizeRequests().antMatchers().hasAuthority(<span class="string">&quot;system:test:index&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/627dc999.html" target="_blank">SpringSecurity配置类</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/Spring-Security/">Spring-Security</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/6c46e8af.html" class="next-prefix">» </a> 下一篇：    <a href="/post/6c46e8af.html" title="发布于 2022-08-22 03:32">SpringSecurity其他认证方案</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

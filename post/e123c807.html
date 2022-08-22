@@ -304,7 +304,7 @@
 <h3 id="认证过滤器"><a href="#认证过滤器" class="headerlink" title="认证过滤器"></a>认证过滤器</h3><blockquote>
 <p>为什么要写这么一个过滤器？</p>
 <p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
-<p><code>SpringSecurity</code>自带的过滤器中是用来认证<font color="red">用户名和密码</font>的，之前的登录接口我们生成了一个token，当前端访问后端的时候需要携带这个token。而这个过滤器就是认证<font color="red">token</font>的。</p>
+<p><code>SpringSecurity</code>自带的过滤器中是用来认证<font color="red">用户名和密码</font>的但我们并没有使用它，在配置的时候就去掉了。之前的登录接口我们生成了一个token，当前端访问后端的时候需要携带这个token。而这个过滤器就是认证<font color="red">token</font>的。</p>
 </blockquote>
 <p>自定义一个<strong>过滤器</strong></p>
 <ol>
@@ -401,7 +401,25 @@
 </ul>
 </li>
 </ol>
-<p>​	<font color="blue" size=5>如果有什么问题，欢迎评论区留言，思路整理了好久…..(￣ ‘i ￣;)</font></p>
+<h1 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h1><p>在我学习这个登录认证的过程中，我一直有一个疑惑，就是感觉这个SpringSecurity自带的认证处理器好像没有”干活”的样子。</p>
+<p>它的作用仅仅是“借用了”它内部的东西（方法）来进行认证。</p>
+<p>到了三更老师讲到其他认证方案时，我才明白，当我们使用配置类时，就**<font color="red">去掉了<code>UsernamePasswordAuthenticationFilter</code></font>**。</p>
+<p>因为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="built_in">super</span>.configure(http);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​	看一下这个<font color="red"><code>super.configure(http);</code></font>这个父类的方法，它进行了<strong>默认的配置</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="built_in">this</span>.logger.debug(<span class="string">&quot;Using default configure(HttpSecurity). If subclassed this will potentially override subclass configure(HttpSecurity).&quot;</span>);</span><br><span class="line">    ((HttpSecurity)((HttpSecurity)((AuthorizedUrl)http.authorizeRequests().anyRequest())</span><br><span class="line">                    .authenticated().and())</span><br><span class="line">     				.formLogin().and())		<span class="comment">//formLogin()......</span></span><br><span class="line">    				.httpBasic();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看这个<code>formLogin()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> FormLoginConfigurer&lt;HttpSecurity&gt; <span class="title function_">formLogin</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="keyword">return</span> (FormLoginConfigurer)<span class="built_in">this</span>.getOrApply(<span class="keyword">new</span> <span class="title class_">FormLoginConfigurer</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再查看<code>FormLoginConfigurer()</code>这个方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">FormLoginConfigurer</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(<span class="keyword">new</span> <span class="title class_">UsernamePasswordAuthenticationFilter</span>(), (String)<span class="literal">null</span>);</span><br><span class="line">    <span class="built_in">this</span>.usernameParameter(<span class="string">&quot;username&quot;</span>);</span><br><span class="line">    <span class="built_in">this</span>.passwordParameter(<span class="string">&quot;password&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，它添加了<code>UsernamePasswordAuthenticationFilter()</code>这个过滤器。</p>
+<p>但是我们配置的时候，去掉了<font color="red"><code>super.configure(http);</code></font>，也就是说不使用<strong>默认配置</strong>了</p>
+<p>那也就是说，不添加了<code>UsernamePasswordAuthenticationFilter()</code>这个过滤器。所以我们根本没使用这个过滤器。</p>
+<p><font color="blue" size=5>如果有什么问题，欢迎评论区留言，思路整理了好久…..(￣ ‘i ￣;)</font></p>
 
                 
                 <p class="end">__END__</p>
