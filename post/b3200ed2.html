@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            卷积神经网络featuremap的可视化
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">卷积神经网络featuremap的可视化</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-24
+                        </span>
+                        
+                            <span id="/post/b3200ed2.html" class="leancloud_visitors" data-flag-title="卷积神经网络featuremap的可视化">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/b3200ed2.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Python</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">神经网络</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>所需要的Python的包：</p>
+<ul>
+<li>pytorch</li>
+<li>matplotlib</li>
+<li>opencv</li>
+</ul>
+<p>此次我们以LeNet进行举例</p>
+<p>Lenet是一个 7 层的神经网络，包含 3 个卷积层，2 个池化层，1 个全连接层。其中所有卷积层的所有卷积核都为 5x5，步长 strid&#x3D;1，池化方法都为全局 pooling，激活函数为 Sigmoid，网络结构如下：</p>
+<p><img src="/%5Cimage%5Carticle%5C%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9Cfeaturemap%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96%5Cimage-20220824175322171.png" alt="image-20220824175322171"></p>
+<p>下面我们就来可视化一下它的三个卷积层。</p>
+<p>首先定义LeNet的网络结构。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">LeNet</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>(LeNet,self).__init__()</span><br><span class="line">        self.RELU = nn.ReLU()</span><br><span class="line">        self.conv1 = nn.Conv2d(in_channels=<span class="number">3</span>,out_channels=<span class="number">6</span>,kernel_size=(<span class="number">5</span>,<span class="number">5</span>),padding=(<span class="number">2</span>,<span class="number">2</span>))</span><br><span class="line">        self.Sigmoid = nn.Sigmoid()</span><br><span class="line">        self.avgpool = nn.AvgPool2d(kernel_size=(<span class="number">2</span>,<span class="number">2</span>),stride=<span class="number">2</span>)</span><br><span class="line">        self.conv2 = nn.Conv2d(in_channels=<span class="number">6</span>,out_channels=<span class="number">16</span>,kernel_size=(<span class="number">5</span>,<span class="number">5</span>))</span><br><span class="line">        self.avgpool2 = nn.AvgPool2d(kernel_size=(<span class="number">2</span>,<span class="number">2</span>),stride=(<span class="number">2</span>,<span class="number">2</span>))</span><br><span class="line">        self.conv3 = nn.Conv2d(in_channels=<span class="number">16</span>,out_channels=<span class="number">120</span>,kernel_size=(<span class="number">5</span>,<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">        self.flatten = nn.Flatten()</span><br><span class="line">        self.line = nn.Linear(<span class="number">120</span>,<span class="number">84</span>)</span><br><span class="line">        self.output = nn.Sequential(</span><br><span class="line">            nn.Linear(in_features=<span class="number">84</span>,out_features=<span class="number">2</span>,bias=<span class="literal">False</span>),</span><br><span class="line">            nn.Sigmoid(),</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self,x</span>):</span><br><span class="line">        x = self.RELU(self.conv1(x))</span><br><span class="line">        x = self.avgpool(x)</span><br><span class="line">        x = self.RELU(self.conv2(x))</span><br><span class="line">        x = self.avgpool2(x)</span><br><span class="line">        x = self.conv3(x)</span><br><span class="line">        x = self.flatten(x)</span><br><span class="line">        x = self.line(x)</span><br><span class="line">        <span class="keyword">return</span> self.output(x)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>结构是稍微有一些改变的，比如：</p>
+<ul>
+<li><p>激活函数我改用了RELU</p>
+</li>
+<li><p>输入层的通道数从单通道改为了三通道</p>
+</li>
+</ul>
+<p>不过这些都问题不大，不影响我们去可视化。</p>
+</blockquote>
+<p>导包</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> cv2 <span class="keyword">as</span> cv</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> transforms</span><br><span class="line"><span class="keyword">from</span> LeNet <span class="keyword">import</span> LeNet  <span class="comment">#我把网络结构的代码写到了LeNet.py，所以需要从另一个文件里导入</span></span><br></pre></td></tr></table></figure>
+
+<p>首先我们需要初始化我们的网络模型，并加载之前训练好的权重文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">device = torch.device(<span class="string">&#x27;cuda&#x27;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">model = LeNet().<span class="built_in">eval</span>()</span><br><span class="line">model.load_state_dict(torch.load(<span class="string">&quot;LeNet_model.pth&quot;</span>,map_location=<span class="string">&quot;cpu&quot;</span>))</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，如果你的网络有BN层，<code>LeNet().eval()</code>是一定要加的，<code>.eval()</code>表示模型进入测试模式。</p>
+</blockquote>
+<p>定义两个列表容器，一个存卷积层的权重，一个存卷积层。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model_weights =[]</span><br><span class="line">conv_layers = []</span><br></pre></td></tr></table></figure>
+
+<p>递归的遍历卷积神经网络，将卷积层和卷积层的权重存起来</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">getConv</span>(<span class="params">children</span>):</span><br><span class="line">    <span class="keyword">for</span> child <span class="keyword">in</span> children:</span><br><span class="line">        <span class="keyword">if</span> child.__class__.__name__ == <span class="string">&quot;Conv2d&quot;</span>:</span><br><span class="line">            model_weights.append(child.weight)</span><br><span class="line">            conv_layers.append(child)</span><br><span class="line">        <span class="keyword">elif</span> child.__class__.__name__==<span class="string">&quot;Sequential&quot;</span>:</span><br><span class="line">            getConv(child.children())</span><br><span class="line">getConv(model.children()) </span><br></pre></td></tr></table></figure>
+
+<p>然后的步骤就类似于测试的步骤</p>
+<ol>
+<li><p>读取图片</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">image = cv.imread(<span class="string">&quot;20160330_170504_473.jpg&quot;</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对图片进行transform变换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">transform = transforms.Compose(</span><br><span class="line">            [</span><br><span class="line">                transforms.ToPILImage(),</span><br><span class="line">                transforms.Resize((<span class="number">28</span>,<span class="number">28</span>)),</span><br><span class="line">                transforms.ToTensor(),</span><br><span class="line">             ]</span><br><span class="line">        )</span><br><span class="line">transform_image = transform(image)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于transform_image 的维度是[3,28,28]的，我们要把他扩展成[1, 3, 28, 28]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = Variable(torch.unsqueeze(transform_image,dim=<span class="number">0</span>).<span class="built_in">float</span>(),requires_grad = <span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用之前的存起来的卷积层，对图片依次进行计算得到了featuremap，然后再依次存起来。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">outputs = []</span><br><span class="line">names = []</span><br><span class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> conv_layers:</span><br><span class="line">    x = layer(x)</span><br><span class="line">    outputs.append(x)</span><br><span class="line">    names.append(layer.__class__.__name__)</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>由于featuremap通道数并不是单通道，而是多通道的。我们可以把每个通道进行可视化，也可以将这些通道取平均，压缩为单通道。</p>
+<ul>
+<li><p>取平均，压缩为单通道**[建议压缩为单通道]**</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">results = []</span><br><span class="line"><span class="keyword">for</span> output <span class="keyword">in</span> outputs:</span><br><span class="line">    output = output.squeeze(<span class="number">0</span>)</span><br><span class="line">    gray_scale = torch.<span class="built_in">sum</span>(output,<span class="number">0</span>)/output.shape[<span class="number">0</span>]</span><br><span class="line">    results.append(gray_scale.detach().numpy())</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>存每一个通道</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">results = []</span><br><span class="line"><span class="keyword">for</span> output <span class="keyword">in</span> outputs:</span><br><span class="line">    output = output.squeeze(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">for</span> feature <span class="keyword">in</span> output:</span><br><span class="line">        results.append(feature.detach().numpy())</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>最后就可以使用matplotlib可视化了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> result <span class="keyword">in</span> results:</span><br><span class="line">    plt.imshow(result)</span><br><span class="line">    <span class="comment">#plt.imshow(result,cmap=&quot;gray&quot;)</span></span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">原图</td>
+<td align="center"><img src="/%5Cimage%5Carticle%5C%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9Cfeaturemap%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96%5C20160330_170504_473.jpg" alt="20160330_170504_473"></td>
+</tr>
+<tr>
+<td align="center">第一层featuremap</td>
+<td align="center"><img src="\image\article\卷积神经网络featuremap的可视化\1.png" alt="1" style="zoom:50%;" /></td>
+</tr>
+<tr>
+<td align="center">第二层featuremap</td>
+<td align="center"><img src="\image\article\卷积神经网络featuremap的可视化\2.png" alt="2" style="zoom:50%;" /></td>
+</tr>
+<tr>
+<td align="center">第三层featuremap</td>
+<td align="center"><img src="\image\article\卷积神经网络featuremap的可视化\3.png" alt="3" style="zoom:50%;" /></td>
+</tr>
+</tbody></table>
+<p>代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> cv2 <span class="keyword">as</span> cv</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"><span class="keyword">from</span> torchvision <span class="keyword">import</span> transforms</span><br><span class="line"><span class="keyword">from</span> LeNet <span class="keyword">import</span> LeNet</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">getConv</span>(<span class="params">children</span>):</span><br><span class="line">    <span class="keyword">for</span> child <span class="keyword">in</span> children:</span><br><span class="line">        <span class="keyword">if</span> child.__class__.__name__ == <span class="string">&quot;Conv2d&quot;</span>:</span><br><span class="line">            model_weights.append(child.weight)</span><br><span class="line">            conv_layers.append(child)</span><br><span class="line">        <span class="keyword">elif</span> child.__class__.__name__==<span class="string">&quot;Sequential&quot;</span>:</span><br><span class="line">            getConv(child.children())</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    device = torch.device(<span class="string">&#x27;cuda&#x27;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">    model = LeNet().<span class="built_in">eval</span>()</span><br><span class="line">    model.load_state_dict(torch.load(<span class="string">&quot;LeNet_model.pth&quot;</span>,map_location=<span class="string">&quot;cpu&quot;</span>))</span><br><span class="line">    children = model.children()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    model_weights =[]</span><br><span class="line">    conv_layers = []</span><br><span class="line">    </span><br><span class="line">    getConv(children)</span><br><span class="line">    model.to(device)</span><br><span class="line">    transform = transforms.Compose(</span><br><span class="line">                [</span><br><span class="line">                    transforms.ToPILImage(),</span><br><span class="line">                    transforms.Resize((<span class="number">28</span>,<span class="number">28</span>)),</span><br><span class="line">                    transforms.ToTensor(),</span><br><span class="line">                 ]</span><br><span class="line">            )</span><br><span class="line">    image = cv.imread(<span class="string">&quot;20160330_170504_473.jpg&quot;</span>)</span><br><span class="line">    transform_image = transform(image)</span><br><span class="line">    x = Variable(torch.unsqueeze(transform_image,dim=<span class="number">0</span>).<span class="built_in">float</span>(),requires_grad = <span class="literal">False</span>)</span><br><span class="line">    outputs = []</span><br><span class="line">    names = []</span><br><span class="line">    <span class="keyword">for</span> layer <span class="keyword">in</span> conv_layers:</span><br><span class="line">        x = layer(x)</span><br><span class="line">        outputs.append(x)</span><br><span class="line">        names.append(layer.__class__.__name__)</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    results = []</span><br><span class="line">    <span class="keyword">for</span> output <span class="keyword">in</span> outputs:</span><br><span class="line">        output = output.squeeze(<span class="number">0</span>)</span><br><span class="line">        gray_scale = torch.<span class="built_in">sum</span>(output,<span class="number">0</span>)/output.shape[<span class="number">0</span>]</span><br><span class="line">        results.append(gray_scale.detach().numpy())</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> result <span class="keyword">in</span> results:</span><br><span class="line">        plt.imshow(result)</span><br><span class="line">        plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>还可以</p>
+<p>应用于其他经典网络，比如Resnet、Alexnet、VGG等等。</p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/b3200ed2.html" target="_blank">卷积神经网络featuremap的可视化</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Python/">Python</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/c1b62771.html" class="next-prefix">» </a> 下一篇：    <a href="/post/c1b62771.html" title="发布于 2022-08-23 08:41">SpringBoot整合Mybatis-plus</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
