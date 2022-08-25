@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            SpringBoot静态资源配置
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,315 +32,198 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">SpringBoot静态资源配置</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-24
+                        </span>
+                        
+                            <span id="/post/4c95c618.html" class="leancloud_visitors" data-flag-title="SpringBoot静态资源配置">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/4c95c618.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">SpringBoot</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p><code>SpringBoot</code>默认把静态资源文件放在<code>resource/static/</code>，默认的静态资源路径匹配为<code>/** </code>。</p>
+<p>如果我们在<code>resource/static/</code>下放一张图片，启动<code>SpringBoot</code>后去访问它的话。访问路径为**<code>http://localhost:8080/1.png</code>**</p>
+<p>我们可以放置的文件目录有：</p>
+<ul>
+<li><code>resources/static</code></li>
+<li><code>resources/public</code></li>
+<li><code>resources/resources</code> </li>
+<li><code>resources/META-INF/resources</code></li>
+</ul>
+<h2 id="更改静态资源访问路径"><a href="#更改静态资源访问路径" class="headerlink" title="更改静态资源访问路径"></a>更改静态资源访问路径</h2><p>前面我们提到，默认的静态资源访问路径是<code>/**</code></p>
+<p>我们可以通过配置文件来更改静态资源访问路径</p>
+<p><strong>例如：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">mvc:</span></span><br><span class="line">    <span class="attr">static-path-pattern:</span> <span class="string">/res/**</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>资源放置目录</th>
+<th>更改之前访问路径</th>
+<th>更改之后访问路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>resource/static/login.html</code></td>
+<td><code>localhost:8080/login.html</code></td>
+<td><code>localhost:8080/res/login.html</code></td>
+</tr>
+<tr>
+<td><code>resource/static/page/index.html</code></td>
+<td><code>localhost:8080/page/index.html</code></td>
+<td><code>localhost:8080/res/page/index.html</code></td>
+</tr>
+</tbody></table>
+<p>相当于多了一个前缀<code>/res/</code></p>
+<h2 id="修改静态资源存放目录"><a href="#修改静态资源存放目录" class="headerlink" title="修改静态资源存放目录"></a>修改静态资源存放目录</h2><p>前面我们提到，静态资源只能存在以下目录。</p>
+<ul>
+<li><code>resources/static</code></li>
+<li><code>resources/public</code></li>
+<li><code>resources/resources</code> </li>
+<li><code>resources/META-INF/resources</code></li>
+</ul>
+<p>当我们在<code>resources/</code>，创建了一个目录<code>data</code>【只要不是<code>static</code>、<code>public</code>、<code>resources</code>、<code>META_INF</code>就行】</p>
+<p>把静态资源放在<code>/resouces/data/</code>目录下，启动<code>SpringBoot</code>是无法访问到的。</p>
+<p>那我们想访问到怎么办？</p>
+<p>修改配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">static-locations:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">classpath:/data/</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">classpath:/page/</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以添加<strong>多个存放目录</strong>。</p>
+<p>配置之前，<code>SpringBoot</code>它只知道<code>static</code>、<code>public</code>、<code>resources</code>、<code>META-INF/resources</code>这些目录下存放着静态文件。</p>
+<p>配置之后，<code>SpringBoot</code>就知道了 除了<code>static</code>、<code>public</code>、<code>resources</code>、<code>META-INF/resources</code>这些目录下存放着静态文件。<code>data</code>、<code>page</code>这些目录也存放着静态文件。</p>
+<p>当我们访问 <strong><code>/data/1.png</code><strong>文件时，访问路径是：</strong><code>http://localhost:8080/1.png</code></strong></p>
+<h2 id="静态资源映射"><a href="#静态资源映射" class="headerlink" title="静态资源映射"></a>静态资源映射</h2><p>当我们进行如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">mvc:</span></span><br><span class="line">    <span class="attr">static-path-pattern:</span> <span class="string">/res/**</span></span><br><span class="line">  <span class="attr">resources:</span></span><br><span class="line">    <span class="attr">static-locations:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">classpath:/data/</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">classpath:/page/</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">访问目录</th>
+<th align="center">访问路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>/data/1.png</code></td>
+<td align="center"><code>localhost:8080/res/1.png</code></td>
+</tr>
+<tr>
+<td align="center"><code>/page/2.png</code></td>
+<td align="center"><code>localhost:8080/res/2.png</code></td>
+</tr>
+</tbody></table>
+<p>但，如果我们想<font color="red"><strong>实现如下效果</strong></font>：</p>
+<table>
+<thead>
+<tr>
+<th align="center">访问目录</th>
+<th align="center">访问路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>/data/1.png</code></td>
+<td align="center"><code>localhost:8080/data/1.png</code></td>
+</tr>
+<tr>
+<td align="center"><code>/page/2.png</code></td>
+<td align="center"><code>localhost:8080/page/2.png</code></td>
+</tr>
+</tbody></table>
+<p>那我们可以经过<font color="blue"><strong>配置类</strong></font>进行配置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MvcConfig</span> <span class="keyword">extends</span> <span class="title class_">WebMvcConfigurationSupport</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">addResourceHandlers</span><span class="params">(ResourceHandlerRegistry registry)</span> &#123;</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/data/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/data/&quot;</span>);</span><br><span class="line">        registry.addResourceHandler(<span class="string">&quot;/page/**&quot;</span>).addResourceLocations(<span class="string">&quot;classpath:/page/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/acb8270e.html">Linux安装Redis</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-01
-                            </span>
-                            
-                                <span id="/post/acb8270e.html" class="leancloud_visitors" data-flag-title="Linux安装Redis">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/acb8270e.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/4c95c618.html" target="_blank">SpringBoot静态资源配置</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/42bdef23.html">Linux安装Mysql</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux安装Mysql并配置
-                                <a href="/post/42bdef23.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/42bdef23.html" class="leancloud_visitors" data-flag-title="Linux安装Mysql">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/42bdef23.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/SpringBoot/">SpringBoot</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c357b778.html">Linux安装jdk</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/c357b778.html" class="leancloud_visitors" data-flag-title="Linux安装jdk">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c357b778.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d0edc1ed.html">Linux常用命令</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux常用命令
-                                <a href="/post/d0edc1ed.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/d0edc1ed.html" class="leancloud_visitors" data-flag-title="Linux常用命令">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d0edc1ed.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/bea0af19.html">安装ssh连接工具</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：ssh连接工具的安装
-                                <a href="/post/bea0af19.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/bea0af19.html" class="leancloud_visitors" data-flag-title="安装ssh连接工具">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/bea0af19.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/3ca46669.html">Linux虚拟机网卡设置问题</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：网卡设置
-                                <a href="/post/3ca46669.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/3ca46669.html" class="leancloud_visitors" data-flag-title="Linux虚拟机网卡设置问题">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/3ca46669.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/afd438ef.html">Linux虚拟机安装教程</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux虚拟机安装教程
-                                <a href="/post/afd438ef.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/afd438ef.html" class="leancloud_visitors" data-flag-title="Linux虚拟机安装教程">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/afd438ef.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/f69f1cc4.html">Spring Cache入门</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：基本使用
-                                <a href="/post/f69f1cc4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-30
-                            </span>
-                            
-                                <span id="/post/f69f1cc4.html" class="leancloud_visitors" data-flag-title="Spring Cache入门">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/f69f1cc4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/78e49ba4.html">Spring-Data-Redis</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：入门
-                                <a href="/post/78e49ba4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-29
-                            </span>
-                            
-                                <span id="/post/78e49ba4.html" class="leancloud_visitors" data-flag-title="Spring-Data-Redis">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/78e49ba4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d2e965a3.html">Redis五种常用数据类型</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Redis入门
-                                <a href="/post/d2e965a3.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-28
-                            </span>
-                            
-                                <span id="/post/d2e965a3.html" class="leancloud_visitors" data-flag-title="Redis五种常用数据类型">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d2e965a3.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/1efeaa73.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/1efeaa73.html" title="发布于 2022-08-25 03:27">SpringBoot跨域请求</a>
+                        <br>
+                    
+                    
+                        <a href="/post/b3200ed2.html" class="next-prefix">» </a> 下一篇：    <a href="/post/b3200ed2.html" title="发布于 2022-08-24 05:48">卷积神经网络featuremap的可视化</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -366,7 +249,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     

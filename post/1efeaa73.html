@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            SpringBoot跨域请求
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,315 +32,194 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">SpringBoot跨域请求</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-25
+                        </span>
+                        
+                            <span id="/post/1efeaa73.html" class="leancloud_visitors" data-flag-title="SpringBoot跨域请求">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1efeaa73.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">跨域请求</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="跨域请求的概念"><a href="#跨域请求的概念" class="headerlink" title="跨域请求的概念"></a>跨域请求的概念</h1><p>浏览器出于安全的考虑，使用 <code>XMLHttpRequest</code>对象发起 HTTP请求时必须遵守同源策略，否则就是跨域的HTTP请求，<strong>默认情况下是被<font color="red">禁止</font>的</strong>。 </p>
+<p><font color="red">同源策略</font>要求源相同才能正常进行通信，即<strong>协议、域名【或者是主机名】、端口号</strong>都完全一致。 </p>
+<p>说通俗一点</p>
+<ul>
+<li>浏览器从一个域名的网页去请求另一个域名的资源时，<u>域名、端口、协议任一不同</u>，都是跨域</li>
+<li>只要协议、域名、端口有任何一个不同，都被当作是不同的域，之间的请求就是跨域操作。</li>
+</ul>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th>前端</th>
+<th>后端</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>http://localost:8080</code></td>
+<td><code>http://localhost:8081</code></td>
+</tr>
+</tbody></table>
+<p>协议相同，主机名相同，但端口号不同。这就是跨域请求。</p>
+<blockquote>
+<p>注意</p>
+<ul>
+<li>只有浏览器才会有这个跨域请求的问题，如果是移动端跨域请求就不会出现问题。</li>
+<li><code>XMLHttpRequest</code>对象就是<code>ajax</code>发送异步请求时使用的对象，所以也就是说浏览器使用<code>ajax</code>请求时才会出现跨域请求的问题。</li>
+</ul>
+<p>总得来说，发生跨域请求问题的场景就是：<strong>浏览器使用<code>ajax</code>请求</strong></p>
+</blockquote>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>解决跨域请求有多种方案</p>
+<p>我们可以使用<code>CORS</code>解决跨域。</p>
+<h2 id="什么是CORS"><a href="#什么是CORS" class="headerlink" title="什么是CORS"></a>什么是<code>CORS</code></h2><p>​	<code>CORS</code>是一个<code>W3C</code>标准，全称是”跨域资源共享”（Cross-origin resource sharing），允许浏览器向跨源服务器，发出<code>XMLHttpRequest</code>请求，从而克服了AJAX只能同源使用的限制。</p>
+<p>​	它通过服务器增加一个特殊的<code>Header[Access-Control-Allow-Origin]</code>来告诉客户端跨域的限制，如果浏览器支持<code>CORS</code>、并且判断Origin通过的话，就会允许<code>XMLHttpRequest</code>发起跨域请求。</p>
+<p>如果是一个跨域请求，就会再发送一个带有<font color="red"><code>Origin</code></font>的请求头。里面的值就是<strong>这个页面所在的域</strong></p>
+<p><img src="/%5Cimage%5Carticle%5CSpringBoot%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82%5Cimage-20220825170142608.png" alt="image-20220825170142608"></p>
+<p>发送给服务器之后，如果我们配置了跨域，响应头就会带有<font color="red"><code>Access-Control-Allow-Origin</code></font>，它的值表示<strong>服务器允许跨域的域</strong>，</p>
+<p>如果该值和请求头的<code>Origin</code>值一样，则表示允许跨域。就会请求成功。</p>
+<p><img src="/%5Cimage%5Carticle%5CSpringBoot%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82%5Cimage-20220825170405785.png" alt="image-20220825170405785"></p>
+<p>如果我们要自己使用<code>Cors</code>解决跨域请求的问题其实就是</p>
+<p>解析请求头，然后去添加响应头就好了。但我们没必要自己去写，<code>SpringBoot</code>有这样的解决跨域请求的拦截器，只需要配置就可以。</p>
+<blockquote>
+<p>如果我们进行了<code>Cors</code>配置，但响应头中没有<code>Access-Control-Allow-Origin</code>，说明我们的配置是有问题的。</p>
+</blockquote>
+<h1 id="SpringBoot使用CORS解决跨域"><a href="#SpringBoot使用CORS解决跨域" class="headerlink" title="SpringBoot使用CORS解决跨域"></a>SpringBoot使用CORS解决跨域</h1><ul>
+<li><p>使用<font color="gold"><code>@CrossOrigin</code></font></p>
+<p>可以在支持跨域的<strong>方法</strong>上或者是<strong>Controller类</strong>上加上<font color="gold"><code>@CrossOrigin</code></font>注解</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="meta">@CrossOrigin</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserServcie userServcie;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/findAll&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> ResponseResult <span class="title function_">findAll</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//调用service查询数据 ，进行返回</span></span><br><span class="line">        List&lt;User&gt; users = userServcie.findAll();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseResult</span>(<span class="number">200</span>,users);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>value</code>属性可以设置多个URL。</p>
+</li>
+<li><p><code>origins</code>属性也可以设置多个URL。例如：<code>@CrossOrigin(origins = &quot;http://domain2.com&quot;, maxAge = 3600)</code></p>
+</li>
+<li><p><code>maxAge</code>属性指定了准备响应前的缓存持续的最大时间。就是探测请求的有效期。</p>
+</li>
+<li><p><code>allowCredentials</code>属性表示用户是否可以发送、处理 cookie。默认为false</p>
+</li>
+<li><p><code>allowedHeaders</code> 属性表示允许的请求头部有哪些。</p>
+</li>
+<li><p><code>methods</code> 属性表示允许请求的方法，默认get,post,head</p>
+</li>
+</ul>
+<blockquote>
+<p>如果你不设置他的<strong>value</strong>属性，或者是<strong>origins</strong>属性，就默认是可以允许所有的URL&#x2F;域访问。</p>
+<p><font color="red">value和origins的效果是一样的，当value和origins同时使用时，配置的值不一样会报错!</font></p>
+</blockquote>
+</li>
+<li><p>使用 <code>WebMvcConfigurer</code> 的 <code>addCorsMappings</code> 方法配置<code>CorsInterceptor</code></p>
+<p>使用注解有一个缺陷，当我们的Controller类过多时，就需要频繁加注解。因此我们可以<strong>使用配置类才进行批量映射</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CorsConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> &#123;</span><br><span class="line">      <span class="comment">// 设置允许跨域的路径</span></span><br><span class="line">        registry.addMapping(<span class="string">&quot;/**&quot;</span>)</span><br><span class="line">                <span class="comment">// 设置允许跨域请求的域名</span></span><br><span class="line">                .allowedOriginPatterns(<span class="string">&quot;*&quot;</span>)</span><br><span class="line">                <span class="comment">// 是否允许cookie</span></span><br><span class="line">                .allowCredentials(<span class="literal">true</span>)</span><br><span class="line">                <span class="comment">// 设置允许的请求方式</span></span><br><span class="line">                .allowedMethods(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;POST&quot;</span>, <span class="string">&quot;DELETE&quot;</span>, <span class="string">&quot;PUT&quot;</span>)</span><br><span class="line">                <span class="comment">// 设置允许的header属性</span></span><br><span class="line">                .allowedHeaders(<span class="string">&quot;*&quot;</span>)</span><br><span class="line">                <span class="comment">// 跨域允许时间</span></span><br><span class="line">                .maxAge(<span class="number">3600</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>addMapping(&quot;/user/**&quot;)</code>：其中* 表示匹配到下一层；** 表示后面不管有多少层，都能匹配。</p>
+</li>
+<li><p><code>allowedOriginPatterns(&quot;http:localhost:8080&quot;)</code>，只有<code>http:localhost:8080</code>可以访问。<code>*</code>表示任意域名</p>
+</li>
+<li><p><code>.maxAge(3600);</code>：</p>
+<p>如果我们使用比较复杂的请求，比如<code>PUT</code>请求。</p>
+<p>那这个请求它不是只发送一个请求，如果是跨域请求，浏览器会先发送一个询问允许我跨域请求的请求。如果服务端是允许的，就会再响应头中添加对应的响应头。</p>
+<p>如果每次请求都发送一个询问请求那就会很浪费时间。</p>
+<p>而<code>maxAge</code>相当于持久的时间。如果我们这个请求被允许了，那在3600秒之内，浏览器再去发送跨域请求，就不会再发送询问请求。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="当时使用SpringSecurity时"><a href="#当时使用SpringSecurity时" class="headerlink" title="当时使用SpringSecurity时"></a>当时使用SpringSecurity时</h1><p>当有跨域请求时，还得经过<code>SringSecurity</code>的过滤器，光靠<code>SpringBoot</code>是不行的，如果<code>SpringSecurity</code>是不允许跨域的还是不行。</p>
+<p>因此还需要配置<code>SpringSecurity</code>来进行跨域请求。配置方法如下：<code>http.cors();</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        http</span><br><span class="line">                <span class="comment">//关闭csrf</span></span><br><span class="line">                .csrf().disable()</span><br><span class="line">                <span class="comment">//不通过Session获取SecurityContext</span></span><br><span class="line">                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br><span class="line">                .and()</span><br><span class="line">                .authorizeRequests()</span><br><span class="line">                <span class="comment">// 对于登录接口 允许匿名访问</span></span><br><span class="line">                .antMatchers(<span class="string">&quot;/user/login&quot;</span>).anonymous()</span><br><span class="line">                <span class="comment">// 除上面外的所有请求全部需要鉴权认证</span></span><br><span class="line">                .anyRequest().authenticated();</span><br><span class="line"></span><br><span class="line">        http.cors();<span class="comment">//允许跨域请求</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/acb8270e.html">Linux安装Redis</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-01
-                            </span>
-                            
-                                <span id="/post/acb8270e.html" class="leancloud_visitors" data-flag-title="Linux安装Redis">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/acb8270e.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/1efeaa73.html" target="_blank">SpringBoot跨域请求</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/42bdef23.html">Linux安装Mysql</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux安装Mysql并配置
-                                <a href="/post/42bdef23.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/42bdef23.html" class="leancloud_visitors" data-flag-title="Linux安装Mysql">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/42bdef23.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82/">跨域请求</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c357b778.html">Linux安装jdk</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/c357b778.html" class="leancloud_visitors" data-flag-title="Linux安装jdk">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c357b778.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d0edc1ed.html">Linux常用命令</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux常用命令
-                                <a href="/post/d0edc1ed.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/d0edc1ed.html" class="leancloud_visitors" data-flag-title="Linux常用命令">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d0edc1ed.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/bea0af19.html">安装ssh连接工具</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：ssh连接工具的安装
-                                <a href="/post/bea0af19.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/bea0af19.html" class="leancloud_visitors" data-flag-title="安装ssh连接工具">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/bea0af19.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/3ca46669.html">Linux虚拟机网卡设置问题</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：网卡设置
-                                <a href="/post/3ca46669.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/3ca46669.html" class="leancloud_visitors" data-flag-title="Linux虚拟机网卡设置问题">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/3ca46669.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/afd438ef.html">Linux虚拟机安装教程</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Linux虚拟机安装教程
-                                <a href="/post/afd438ef.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-31
-                            </span>
-                            
-                                <span id="/post/afd438ef.html" class="leancloud_visitors" data-flag-title="Linux虚拟机安装教程">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/afd438ef.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/f69f1cc4.html">Spring Cache入门</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：基本使用
-                                <a href="/post/f69f1cc4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-30
-                            </span>
-                            
-                                <span id="/post/f69f1cc4.html" class="leancloud_visitors" data-flag-title="Spring Cache入门">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/f69f1cc4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/78e49ba4.html">Spring-Data-Redis</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：入门
-                                <a href="/post/78e49ba4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-29
-                            </span>
-                            
-                                <span id="/post/78e49ba4.html" class="leancloud_visitors" data-flag-title="Spring-Data-Redis">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/78e49ba4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/d2e965a3.html">Redis五种常用数据类型</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Redis入门
-                                <a href="/post/d2e965a3.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-07-28
-                            </span>
-                            
-                                <span id="/post/d2e965a3.html" class="leancloud_visitors" data-flag-title="Redis五种常用数据类型">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/d2e965a3.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/4c95c618.html" class="next-prefix">» </a> 下一篇：    <a href="/post/4c95c618.html" title="发布于 2022-08-24 08:42">SpringBoot静态资源配置</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -366,7 +245,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
