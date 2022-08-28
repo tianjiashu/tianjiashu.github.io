@@ -85,7 +85,7 @@
 <li>每个节点的所有子节点包含的字符都不相同</li>
 </ul>
 <p>假设有<code>b</code>，<code>abc</code>，<code>abd</code>，<code>bcd</code>，<code>abcd</code>，<code>efg</code>，<code>hii </code>这6个单词,那我们创建<code>trie</code>树就得到</p>
-<p><img src="/image/article/%E5%89%8D%E7%BC%80%E6%A0%91/20190924193658133.png" alt="20190924193658133"></p>
+<p><img src="/%5Cimage%5Carticle%5C%E5%89%8D%E7%BC%80%E6%A0%91%5C20190924193658133.png" alt="20190924193658133"></p>
 <p>其中红色的节点表示，从根节点到该节点连成的字符串，是前缀树包含的。</p>
 <h1 id="Java实现"><a href="#Java实现" class="headerlink" title="Java实现"></a>Java实现</h1><p>定义<strong>前缀树节点</strong>的数据结构</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>&#123;</span><br><span class="line">    Map&lt;Character,Node&gt; child;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">()</span>&#123;</span><br><span class="line">        child = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        isEnd = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
