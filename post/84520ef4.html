@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            SpringBoot跨域请求
+            前缀树
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -37,29 +37,29 @@
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">SpringBoot跨域请求</h1>
+                <h1 class="header-subtitle">前缀树</h1>
                 <div class="header-subinfo">
                     <p class="article-info-text">
                         <span>
-                            <i class="iconfont icon-time"></i> 发表时间：2022-08-25
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-28
                         </span>
                         
-                            <span id="/post/1efeaa73.html" class="leancloud_visitors" data-flag-title="SpringBoot跨域请求">
+                            <span id="/post/84520ef4.html" class="leancloud_visitors" data-flag-title="前缀树">
                                 <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
                             </span>
                         
                         <span>
-                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1efeaa73.html"></span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/84520ef4.html"></span>
                         </span>  
                     </p>
                     
                         
-                            <span class="category-color">Spring</span>
+                            <span class="category-color">数据结构</span>
                         
                     
                     
                         
-                            <span class="tag-color">跨域请求</span>
+                            <span class="tag-color">数据结构</span>
                         
                     
                 </div>
@@ -74,95 +74,47 @@
         <div id="article">
             <div class="toc"></div>
             <div class="article-body">
-                <h1 id="跨域请求的概念"><a href="#跨域请求的概念" class="headerlink" title="跨域请求的概念"></a>跨域请求的概念</h1><p>浏览器出于安全的考虑，使用 <code>XMLHttpRequest</code>对象发起 HTTP请求时必须遵守同源策略，否则就是跨域的HTTP请求，<strong>默认情况下是被<font color="red">禁止</font>的</strong>。 </p>
-<p><font color="red">同源策略</font>要求源相同才能正常进行通信，即<strong>协议、域名【或者是主机名】、端口号</strong>都完全一致。 </p>
-<p>说通俗一点</p>
+                <h1 id="前缀树简介"><a href="#前缀树简介" class="headerlink" title="前缀树简介"></a>前缀树简介</h1><p>又称单词查找树，字典树，<code>Trie</code>树，是一种树形结构，是一种<strong>哈希树</strong>的变种。</p>
+<p>典型应用是用于统计，排序和保存大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计。</p>
+<p>它的优点是：<code>利用字符串的公共前缀来减少查询时间，最大限度地减少无谓的字符串比较，查询效率比哈希树高</code>。</p>
+<p>是一种典型的用时间换空间的数据结构</p>
+<p><strong>前缀树的性质：</strong></p>
 <ul>
-<li>浏览器从一个域名的网页去请求另一个域名的资源时，<u>域名、端口、协议任一不同</u>，都是跨域</li>
-<li>只要协议、域名、端口有任何一个不同，都被当作是不同的域，之间的请求就是跨域操作。</li>
+<li><font color="red"><strong>根节点不包含字符</strong></font>，除根节点外每一个节点都只包含一个字符</li>
+<li>从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串</li>
+<li>每个节点的所有子节点包含的字符都不相同</li>
 </ul>
-<p>例如：</p>
-<table>
-<thead>
-<tr>
-<th>前端</th>
-<th>后端</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>http://localost:8080</code></td>
-<td><code>http://localhost:8081</code></td>
-</tr>
-</tbody></table>
-<p>协议相同，主机名相同，但端口号不同。这就是跨域请求。</p>
-<blockquote>
-<p>注意</p>
-<ul>
-<li>只有浏览器才会有这个跨域请求的问题，如果是移动端跨域请求就不会出现问题。</li>
-<li><code>XMLHttpRequest</code>对象就是<code>ajax</code>发送异步请求时使用的对象，所以也就是说浏览器使用<code>ajax</code>请求时才会出现跨域请求的问题。</li>
-</ul>
-<p>总得来说，发生跨域请求问题的场景就是：<strong>浏览器使用<code>ajax</code>请求</strong></p>
-</blockquote>
-<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>解决跨域请求有多种方案</p>
-<p>我们可以使用<code>CORS</code>解决跨域。</p>
-<h2 id="什么是CORS"><a href="#什么是CORS" class="headerlink" title="什么是CORS"></a>什么是<code>CORS</code></h2><p>​	<code>CORS</code>是一个<code>W3C</code>标准，全称是”跨域资源共享”（Cross-origin resource sharing），允许浏览器向跨源服务器，发出<code>XMLHttpRequest</code>请求，从而克服了AJAX只能同源使用的限制。</p>
-<p>​	它通过服务器增加一个特殊的<code>Header[Access-Control-Allow-Origin]</code>来告诉客户端跨域的限制，如果浏览器支持<code>CORS</code>、并且判断Origin通过的话，就会允许<code>XMLHttpRequest</code>发起跨域请求。</p>
-<p>如果是一个跨域请求，就会再发送一个带有<font color="red"><code>Origin</code></font>的请求头。里面的值就是<strong>这个页面所在的域</strong></p>
-<p><img src="/%5Cimage%5Carticle%5CSpringBoot%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82%5Cimage-20220825170142608.png" alt="image-20220825170142608"></p>
-<p>发送给服务器之后，如果我们配置了跨域，响应头就会带有<font color="red"><code>Access-Control-Allow-Origin</code></font>，它的值表示<strong>服务器允许跨域的域</strong>，</p>
-<p>如果该值和请求头的<code>Origin</code>值一样，则表示允许跨域。就会请求成功。</p>
-<p><img src="/%5Cimage%5Carticle%5CSpringBoot%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82%5Cimage-20220825170405785.png" alt="image-20220825170405785"></p>
-<p>如果我们要自己使用<code>Cors</code>解决跨域请求的问题其实就是</p>
-<p>解析请求头，然后去添加响应头就好了。但我们没必要自己去写，<code>SpringBoot</code>有这样的解决跨域请求的拦截器，只需要配置就可以。</p>
-<blockquote>
-<p>如果我们进行了<code>Cors</code>配置，但响应头中没有<code>Access-Control-Allow-Origin</code>，说明我们的配置是有问题的。</p>
-</blockquote>
-<h1 id="SpringBoot使用CORS解决跨域"><a href="#SpringBoot使用CORS解决跨域" class="headerlink" title="SpringBoot使用CORS解决跨域"></a>SpringBoot使用CORS解决跨域</h1><ul>
-<li><p>使用<font color="gold"><code>@CrossOrigin</code></font></p>
-<p>可以在支持跨域的<strong>方法</strong>上或者是<strong>Controller类</strong>上加上<font color="gold"><code>@CrossOrigin</code></font>注解</p>
-<p>例如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="meta">@CrossOrigin</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserServcie userServcie;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/findAll&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> ResponseResult <span class="title function_">findAll</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//调用service查询数据 ，进行返回</span></span><br><span class="line">        List&lt;User&gt; users = userServcie.findAll();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ResponseResult</span>(<span class="number">200</span>,users);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假设有<code>b</code>，<code>abc</code>，<code>abd</code>，<code>bcd</code>，<code>abcd</code>，<code>efg</code>，<code>hii </code>这6个单词,那我们创建<code>trie</code>树就得到</p>
+<p><img src="/image/article/%E5%89%8D%E7%BC%80%E6%A0%91/20190924193658133.png" alt="20190924193658133"></p>
+<p>其中红色的节点表示，从根节点到该节点连成的字符串，是前缀树包含的。</p>
+<h1 id="Java实现"><a href="#Java实现" class="headerlink" title="Java实现"></a>Java实现</h1><p>定义<strong>前缀树节点</strong>的数据结构</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>&#123;</span><br><span class="line">    Map&lt;Character,Node&gt; child;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">()</span>&#123;</span><br><span class="line">        child = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        isEnd = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><p><code>value</code>属性可以设置多个URL。</p>
-</li>
-<li><p><code>origins</code>属性也可以设置多个URL。例如：<code>@CrossOrigin(origins = &quot;http://domain2.com&quot;, maxAge = 3600)</code></p>
-</li>
-<li><p><code>maxAge</code>属性指定了准备响应前的缓存持续的最大时间。就是探测请求的有效期。</p>
-</li>
-<li><p><code>allowCredentials</code>属性表示用户是否可以发送、处理 cookie。默认为false</p>
-</li>
-<li><p><code>allowedHeaders</code> 属性表示允许的请求头部有哪些。</p>
-</li>
-<li><p><code>methods</code> 属性表示允许请求的方法，默认get,post,head</p>
-</li>
-</ul>
-<blockquote>
-<p>如果你不设置他的<strong>value</strong>属性，或者是<strong>origins</strong>属性，就默认是可以允许所有的URL&#x2F;域访问。</p>
-<p><font color="red">value和origins的效果是一样的，当value和origins同时使用时，配置的值不一样会报错!</font></p>
-</blockquote>
-</li>
-<li><p>使用 <code>WebMvcConfigurer</code> 的 <code>addCorsMappings</code> 方法配置<code>CorsInterceptor</code></p>
-<p>使用注解有一个缺陷，当我们的Controller类过多时，就需要频繁加注解。因此我们可以<strong>使用配置类才进行批量映射</strong>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CorsConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> &#123;</span><br><span class="line">      <span class="comment">// 设置允许跨域的路径</span></span><br><span class="line">        registry.addMapping(<span class="string">&quot;/**&quot;</span>)</span><br><span class="line">                <span class="comment">// 设置允许跨域请求的域名</span></span><br><span class="line">                .allowedOriginPatterns(<span class="string">&quot;*&quot;</span>)</span><br><span class="line">                <span class="comment">// 是否允许cookie</span></span><br><span class="line">                .allowCredentials(<span class="literal">true</span>)</span><br><span class="line">                <span class="comment">// 设置允许的请求方式</span></span><br><span class="line">                .allowedMethods(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;POST&quot;</span>, <span class="string">&quot;DELETE&quot;</span>, <span class="string">&quot;PUT&quot;</span>)</span><br><span class="line">                <span class="comment">// 设置允许的header属性</span></span><br><span class="line">                .allowedHeaders(<span class="string">&quot;*&quot;</span>)</span><br><span class="line">                <span class="comment">// 跨域允许时间</span></span><br><span class="line">                .maxAge(<span class="number">3600</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用<code>Map</code>来存储该节点的孩子节点</p>
+<p>布尔类型的<code>isEnd</code>很重要，前缀树包含某一字符串，但该前缀树不一定存入该字符串。【如上图所示的红色节点】</p>
+<p>它标识以该字符为结尾的字符串是存入的字符串。</p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tire.insert(<span class="string">&quot;apple&quot;</span>);</span><br><span class="line">tire.search(<span class="string">&quot;app&quot;</span>);<span class="comment">//false</span></span><br></pre></td></tr></table></figure>
 
-<ul>
-<li><p><code>addMapping(&quot;/user/**&quot;)</code>：其中* 表示匹配到下一层；** 表示后面不管有多少层，都能匹配。</p>
-</li>
-<li><p><code>allowedOriginPatterns(&quot;http:localhost:8080&quot;)</code>，只有<code>http:localhost:8080</code>可以访问。<code>*</code>表示任意域名</p>
-</li>
-<li><p><code>.maxAge(3600);</code>：</p>
-<p>如果我们使用比较复杂的请求，比如<code>PUT</code>请求。</p>
-<p>那这个请求它不是只发送一个请求，如果是跨域请求，浏览器会先发送一个询问允许我跨域请求的请求。如果服务端是允许的，就会再响应头中添加对应的响应头。</p>
-<p>如果每次请求都发送一个询问请求那就会很浪费时间。</p>
-<p>而<code>maxAge</code>相当于持久的时间。如果我们这个请求被允许了，那在3600秒之内，浏览器再去发送跨域请求，就不会再发送询问请求。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="当时使用SpringSecurity时"><a href="#当时使用SpringSecurity时" class="headerlink" title="当时使用SpringSecurity时"></a>当时使用SpringSecurity时</h1><p>当有跨域请求时，还得经过<code>SringSecurity</code>的过滤器，光靠<code>SpringBoot</code>是不行的，如果<code>SpringSecurity</code>是不允许跨域的还是不行。</p>
-<p>因此还需要配置<code>SpringSecurity</code>来进行跨域请求。配置方法如下：<code>http.cors();</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableGlobalMethodSecurity(prePostEnabled = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        http</span><br><span class="line">                <span class="comment">//关闭csrf</span></span><br><span class="line">                .csrf().disable()</span><br><span class="line">                <span class="comment">//不通过Session获取SecurityContext</span></span><br><span class="line">                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br><span class="line">                .and()</span><br><span class="line">                .authorizeRequests()</span><br><span class="line">                <span class="comment">// 对于登录接口 允许匿名访问</span></span><br><span class="line">                .antMatchers(<span class="string">&quot;/user/login&quot;</span>).anonymous()</span><br><span class="line">                <span class="comment">// 除上面外的所有请求全部需要鉴权认证</span></span><br><span class="line">                .anyRequest().authenticated();</span><br><span class="line"></span><br><span class="line">        http.cors();<span class="comment">//允许跨域请求</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><font size= 4><strong>前缀树的实现</strong></font></p>
+<p><strong>字符串插入</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(String word)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;<span class="comment">//指针指向根节点,从前缀树的根节点开始遍历</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length(); i++) &#123;<span class="comment">//遍历该字符串</span></span><br><span class="line">        <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">        <span class="keyword">if</span>(!node.child.containsKey(c))&#123;<span class="comment">//如果该节点的孩子节点不包含该字符</span></span><br><span class="line">            node.child.put(c,<span class="keyword">new</span> <span class="title class_">Node</span>());<span class="comment">//新加入该字符</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i==word.length()-<span class="number">1</span>)node.child.get(c).isEnd=<span class="literal">true</span>;<span class="comment">//当到了最后的一个字符时，就标记为一个字符串的结尾。</span></span><br><span class="line">        node = node.child.get(c);<span class="comment">//指针指向孩子节点。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>字符串查找</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">search</span><span class="params">(String word)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;<span class="comment">//指针指向根节点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length(); i++) &#123;<span class="comment">//遍历该字符串</span></span><br><span class="line">        <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">        <span class="comment">//如果存在某个节点的孩子不包含该字符串，就说明前缀树中不存在该字符串</span></span><br><span class="line">        <span class="keyword">if</span>(!node.child.containsKey(c))<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        node = node.child.get(c);<span class="comment">//指针指向孩子节点。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> node.isEnd;<span class="comment">//都包含的还不行，还得看看该节点是否标记为字符串的结束标志</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>前缀树是否包含字符串的前缀</strong></p>
+<p>和字符串代码唯一不同的是：</p>
+<p>如果包含该字符串，最后<code>return</code>的时候，不会判断该节点是否标记为字符串结束标志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">startsWith</span><span class="params">(String prefix)</span> &#123;</span><br><span class="line">    <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; prefix.length(); i++) &#123;</span><br><span class="line">        <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> prefix.charAt(i);</span><br><span class="line">        <span class="keyword">if</span>(!node.child.containsKey(c))<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        node = node.child.get(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>找到以某字符串为前缀的字符串</strong></p>
+<p>例如：</p>
+<p>前缀树包含的字符串有，<code>apple</code>、<code>code</code>、<code>appl</code>、<code>leet</code>、<code>apples</code>、<code>abc</code>、<code>ace</code></p>
+<p>找到以<code>app</code>为前缀的字符们：<code>apple</code>、<code>appl</code>、<code>apples</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;String&gt; <span class="title function_">searchprefix</span><span class="params">(String word)</span> &#123;</span><br><span class="line">    cnt = <span class="number">0</span>;   <span class="comment">//前缀字符串数量</span></span><br><span class="line">    List&lt;String&gt; res = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;		<span class="comment">//指针指向根节点</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length();i++) &#123;</span><br><span class="line">        <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">        <span class="keyword">if</span> (!node.child.containsKey(c)) <span class="keyword">return</span> res;<span class="comment">//如果不包含该前缀字符串直接return res</span></span><br><span class="line">        node = node.child.get(c);<span class="comment">//</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//找到前缀之后，以前缀末尾字符的节点开始进行深度优先遍历。</span></span><br><span class="line">    dfs(word, node, res, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">dfs</span><span class="params">(String word, Node node, List&lt;String&gt; res, String path)</span> &#123;  <span class="comment">// 深度优先搜索</span></span><br><span class="line">    <span class="keyword">if</span> (cnt &gt;= COUNT) <span class="keyword">return</span>;<span class="comment">//COUNT为要查找的前缀字符串数量</span></span><br><span class="line">    <span class="keyword">if</span> (node.isEnd &amp;&amp; !word.equals(word + path)) &#123;</span><br><span class="line">        res.add(word + path);</span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (Map.Entry&lt;Character, Node&gt; entry : node.child.entrySet()) &#123;</span><br><span class="line">        node = entry.getValue();</span><br><span class="line">        path = path + entry.getKey();</span><br><span class="line">        dfs(word, node, res, path);</span><br><span class="line">        path = path.substring(<span class="number">0</span>, path.length() - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="完整Java代码"><a href="#完整Java代码" class="headerlink" title="完整Java代码"></a>完整Java代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="type">int</span> <span class="variable">COUNT</span> <span class="operator">=</span> <span class="number">10</span>;  <span class="comment">// 提示内容的最大数目</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">cnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span>&#123;</span><br><span class="line">        Map&lt;Character,Node&gt; child;</span><br><span class="line">        <span class="type">boolean</span> isEnd;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">()</span>&#123;</span><br><span class="line">            child = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">            isEnd = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Node root;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        root = <span class="keyword">new</span> <span class="title class_">Node</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(String word)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length(); i++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">            <span class="keyword">if</span>(!node.child.containsKey(c))&#123;</span><br><span class="line">                node.child.put(c,<span class="keyword">new</span> <span class="title class_">Node</span>());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(i==word.length()-<span class="number">1</span>)node.child.get(c).isEnd=<span class="literal">true</span>;</span><br><span class="line">            node = node.child.get(c);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">search</span><span class="params">(String word)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length(); i++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">            <span class="keyword">if</span>(!node.child.containsKey(c))<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            node = node.child.get(c);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> node.isEnd;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">startsWith</span><span class="params">(String prefix)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; prefix.length(); i++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> prefix.charAt(i);</span><br><span class="line">            <span class="keyword">if</span>(!node.child.containsKey(c))<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            node = node.child.get(c);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> List&lt;String&gt; <span class="title function_">searchprefix</span><span class="params">(String word)</span> &#123;</span><br><span class="line">        cnt = <span class="number">0</span>;</span><br><span class="line">        List&lt;String&gt; res = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> root;    </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; word.length();i++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> word.charAt(i);</span><br><span class="line">            <span class="keyword">if</span> (!node.child.containsKey(c)) <span class="keyword">return</span> res;</span><br><span class="line">            node = node.child.get(c);</span><br><span class="line">        &#125;</span><br><span class="line">        dfs(word, node, res, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">dfs</span><span class="params">(String word, Node node, List&lt;String&gt; res, String path)</span> &#123;  </span><br><span class="line">        <span class="keyword">if</span> (cnt &gt;= COUNT) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">if</span> (node.isEnd &amp;&amp; !word.equals(word + path)) &#123;</span><br><span class="line">            res.add(word + path);</span><br><span class="line">            cnt++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;Character, Node&gt; entry : node.child.entrySet()) &#123;</span><br><span class="line">            node = entry.getValue();</span><br><span class="line">            path = path + entry.getKey();</span><br><span class="line">            dfs(word, node, res, path);</span><br><span class="line">            path = path.substring(<span class="number">0</span>, path.length() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
                 
                 <p class="end">__END__</p>
@@ -175,7 +127,7 @@
     <div class="suffix-box-right">
         <span class="suffix-box-title">文章作者：</span>Lucky Dog
         <br>
-        <span class="suffix-box-title">文章出处：</span><a href="/post/1efeaa73.html" target="_blank">SpringBoot跨域请求</a>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/84520ef4.html" target="_blank">前缀树</a>
         <br>
         <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
         <br>
@@ -190,7 +142,7 @@
                     <div class="category">
                         分类：
                         
-                            <a href="/category/Spring/">Spring</a>
+                            <a href="/category/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
                         
                     </div>
                 
@@ -198,17 +150,14 @@
                     <div class="tag">
                         标签：
                         
-                            <a href="/tag/%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82/">跨域请求</a>
+                            <a href="/tag/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
                         
                     </div>
                 
                 <div class="article-prev-next">
                     
-                        <a href="/post/84520ef4.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/84520ef4.html" title="发布于 2022-08-28 07:35">前缀树</a>
-                        <br>
                     
-                    
-                        <a href="/post/4c95c618.html" class="next-prefix">» </a> 下一篇：    <a href="/post/4c95c618.html" title="发布于 2022-08-24 08:42">SpringBoot静态资源配置</a>
+                        <a href="/post/1efeaa73.html" class="next-prefix">» </a> 下一篇：    <a href="/post/1efeaa73.html" title="发布于 2022-08-25 03:27">SpringBoot跨域请求</a>
                     
                 </div>
             </div>
