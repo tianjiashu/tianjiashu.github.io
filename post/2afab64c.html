@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            Lucky Dog's blogs
+            Sharding-jdbc分表配置
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,327 +32,141 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/index.css">
-<div id="count"></div>
-<div id="header" >
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-title">Lucky Dog</h1>
-                <h2 class="header-description" id="hitokoto"></h2>
-                <h3 class="header-info" id="hitokotoAuthor"></h3>
+                <h1 class="header-subtitle">Sharding-jdbc分表配置</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-08-29
+                        </span>
+                        
+                            <span id="/post/2afab64c.html" class="leancloud_visitors" data-flag-title="Sharding-jdbc分表配置">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/2afab64c.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">Spring</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">分表</span>
+                        
+                    
+                </div>
             
         </div>
     </div>
-    
-        <a class="scroll-down" href="javascript:;" target="_self" data-offset="-45">
-            <i class="scroll-down-icon iconfont icon-return"></i>
-        </a>
     
 </div>
 <div id="container">
     
-        
-            <!-- 首页 -->
-            <div class="articles">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <p>最近在做一个用Java实现一个简易的搜索引擎项目时，由于数据量很大，需要分表。这里的分表指的<strong>水平分表</strong>。数据大概有几千万行了吧。</p>
+<p><img src="/%5Cimage%5Carticle%5CSharding-jdbc%E5%88%86%E8%A1%A8%E9%85%8D%E7%BD%AE%5Cimage-20220829225513347.png" alt="image-20220829225513347"></p>
+<p>当数据量特别大的时候，查询速度特别慢，为了加快查询速度，只能采用分表的策略。除了水平切分还有垂直切分，用的不多。</p>
+<p>当数据库分表后，为了方便操作数据库，我们可以采用<code>Sharding-jdbc</code>。你可以把它理解为加强版的<code>JDBC</code>。</p>
+<p>当我们需要使用<code>Shard-jdbc</code>，首先我们需要导入<code>pom</code>坐标</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.shardingsphere<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sharding-jdbc-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.0-RC1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我这里使用的<code>4.0</code>版本</p>
+<p>然后配置如下</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">main:</span></span><br><span class="line">    <span class="attr">allow-bean-definition-overriding:</span> <span class="literal">true</span> <span class="comment">#允许bean覆盖</span></span><br><span class="line">  <span class="attr">shardingsphere:</span></span><br><span class="line">    <span class="attr">datasource:</span></span><br><span class="line">      <span class="attr">names:</span> <span class="string">master</span>	<span class="comment">#数据源名称</span></span><br><span class="line">      <span class="attr">master:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span>  <span class="comment">#使用druid数据源，如果不用就去掉这一行，如果用记得导入pom坐标</span></span><br><span class="line">        <span class="attr">driver-class-name:</span> <span class="string">com.mysql.cj.jdbc.Driver</span></span><br><span class="line">        <span class="attr">url:</span> <span class="string">jdbc:mysql://192.168.37.135:3306/my_search_engine?serverTimezone=UTC</span></span><br><span class="line">        <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">sharding:</span> </span><br><span class="line">      <span class="attr">tables:</span></span><br><span class="line">        <span class="attr">data_seg_relation:</span> <span class="comment">#需要分表的表名  也可以理解为分表后的表名前缀</span></span><br><span class="line">        	<span class="comment">#分成100个表 从data_seg_relation_0 --&gt;data_seg_relation_99</span></span><br><span class="line">          <span class="attr">actual-data-nodes:</span> <span class="string">master.data_seg_relation_$-&gt;&#123;0..99&#125;</span> </span><br><span class="line">          <span class="attr">key-generator:</span> <span class="comment">#主键生成策略</span></span><br><span class="line">            <span class="attr">column:</span> <span class="string">id</span></span><br><span class="line">            <span class="attr">type:</span> <span class="string">SNOWFLAKE</span>  <span class="comment">#使用雪花算法生成id</span></span><br><span class="line">          <span class="attr">table-strategy:</span></span><br><span class="line">            <span class="attr">inline:</span></span><br><span class="line">              <span class="attr">algorithm-expression:</span> <span class="string">data_seg_relation_$-&gt;&#123;seg_id</span> <span class="string">%</span> <span class="number">100</span><span class="string">&#125;</span> <span class="comment">#如何映射到表</span></span><br><span class="line">              <span class="attr">sharding-column:</span> <span class="string">seg_id</span>	</span><br></pre></td></tr></table></figure>
+
+<p>说明一下，这是数据库里面的表。</p>
+<p>我们可以看到  <code>data_seg_relation</code>被分成了100个表，从<code>data_seg_relation_0</code>到<code>data_seg_relation_99</code></p>
+<img src="\image\article\Sharding-jdbc分表配置\image-20220829230552472.png" alt="image-20220829230552472" style="zoom: 80%;" />
+
+<p><font size=5><strong>表结构</strong></font></p>
+<img src="\image\article\Sharding-jdbc分表配置\image-20220829230826244.png" alt="image-20220829230826244" style="zoom:80%;" />
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">algorithm-expression:</span> <span class="string">data_seg_relation_$-&gt;&#123;seg_id</span> <span class="string">%</span> <span class="number">100</span><span class="string">&#125;</span> <span class="comment">#如何映射到表</span></span><br><span class="line"><span class="attr">sharding-column:</span> <span class="string">seg_id</span>	</span><br></pre></td></tr></table></figure>
+
+<p>这个配置的意思是，当你查询的时候，比如 <code>select * from data_seg_relation where seg_id=1165136</code>，</p>
+<p><code>Shard-jdbc</code>会根据<code>seg_id</code>这个取值，<code>seg_id % 100 = 36</code>。然后它实际就会去查<code>data_seg_relation_36</code>这个表。</p>
+<p><strong>当你配置好之后，你就可以像没有分表那样来去操作数据库。</strong></p>
+<p>但需要注意的是【踩的几个坑吧】:</p>
+<ul>
+<li><p>如果你的<code>Java</code>是<code>jdk8</code>以上的版本，或许你会报这样的错：</p>
+<p><code>Cause: javax.xml.bind.JAXBException: Implementation of JAXB-API has not been found on module path or classpath.</code></p>
+<p>大概率就是你<code>jdk</code>版本的原因，要么你回退到<code>jdk8</code>版本，要么你就添加如下<code>pom</code>坐标。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.xml.bind<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jaxb-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/javax.activation/activation --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.activation<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>activation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.glassfish.jaxb<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jaxb-runtime<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.0-b170127.1453<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当你用使用mybatis或mybatis-plus时，就不需要再配置它们的数据源了。</p>
+</li>
+<li><p>你当你写<code>SQL</code>时，最好别用子查询，因为你可能会报错的，【错误信息找不到ಥ_ಥ】</p>
+<p>解决方法就是不用子查询，一条<code>SQL</code>语句拆成两条不就好了！</p>
+</li>
+</ul>
+
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/474fbc8a.html">Java泛型机制（一）泛型基础</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：泛型概述、泛型的基本使用以及泛型的类型限定
-                                <a href="/post/474fbc8a.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-09
-                            </span>
-                            
-                                <span id="/post/474fbc8a.html" class="leancloud_visitors" data-flag-title="Java泛型机制（一）泛型基础">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/474fbc8a.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/2afab64c.html" target="_blank">Sharding-jdbc分表配置</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/Spring/">Spring</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/ae19fff4.html">Java泛型机制（二）深入理解泛型——类型擦除</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：Java中的泛型是伪泛型？什么是类型擦除？如何证明类型擦除？什么是原始类型？如何理解编译器检查？JVM是如何解决类型擦除和多态之间的冲突的？
-                                <a href="/post/ae19fff4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-10
-                            </span>
-                            
-                                <span id="/post/ae19fff4.html" class="leancloud_visitors" data-flag-title="Java泛型机制（二）深入理解泛型——类型擦除">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/ae19fff4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E5%88%86%E8%A1%A8/">分表</a>
+                        
                     </div>
                 
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/1eb4aa8d.html">Java泛型机制（三）深入理解泛型</a>
-                            
-                                <span class="article-sticky">置顶</span>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：泛型数组，泛型类能不能实例化？以及如何理解泛型类中的静态方法和静态变量?
-                                <a href="/post/1eb4aa8d.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-11
-                            </span>
-                            
-                                <span id="/post/1eb4aa8d.html" class="leancloud_visitors" data-flag-title="Java泛型机制（三）深入理解泛型">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1eb4aa8d.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/2afab64c.html">Sharding-jdbc分表配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：SpringBoot整合Sharding-jdbc,并进行简单的分表。
-                                <a href="/post/2afab64c.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-29
-                            </span>
-                            
-                                <span id="/post/2afab64c.html" class="leancloud_visitors" data-flag-title="Sharding-jdbc分表配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/2afab64c.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/84520ef4.html">前缀树</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：前缀树的简介以及前缀树的Java实现。
-                                <a href="/post/84520ef4.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-28
-                            </span>
-                            
-                                <span id="/post/84520ef4.html" class="leancloud_visitors" data-flag-title="前缀树">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/84520ef4.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/1efeaa73.html">SpringBoot跨域请求</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：什么是跨域请求？如何解决跨域请求？当使用SpringSecurity是进行跨域请求配置。
-                                <a href="/post/1efeaa73.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-25
-                            </span>
-                            
-                                <span id="/post/1efeaa73.html" class="leancloud_visitors" data-flag-title="SpringBoot跨域请求">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/1efeaa73.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/4c95c618.html">SpringBoot静态资源配置</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：更改静态资源访问路径,更改静态资源存放目录以及静态资源映射
-                                <a href="/post/4c95c618.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-24
-                            </span>
-                            
-                                <span id="/post/4c95c618.html" class="leancloud_visitors" data-flag-title="SpringBoot静态资源配置">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/4c95c618.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/b3200ed2.html">卷积神经网络featuremap的可视化</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：神经网络对人们来说就像是一个黑箱子，并不知道其中提取了哪些特征，于是我们可以获取它的featuremap来进行可视化。以LeNet为例。
-                                <a href="/post/b3200ed2.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-24
-                            </span>
-                            
-                                <span id="/post/b3200ed2.html" class="leancloud_visitors" data-flag-title="卷积神经网络featuremap的可视化">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/b3200ed2.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/c1b62771.html">SpringBoot整合Mybatis-plus</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：添加依赖，配置数据源、映射规则配置以及主键生成配置。
-                                <a href="/post/c1b62771.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-23
-                            </span>
-                            
-                                <span id="/post/c1b62771.html" class="leancloud_visitors" data-flag-title="SpringBoot整合Mybatis-plus">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/c1b62771.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
-                    <div class="article">
-                        <div class="article-title">
-                            <a href="/post/627dc999.html">SpringSecurity配置类</a>
-                            
-                        </div>
-                        <div class="article-abstract">
-                            
-                                摘要：在学习 三更老师 的SpringSecurity课程后所做的配置类的笔记综述
-                                <a href="/post/627dc999.html">阅读全文</a>
-                            
-                        </div>
-                        <div class="clear"></div>
-                        <div class="article-info">
-                            <span>
-                                <i class="iconfont icon-time"></i> 发表时间：2022-08-22
-                            </span>
-                            
-                                <span id="/post/627dc999.html" class="leancloud_visitors" data-flag-title="SpringSecurity配置类">
-                                    <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
-                                </span>
-                            
-                            <span>
-                                <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/627dc999.html"></span>
-                            </span>
-                        </div>
-                        <div class="clear"></div>     
-                    </div>
-                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/84520ef4.html" class="next-prefix">» </a> 下一篇：    <a href="/post/84520ef4.html" title="发布于 2022-08-28 07:35">前缀树</a>
+                    
+                </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a href="/page/2/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -378,7 +192,7 @@
             <div class="menu-list">
                 <ul>
                     
-                        <li class=" active "><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
                     
                         <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
                     
