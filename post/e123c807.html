@@ -74,10 +74,10 @@
         <div id="article">
             <div class="toc"></div>
             <div class="article-body">
-                <h1 id="登录校验过程"><a href="#登录校验过程" class="headerlink" title="登录校验过程"></a>登录校验过程</h1><p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211215094003288.png" alt="image-20211215094003288"></p>
+                <h1 id="登录校验过程"><a href="#登录校验过程" class="headerlink" title="登录校验过程"></a>登录校验过程</h1><p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211215094003288.png" alt="image-20211215094003288"></p>
 <h1 id="原理初探"><a href="#原理初探" class="headerlink" title="原理初探"></a>原理初探</h1><p>想要知道如何实现自己的登陆流程就必须要先知道入门案例中<code>SpringSecurity</code>的流程。</p>
 <h2 id="SpringSecurity完整流程"><a href="#SpringSecurity完整流程" class="headerlink" title="SpringSecurity完整流程"></a>SpringSecurity完整流程</h2><p><code>SpringSecurity</code>的原理其实就是一个<font color="red"><strong>过滤器链</strong></font>，内部包含了提供各种功能的过滤器。</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
 <p><font color="red"><strong>图中只展示了核心过滤器</strong></font>，其它的非核心过滤器并没有在图中展示。</p>
 <ul>
 <li><code>UsernamePasswordAuthenticationFilter</code>:负责处理我们在登陆页面填写了用户名密码后的登陆请求。入门案例的认证工作主要有它负责。【判断你的用户名和密码是否正确】</li>
@@ -85,12 +85,12 @@
 <li><code>FilterSecurityInterceptor</code>：负责权限校验的过滤器。【它会判断你登录成功的用户是“谁”，“你”具有什么权限，当前访问的资源需要什么权限】</li>
 </ul>
 <p>可以通过Debug查看当前系统中SpringSecurity过滤器链中有哪些过滤器及它们的顺序。</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214145824903.png" alt="image-20211214145824903"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214145824903.png" alt="image-20211214145824903"></p>
 <p>我们可以看到一共有15个过滤器。大概了解几个过滤器：</p>
 <p><code>DefaultLoginPageGeneratingFilter</code>：默认登录页就是这个过滤器显示出来的，如果不想要默认登录页，就去掉这个过滤器就可以了。</p>
 <p><code>DefaultLogoutPageGeneratingFilter</code>：用来显示默认注销的页面</p>
 <h2 id="认证流程详解"><a href="#认证流程详解" class="headerlink" title="认证流程详解"></a>认证流程详解</h2><p><code>UsernamePasswordAuthenticationFilter</code>这个过滤器来实现认证过程逻辑的。实际上不是它这一个类就实现了，它还通过其他类来帮助他实现的，下图就是该过滤器内部实现大致流程。</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214151515385.png" alt="image-20211214151515385"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214151515385.png" alt="image-20211214151515385"></p>
 <p>过程详解：</p>
 <p>当前端提交用户名和密码过来时，进入了<code>UsernamePasswordAuthenticationFilter</code>过滤器。</p>
 <ul>
@@ -152,14 +152,14 @@
 </li>
 </ul>
 <h1 id="实现登录认证"><a href="#实现登录认证" class="headerlink" title="实现登录认证"></a>实现登录认证</h1><h2 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h2><p><font color="blue" size=5><strong>登录</strong></font></p>
-<p>​	①自定义登录接口  <img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0414(20220818-140941).PNG" alt="IMG_0414(20220818-140941)"></p>
+<p>​	①自定义登录接口  <img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0414(20220818-140941).PNG" alt="IMG_0414(20220818-140941)"></p>
 <p>​				调用<code>ProviderManager</code>的方法进行认证 如果认证通过生成<code>jwt</code></p>
 <p>​				把用户信息存入<code>redis</code>中【<code>userId</code>作为Key，用户信息作为Value】</p>
 <p>​	②自定义<code>UserDetailsService </code></p>
 <p>​	【因为原本这个<strong>接口的实现类</strong>是<strong>在内存中查询用户信息</strong>，不符合我们的要求，所以需要我们自己去实现它来自定义】</p>
 <p>​				在这个实现类中去查询数据库 </p>
 <p><font color="blue" size=5><strong>校验</strong></font>：【校验的话，需要我们自己去<strong>自定义一个过滤器</strong>】</p>
-<img src="\image\article\Spring-Security登录认证\IMG_0415(20220818-141117).PNG" alt="IMG_0415(20220818-141117)" style="zoom: 80%;" />
+<img src="image\article\Spring-Security登录认证\IMG_0415(20220818-141117).PNG" alt="IMG_0415(20220818-141117)" style="zoom: 80%;" />
 
 <p>​	①定义<code>Jwt</code>认证过滤器</p>
 <p>​				获取token</p>
@@ -230,9 +230,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">UserDetailsService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserService service;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> UserDetails <span class="title function_">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException &#123;</span><br><span class="line">        <span class="comment">//根据传入了Passward查询用户</span></span><br><span class="line">        LambdaQueryWrapper&lt;User&gt; queryWrapper = <span class="keyword">new</span> <span class="title class_">LambdaQueryWrapper</span>&lt;&gt;();</span><br><span class="line">        queryWrapper.eq(User::getUserName,username);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> service.getOne(queryWrapper);</span><br><span class="line">        <span class="comment">//如果没有查询到用户就抛出异常</span></span><br><span class="line">        <span class="keyword">if</span>(Objects.isNull(user))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UsernameNotFoundException</span>(<span class="string">&quot;用户名不存在&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//TODO 查询对应的权限</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">LoginUser</span>(user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>注意：如果要测试，需要往用户表中写入用户数据，并且如果你想让用户的密码是明文存储，需要在密码前加{noop}。例如</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211216123945882.png" alt="image-20211216123945882"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211216123945882.png" alt="image-20211216123945882"></p>
 <p>这样登陆的时候就可以用sg作为用户名，1234作为密码来登陆了。</p>
-<h4 id="密码加密存储"><a href="#密码加密存储" class="headerlink" title="密码加密存储"></a>密码加密存储</h4><img src="\image\article\Spring-Security登录认证\image-20220819003356284.png" alt="image-20220819003356284" style="zoom:67%;" />
+<h4 id="密码加密存储"><a href="#密码加密存储" class="headerlink" title="密码加密存储"></a>密码加密存储</h4><img src="image\article\Spring-Security登录认证\image-20220819003356284.png" alt="image-20220819003356284" style="zoom:67%;" />
 
 <p>实际项目中我们不会把密码明文存储在数据库中。</p>
 <p>​	默认使用的<code>PasswordEncoder</code>要求数据库中的密码格式为：<code>&#123;id&#125;password </code>。它会根据id去判断密码的加密方式。但是我们一般不会采用这种方式。所以就需要替换<code>PasswordEncoder</code>。</p>
@@ -242,11 +242,11 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> PasswordEncoder <span class="title function_">passwordEncoder</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">BCryptPasswordEncoder</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>配置之后，我们要将数据库<code>sys_user</code>表的用户密码，从 <strong>1234</strong>,改为加密之后的。</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819003102757.png" alt="image-20220819003102757"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819003102757.png" alt="image-20220819003102757"></p>
 <p>当我们进行注册时，要将密码进行加密，我们可以将<code>PasswordEncoder</code>注入进Controller里。下面我们进行测试演示。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Demo1ApplicationTests</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PasswordEncoder passwordEncoder;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">contextLoads</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">encode</span> <span class="operator">=</span> passwordEncoder.encode(<span class="string">&quot;1234&quot;</span>);</span><br><span class="line">        System.out.println(encode);<span class="comment">//$2a$10$OHOzZsC9RMCqJdWWpBzgfOfQZlEVedDXrUqHhp3HSINu4HghI59kq</span></span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">			加密后的信息是动态变化的，因为我们要使用，matches()来进行比较。</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">matches</span> <span class="operator">=</span> passwordEncoder.matches(<span class="string">&quot;1234&quot;</span>, encode);</span><br><span class="line">        System.out.println(matches);<span class="comment">//true</span></span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">matches2</span> <span class="operator">=</span> passwordEncoder.matches(<span class="string">&quot;12345&quot;</span>, encode);</span><br><span class="line">        System.out.println(matches2);<span class="comment">//false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="登录接口"><a href="#登录接口" class="headerlink" title="登录接口"></a>登录接口</h3><img src="\image\article\Spring-Security登录认证\image-20220819004454194.png" alt="image-20220819004454194" style="zoom:67%;" />
+<h3 id="登录接口"><a href="#登录接口" class="headerlink" title="登录接口"></a>登录接口</h3><img src="image\article\Spring-Security登录认证\image-20220819004454194.png" alt="image-20220819004454194" style="zoom:67%;" />
 
 <p>接下我们需要自定义登陆接口。</p>
 <ol>
@@ -287,7 +287,7 @@
 <p><code>Principal</code>属性是<code>Userdetails</code></p>
 <p><code>credentials</code> 属性为null</p>
 </blockquote>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819010124847.png" alt="image-20220819010124847"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819010124847.png" alt="image-20220819010124847"></p>
 </li>
 </ul>
 </li>
@@ -303,7 +303,7 @@
 
 <h3 id="认证过滤器"><a href="#认证过滤器" class="headerlink" title="认证过滤器"></a>认证过滤器</h3><blockquote>
 <p>为什么要写这么一个过滤器？</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20211214144425527.png" alt="image-20211214144425527"></p>
 <p><code>SpringSecurity</code>自带的过滤器中是用来认证<font color="red">用户名和密码</font>的但我们并没有使用它，在配置的时候就去掉了。之前的登录接口我们生成了一个token，当前端访问后端的时候需要携带这个token。而这个过滤器就是认证<font color="red">token</font>的。</p>
 </blockquote>
 <p>自定义一个<strong>过滤器</strong></p>
@@ -378,12 +378,12 @@
 </ul>
 <h2 id="图例演示"><a href="#图例演示" class="headerlink" title="图例演示"></a>图例演示</h2><ol>
 <li><p>当我们登录时</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0418(20220819-175440)-16609042254092.PNG" alt="IMG_0418(20220819-175440)"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0418(20220819-175440)-16609042254092.PNG" alt="IMG_0418(20220819-175440)"></p>
 </li>
 <li><p>登录之后，前端访问其他资源</p>
 <ul>
 <li><p>携带token</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0421(20220819-181345).PNG" alt="IMG_0421(20220819-181345)"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5CIMG_0421(20220819-181345).PNG" alt="IMG_0421(20220819-181345)"></p>
 <blockquote>
 <p>通过DEBUG发现，如果携带token。</p>
 <ul>
@@ -396,7 +396,7 @@
 </blockquote>
 </li>
 <li><p>未携带token</p>
-<p><img src="/%5Cimage%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819181740017.png" alt="image-20220819181740017"></p>
+<p><img src="/image%5Carticle%5CSpring-Security%E7%99%BB%E5%BD%95%E8%AE%A4%E8%AF%81%5Cimage-20220819181740017.png" alt="image-20220819181740017"></p>
 </li>
 </ul>
 </li>

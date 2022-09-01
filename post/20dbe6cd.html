@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <title>
         
-            归档
+            Java对象序列化和反序列化
         
     </title>
     <link rel="shortcut icon" href="#"/>
@@ -32,15 +32,36 @@
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 <body>
     <a id="cover"></a>
-    <link type="text/css" rel="stylesheet" href="/css/archive.css">
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
 <div id="header" class="header">
     <div class="vertical">
         <div class="inner">
             
-                <h1 class="header-subtitle">归档</h1>
+                <h1 class="header-subtitle">Java对象序列化和反序列化</h1>
                 <div class="header-subinfo">
-                    <p class="article-info-text Chinese"></p>
-                    <p class="article-info-text English"></p>                  
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-09-01
+                        </span>
+                        
+                            <span id="/post/20dbe6cd.html" class="leancloud_visitors" data-flag-title="Java对象序列化和反序列化">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/20dbe6cd.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">java基础</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">序列化和反序列化</span>
+                        
+                    
                 </div>
             
         </div>
@@ -49,135 +70,127 @@
 </div>
 <div id="container">
     
-        
-            <!-- 归档页面、分类归档页面、标签归档页面 -->
-            <div class="articles">
-                <div class="articles-wrap">
-                    <span class="archive-move-on"></span>
-                    <span class="archive-counter">
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><font size=5><strong>对象序列化：</strong></font></p>
+<p>所谓的对象序列化就是将对象保存到磁盘中，或者在网络中传输对象。</p>
+<p>这种机制就是使用一个<strong>字节序列</strong>表示一个对象，该字节序列包含:</p>
+<ul>
+<li>对象的类型</li>
+<li>对象的数据</li>
+<li>对象中存储的属性等信息</li>
+</ul>
+<p>字节序列写到文件之后，相当于文件中持久保存了一个对象的信息</p>
+<p><font size=5><strong>对象反序列化：</strong></font></p>
+<p>对象反序列化就是将 对象的字节序列从文件中读取回来，重构对象，对它进行反序列化。</p>
+<h1 id="对象序列化准备工作"><a href="#对象序列化准备工作" class="headerlink" title="对象序列化准备工作"></a>对象序列化准备工作</h1><h2 id="实现Serializable接口"><a href="#实现Serializable接口" class="headerlink" title="实现Serializable接口"></a>实现<code>Serializable</code>接口</h2><p>如果要将，对象序列化，该对象必须实现<code>Serializable</code>接口，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">People</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">42L</span>;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;  <span class="comment">//不想被序列化 transient</span></span><br><span class="line">	<span class="comment">//....</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Serializable</code>接口表示该类 启用 <strong>类的序列化</strong>，也就是允许该类被序列化。该接口没有实现方法，只是一个标识性的接口。</p>
+<p>如果需要序列化或者反序列化的类不实现该接口，那么在序列化或者序列化过程中抛出异常<code>NotSerializableException</code>。</p>
+<h2 id="最好显式声明一个serialVersionUID"><a href="#最好显式声明一个serialVersionUID" class="headerlink" title="最好显式声明一个serialVersionUID"></a>最好显式声明一个<code>serialVersionUID</code></h2><blockquote>
+<p>什么是<code>serialVersionUID</code>？</p>
+<p>序列化运行时将<font color="blue"><strong>每个可序列化的类</strong></font>与<font color="blue"><strong>称为<code>serialVersionUID</code>的版本号</strong></font>相关联。</p>
+<p>该序列号在反序列化期间<strong>用于验证序列化对象的发送者和接收者是否已加载与该序列化兼容的对象的类</strong>。  如果接收方加载了一个具有不同于相应发件人类的<code>serialVersionUID</code>的对象的类，则反序列化将导致<code>InvalidClassException</code> 。</p>
+<p>简而言之：</p>
+<p>相当于Java的版本号，保证<strong>序列化的对象</strong> 和 <strong>反序列化兼容的对象</strong> 的版本相同才能反序列化。</p>
+</blockquote>
+<p>如果没有显式地声明一个<code>serialVersionUID</code></p>
+<p>则序列化运行时将根据**Java（TM）对象序列化规范中所述的类的<font color="blue">各个方面</font>**计算该类的默认<code>serialVersionUID</code>值</p>
+<p>默认的<code>serialVersionUID</code>计算对类详细信息<font color="blue"><strong>非常敏感</strong></font>，这可能会<strong>因编译器实现</strong>而异，因此可能会在反<code>InvalidClassException</code>化期间导致<code>InvalidClassException</code>的<code>InvalidClassException</code>。</p>
+<p>比如将如下类的对象序列化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">People</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;  </span><br><span class="line">	<span class="comment">//Geter 和 Seter....省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在反序列化之前，<strong>修改这个类</strong>，添加一个属性或者删除一个属性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">People</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;  </span><br><span class="line">    <span class="keyword">private</span> String address</span><br><span class="line">	<span class="comment">//Geter 和 Seter....省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就会抛出<code>InvalidClassException</code>异常。异常信息：</p>
+<p><code>stream classdesc serialVersionUID = 6500785223629970781, local class serialVersionUID = -4354424114631597798</code></p>
+<p>异常信息表明，流对象发”版本号“是6500785223629970781，当前接收的类的”版本号“是-4354424114631597798。</p>
+<p><font color="red"><strong>版本号不一致！</strong></font>这说明默认的<code>serialVersionUID </code>对类的细节非常敏感！</p>
+<p>但如果我们显式的声明<code>serialVersionUID</code>就不会出现这种问题。需要说明的是，**<font color="red">该字段必须是静态的，最终的，类型是<code>long</code> </font>**</p>
+<p><strong>显式声明一个<code>serialVersionUID</code></strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">People</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">42L</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;  </span><br><span class="line">	<span class="comment">//Geter 和 Seter....省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他需要注意的"><a href="#其他需要注意的" class="headerlink" title="其他需要注意的"></a>其他需要注意的</h2><ul>
+<li>序列化的类必须有<strong>可访问的无参构造函数</strong></li>
+<li>序列化的类不能包含<strong>未知的数据类型</strong></li>
+</ul>
+<p>否则都会引发<code>InvalidClassException</code>异常。</p>
+<p>如果你不想类中某个字段不被序列化，可以<font color="red">使用<code>transient</code>关键字修饰</font>。</p>
+<h1 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h1><ul>
+<li>对象序列化使用<code>objectOutputStream</code>类。<ul>
+<li>方法：<code>void writeobject (object obj)</code>:将指定的对象写入<code>objectOutputStream</code></li>
+</ul>
+</li>
+<li>反序列化使用<code>objectInputStream</code>类。<ul>
+<li>方法：<code>object read0bject ()</code>:从<code>objectInputStream</code>读取一个对象</li>
+</ul>
+</li>
+</ul>
+<p>了解一下就行了，真正开发时，用的很少。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UID</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">		write();</span><br><span class="line">        read();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">write</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">People</span> <span class="variable">peo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">People</span>(<span class="string">&quot;张三&quot;</span>,<span class="number">23</span>);</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;D:\\oos.txt&quot;</span>)</span><br><span class="line">        );</span><br><span class="line">        oos.writeObject(peo);</span><br><span class="line">        oos.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;D:\\oos.txt&quot;</span>)</span><br><span class="line">        );</span><br><span class="line">        <span class="type">Object</span> <span class="variable">object</span> <span class="operator">=</span> ois.readObject();</span><br><span class="line">        <span class="type">People</span> <span class="variable">people</span> <span class="operator">=</span> (People) object;</span><br><span class="line">        System.out.println(people.getName());</span><br><span class="line">        ois.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">People</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">serialVersionUID</span> <span class="operator">=</span> <span class="number">42L</span>;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">int</span> age;  <span class="comment">//不想被序列化 transient</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">People</span><span class="params">(String name, <span class="type">int</span> age)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">getAge</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setAge</span><span class="params">(<span class="type">int</span> age)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/20dbe6cd.html" target="_blank">Java对象序列化和反序列化</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
                         
-                            目前共计 48 篇日志，继续加油！
+                            <a href="/category/java%E5%9F%BA%E7%A1%80/">java基础</a>
                         
-                    </span>
-                    
-                    
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
                         
-                            <div class="archive-title">
-                                <h2 class="archive-year">2022</h2>
-                            </div>
-                            
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/e696a246.html"><span>MYSQL主从配置</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-03</span>
-                                </div>
-                            </div>
-                        </div>
+                            <a href="/tag/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">序列化和反序列化</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/d09e42a4.html"><span>乘积小于k的子数组</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
                     
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/714fed31.html"><span>跳跃游戏II</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/acb8270e.html"><span>Linux安装Redis</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">08-01</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/42bdef23.html"><span>Linux安装Mysql</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/c357b778.html"><span>Linux安装jdk</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/d0edc1ed.html"><span>Linux常用命令</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/bea0af19.html"><span>安装ssh连接工具</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/3ca46669.html"><span>Linux虚拟机网卡设置问题</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
-                    
-                           
-                        <div class="article">
-                            <div class="article-header">
-                                <h1 class="article-title"><a href="/post/afd438ef.html"><span>Linux虚拟机安装教程</span></a></h1>
-                                <div class="article-meta">
-                                    <span class="article-time">07-31</span>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/post/2afab64c.html" class="next-prefix">» </a> 下一篇：    <a href="/post/2afab64c.html" title="发布于 2022-08-29 10:49">Sharding-jdbc分表配置</a>
                     
                 </div>
             </div>
             
+    <div class="article-comments">
         
-    <div class="pagination-bottom">
-        <div class="pagination">
-            
-                <a class="extend prev" rel="prev" href="/archive/2022/page/3/">上一页</a><a class="page-number" href="/archive/2022/">1</a><a class="page-number" href="/archive/2022/page/2/">2</a><a class="page-number" href="/archive/2022/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/archive/2022/page/5/">5</a><a class="extend next" rel="next" href="/archive/2022/page/5/">下一页</a>
-            
-        </div>
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
     </div>
 
+        </div>
     
 </div>
     <div id="footer"></div>
@@ -209,7 +222,7 @@
                     
                         <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
                     
-                        <li class=" active "><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
                     
                         <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
                     
