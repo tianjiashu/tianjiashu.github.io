@@ -78,7 +78,7 @@
 <p>声明：我用的Java的版本是<code>Java9</code>版本。版本不同，源代码也有差异。</p>
 <p>ArrayList源码中大量使用了一下两个函数，首先搞清楚这两个函数的含义</p>
 <ul>
-<li><code>System.arraycopy()</code></li>
+<li><font size=5><code>System.arraycopy()</code></font></li>
 </ul>
  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我们发现 arraycopy 是一个 native 方法,接下来我们解释一下各个参数的具体意义</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*   复制数组</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> src 源数组</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> srcPos 源数组中的起始位置</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> dest 目标数组</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> destPos 目标数组中的起始位置</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> length 要复制的数组元素的数量</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">arraycopy</span><span class="params">(Object src,  <span class="type">int</span>  srcPos,</span></span><br><span class="line"><span class="params">                                    Object dest, <span class="type">int</span> destPos,</span></span><br><span class="line"><span class="params">                                    <span class="type">int</span> length)</span>;</span><br></pre></td></tr></table></figure>
 
@@ -88,7 +88,7 @@
 <p> 含义：将<code>array</code>数组的元素，从下标<code>5</code>为起始，4个元素，赋给<code>array</code>数组从<code>4</code>索引开始的位置上。这个实现的是一个<strong>数组删除操作</strong>。</p>
 <p> <img src="/image/article/ArrayList%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/image-20220901170637925.png" alt="image-20220901170637925"></p>
 <ul>
-<li><code>Arrays.copyOf()</code></li>
+<li><font size=5><code>Arrays.copyOf()</code></font></li>
 </ul>
  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span>[] copyOf(<span class="type">int</span>[] original, <span class="type">int</span> newLength) &#123;</span><br><span class="line">	<span class="comment">// 申请一个新的数组</span></span><br><span class="line">    <span class="type">int</span>[] copy = <span class="keyword">new</span> <span class="title class_">int</span>[newLength];</span><br><span class="line">	<span class="comment">// 调用System.arraycopy,将源数组中的数据进行拷贝,并返回新的数组</span></span><br><span class="line">    System.arraycopy(original, <span class="number">0</span>, copy, <span class="number">0</span>,</span><br><span class="line">                     Math.min(original.length, newLength));</span><br><span class="line">    <span class="keyword">return</span> copy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -337,6 +337,9 @@
                     </div>
                 
                 <div class="article-prev-next">
+                    
+                        <a href="/post/a748c2b9.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/a748c2b9.html" title="发布于 2022-09-02 02:35">HashMap&HashSet源码分析</a>
+                        <br>
                     
                     
                         <a href="/post/20dbe6cd.html" class="next-prefix">» </a> 下一篇：    <a href="/post/20dbe6cd.html" title="发布于 2022-09-01 02:03">Java对象序列化和反序列化</a>
