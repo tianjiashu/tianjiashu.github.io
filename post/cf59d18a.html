@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            操作系统-进程管理（一）
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">操作系统-进程管理（一）</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-09-05
+                        </span>
+                        
+                            <span id="/post/cf59d18a.html" class="leancloud_visitors" data-flag-title="操作系统-进程管理（一）">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/cf59d18a.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">操作系统</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">进程管理</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="进程的定义"><a href="#进程的定义" class="headerlink" title="进程的定义"></a>进程的定义</h1><p>什么是进程？</p>
+<p>其实进程就是<strong>运行着的程序</strong>，是一个指令序列。</p>
+<p>进程实体：进程实体由三个部分组成，<strong>程序段、数据段、PCB</strong>。</p>
+<ul>
+<li>程序段：保存的是程序代码本身。</li>
+<li>数据段：保存的是程序运行的过程中运行所需要的数据（如：变量）。</li>
+<li>PCB：进程控制块，用来描述进程的各种信息。</li>
+</ul>
+<img src="\image\article\操作系统-进程管理\image-20220905155928075.png" alt="image-20220905155928075" style="zoom:67%;" />
+
+<p>我们把进程实体简称位进程。</p>
+<p>所谓的创建进程，实质上是<font color="red"><strong>创建进程实体中的PCB</strong></font></p>
+<p>撤销进程，实质上是<font color="red"><strong>撤销进程实体中的PCB</strong></font></p>
+<blockquote>
+<p>PCB是进程存在的唯一标志。</p>
+<p>严格来说，进程实体和进程是不一样的。进程实体是<font color="blue">静态的</font>，进程是<font color="blue">动态的</font>。</p>
+</blockquote>
+<h2 id="进程控制块PCB"><a href="#进程控制块PCB" class="headerlink" title="进程控制块PCB"></a>进程控制块PCB</h2><p>在操作系统中，是用<strong>进程控制块</strong>（<em>process control block，PCB</em>）数据结构来描述进程的。</p>
+<p><strong>PCB 是进程存在的唯一标识</strong>，这意味着一个进程的存在，必然会有一个 PCB，如果进程消失了，那么 PCB 也会随之消失</p>
+<p>PCB包含的信息：</p>
+<ul>
+<li><p>进程描述信息</p>
+<ul>
+<li>进程标识符【PID】：标识各个进程，每个进程都有一个并且唯一的标识符；【可以理解位<strong>进程的ID</strong>】</li>
+<li>用户标识符：进程归属的用户，用户标识符主要为共享和保护服务；</li>
+</ul>
+</li>
+<li><p>进程控制和管理信息</p>
+<ul>
+<li>进程当前状态：如 new、ready(就绪态)、running(运行态)、waiting 或 blocked(阻塞态) 等；</li>
+<li>进程优先级：进程抢占 CPU 时的优先级；</li>
+</ul>
+</li>
+<li><p>资源分配清单【即该进程被分配了<strong>哪些系统资源</strong>】</p>
+<ul>
+<li>有关内存地址空间或虚拟地址空间的信息，所打开文件的列表和所使用的 I&#x2F;O 设备信息。</li>
+</ul>
+</li>
+<li><p>处理机相关信息</p>
+<ul>
+<li><p>CPU 中各个寄存器的值。</p>
+<p>当进程被切换时，CPU 的状态信息都会被保存在相应的 PCB 中，以便进程重新执行时，能从断点处继续执行。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220905160900292.png" alt="image-20220905160900292"></p>
+<h2 id="进程的组织"><a href="#进程的组织" class="headerlink" title="进程的组织"></a>进程的组织</h2><p>在一个系统中，通常由数十、数百乃至数千个PCB。为了对他们加以有效的管理，应当用适当的方式把这些PCB组织起来。</p>
+<p>进程的组织方式：</p>
+<ul>
+<li>链接方式</li>
+<li>索引方式</li>
+</ul>
+<h3 id="链接方式"><a href="#链接方式" class="headerlink" title="链接方式"></a>链接方式</h3><p>PCB通常是通过<strong>链表</strong>的方式进行组织，把具有<strong>相同状态的进程链在一起，组成各种队列</strong>。</p>
+<p>比如：</p>
+<ul>
+<li>将所有处于就绪状态的进程链在一起，称为<font color="red"><strong>就绪队列</strong></font>；【通常会把优先级高的进程放在队头】</li>
+<li>把所有因等待某事件而处于等待状态的进程链在一起就组成各种<font color="red"><strong>阻塞队列</strong></font>；【很多操作系统会根据阻塞原因不同，再分为多个队列】</li>
+<li>对于<font color="red"><strong>运行队列</strong></font>在<font color="blue">单核 CPU 系统</font>中则只有<font color="blue">一个运行指针</font>了，因为单核 CPU 在某个时间，只能运行一个程序。</li>
+</ul>
+<img src="\image\article\操作系统-进程管理\image-20220905161507607.png" alt="image-20220905161507607" style="zoom:67%;" />
+
+<h3 id="索引方式"><a href="#索引方式" class="headerlink" title="索引方式"></a>索引方式</h3><p>它的工作原理：将同一状态的进程组织在一个索引表中，索引表项指向相应的 PCB，不同状态对应不同的索引表。</p>
+<p>它和链接方式很类似</p>
+<img src="\image\article\操作系统-进程管理\image-20220905161814030.png" alt="image-20220905161814030" style="zoom:67%;" />
+
+<h1 id="进程的状态与转换"><a href="#进程的状态与转换" class="headerlink" title="进程的状态与转换"></a>进程的状态与转换</h1><p>进程的状态由五种：</p>
+<ul>
+<li><p><font color="red"><strong>运行状态</strong></font>：占用CPU，并在CPU上运行。【多核CPU，可以有多个程序处于运行态，单核CPU，只能由一个程序处于运行态】</p>
+</li>
+<li><p><font color="red"><strong>就绪状态</strong></font>：已经具备的运行条件，但由于没有空闲的CPU，而暂时不能运行<strong>【万事具备，只欠CPU】</strong></p>
+</li>
+<li><p><font color="red"><strong>阻塞状态</strong></font>：因等待某一事件而暂时不能运行。【比如：等待用户输入，等待读磁盘操作】</p>
+</li>
+<li><p>创建状态：程序正在被创建，操作系统为进程分配资源，初始化PCB</p>
+</li>
+<li><p>终止状态：进程正在从系统撤销，操作系统会回收进程拥有的资源、撤销PCB。</p>
+</li>
+</ul>
+<p>其中，运行状态、就绪状态和阻塞状态是<strong>三种基本状态</strong>。</p>
+<p>状态转换</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220905164843230.png" alt="image-20220905164843230"></p>
+<blockquote>
+<p>运行态 —–&gt; 阻塞态是一种进程自身做出的<font color="red">主动行为</font></p>
+<p>阻塞态 —–&gt; 就绪态不是进程自身能控制的，是一种<font color="red">被动行为</font></p>
+<p>注意：</p>
+<ul>
+<li>不能由阻塞态直接转换为运行态</li>
+<li>不能由就绪态直接转换为阻塞态</li>
+</ul>
+</blockquote>
+<h1 id="进程的控制"><a href="#进程的控制" class="headerlink" title="进程的控制"></a>进程的控制</h1><p>进程控制的主要功能是对系统中的所有进程实施有效的管理，他具有以下功能：</p>
+<ul>
+<li>创建新进程</li>
+<li>撤销已有进程</li>
+<li>实现进程状态转换等</li>
+</ul>
+<p>其实，<strong>进程控制就是实现进程的状态转换</strong></p>
+<h3 id="创建进程"><a href="#创建进程" class="headerlink" title="创建进程"></a>创建进程</h3><p>创建进程，进程会从<strong>创建态</strong>，转换为，<strong>就绪态</strong>【创建态 —-&gt; 就绪态】</p>
+<img src="\image\article\操作系统-进程管理\image-20220905200645460.png" alt="image-20220905200645460" style="zoom: 50%;" />
+
+<p>过程如下：</p>
+<ol>
+<li><strong>申请一个空白的 PCB，并向 PCB 中填写一些控制和管理进程的信息</strong>，比如进程的唯一标识等；</li>
+<li>为该进程<strong>分配运行时所必需的资源</strong>，比如内存资源；</li>
+<li><strong>将 PCB 插入到就绪队列</strong>，等待被调度运行；</li>
+</ol>
+<h3 id="阻塞进程"><a href="#阻塞进程" class="headerlink" title="阻塞进程"></a>阻塞进程</h3><p>当进程需要<strong>等待某一事件完成</strong>时，它可以调用阻塞语句把自己阻塞等待。而一旦被阻塞等待，它只能由另一个进程唤醒。</p>
+<img src="\image\article\操作系统-进程管理\image-20220905201435819.png" alt="image-20220905201435819" style="zoom:50%;" />
+
+<p>过程如下：</p>
+<ol>
+<li>找到将要被阻塞进程标识号对应的 PCB</li>
+<li>如果该进程为运行状态，则<strong>保护其现场</strong>，将其状态转为阻塞状态，停止运行；</li>
+<li><strong>将该 PCB 插入到阻塞队列中去</strong>；</li>
+</ol>
+<h3 id="唤醒进程"><a href="#唤醒进程" class="headerlink" title="唤醒进程"></a>唤醒进程</h3><p>进程由「运行」转变为「阻塞」状态是由于进程必须等待某一事件的完成，所以<font color="red">处于阻塞状态的进程是绝对不可能叫醒自己的</font>。</p>
+<p>【不可能自己叫醒自己】</p>
+<p>如果某进程正在等待 I&#x2F;O 事件，<strong>需由别的进程发消息给它</strong>，则只有当该进程所期待的事件出现时，才由发现者进程用唤醒语句叫醒它。</p>
+<img src="\image\article\操作系统-进程管理\image-20220905201857890.png" alt="image-20220905201857890" style="zoom:50%;" />
+
+<ol>
+<li>在该事件的阻塞队列中找到相应进程的 PCB；【如果是等待的是资源分配，则还需要为进程分配资源】</li>
+<li>将其从阻塞队列中移出，并置其状态为就绪状态；</li>
+<li>把该 PCB 插入到就绪队列中，等待调度程序调度；</li>
+</ol>
+<p>进程的<strong>阻塞和唤醒</strong>是一对功能相反的语句，如果某个进程调用了阻塞语句，则必有一个与之对应的唤醒语句</p>
+<h3 id="终止进程"><a href="#终止进程" class="headerlink" title="终止进程"></a>终止进程</h3><img src="\image\article\操作系统-进程管理\image-20220905202145855.png" alt="image-20220905202145855" style="zoom:50%;" />
+
+<p>进程可以有 3 种终止方式：</p>
+<ul>
+<li>正常结束</li>
+<li>异常结束【除0，数组越界····】</li>
+<li>外界干预（信号 <code>kill</code> 掉）。</li>
+</ul>
+<p>当子进程被终止时，其在父进程处继承的资源应当还给父进程。而当父进程被终止时，该父进程的子进程就变为孤儿进程，会被 1 号进程收养，并由 1 号进程对它们完成状态收集工作。</p>
+<p>终止进程的过程如下：</p>
+<ul>
+<li>查找需要终止的进程的 PCB；</li>
+<li>如果处于执行状态，则立即终止该进程的执行，然后将 CPU 资源分配给其他进程；</li>
+<li>如果其还有子进程，则应将该进程的子进程交给 1 号进程接管；</li>
+<li>将该进程所拥有的全部资源都归还给操作系统；</li>
+<li>将其从 PCB 所在队列中删除；</li>
+</ul>
+<h3 id="原语"><a href="#原语" class="headerlink" title="原语"></a>原语</h3><p>进程控制的实现是使用<strong>原语</strong>实现的</p>
+<p>原语的特点是：<font color="red">执行期间不允许中断，只能一气呵成。</font>【这种不可被中断的操作即<font color="blue"><strong>原子操作</strong></font>】</p>
+<p>原语是一种特殊的程序，采用   “关中断指令”   和  “开中断指令“实现。</p>
+<img src="\image\article\操作系统-进程管理\image-20220905203006828.png" alt="image-20220905203006828" style="zoom:67%;" />
+
+<p><font color="red">关&#x2F;开中断指令</font>的权限非常大，必然只允许在<font color="red">核心态</font>下执行。</p>
+<h1 id="进程通信"><a href="#进程通信" class="headerlink" title="进程通信"></a>进程通信</h1><p>进程是分配系统资源的单位，因此<font color="red">各进程</font>拥有的<font color="red">内存地址空间相互独立</font>。</p>
+<img src="\image\article\操作系统-进程管理\image-20220905203711326.png" alt="image-20220905203711326" style="zoom:50%;" />
+
+<p>进程1可以访问进程1的地址空间，进程2可以访问进程2的地址空间，但进程1无法访问进程2的地址空间。如果可以，这是非常危险，进程1就可以篡改进程2的数据，是非常不安全的。</p>
+<p>为了保证安全，<font color='red'>一个进程是不能直接访问另一个进程的地址空间的</font>。</p>
+<p>但是进程之间的信息交换又是必须实现的。为了保证进程间的安全通信，操作系统提供了一些方法。</p>
+<p>比如：你可以将浏览器的照片通过QQ分享给你的朋友。</p>
+<p>进程通信可以使用以下三种方式实现</p>
+<ul>
+<li>共享存储</li>
+<li>消息传递</li>
+<li>管道通信</li>
+</ul>
+<h2 id="管道通信"><a href="#管道通信" class="headerlink" title="管道通信"></a>管道通信</h2><p>所谓的管道，是指用于<font color="red">连接读写进程的一个<strong>共享文件</strong></font>，又名pipe文件。其实就是<font color="blue"><strong>在内存中开辟一个大小固定的缓冲区</strong></font>。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220905204739438.png" alt="image-20220905204739438"></p>
+<p>管道只能采用<font color="red">半双工通信</font>【单向传输】。如果要实现全双工通信，则需要设置两个管道。</p>
+<p>各进程要<font color="red">互斥</font>地访问管道【进程1向管道写数据的时候，进程2是不可以读数据的】</p>
+<p>通信过程：</p>
+<ul>
+<li>数据以<font color="blue">字符流</font>的形式写入管道，当<font color="red">管道写满</font>时，写进程的<code>write()</code>系统调用将被阻塞，等待读进程将数据取走。</li>
+<li>当读进程将数据全部取走后，<font color="red">管道变空</font>，此时读进程的<code>read()</code>系统调用将被阻塞。</li>
+</ul>
+<blockquote>
+<p>注意：</p>
+<p>如果没有写满，是不允许读的。如果没有读空，是不允许写的。</p>
+<p>数据一旦被读出，就从管道中被抛弃，这就意味着<font color="red">读进程最多只能由一个</font>，否则可能会有读错数据的情况。</p>
+</blockquote>
+<p> <font size=4>管道这种通信方式效率低，不适合进程间频繁地交换数据</font></p>
+<h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><p>进程间的数据交换以<font color="red">格式化的消息</font>为单位。进程通过操作系统提供的  <strong>”发送消息&#x2F;接收消息“</strong>  两个原语进行数据交换。</p>
+<p>一个格式化的消息分为：<strong>消息头</strong>   和   <strong>消息体</strong>   两部分</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220905214501470.png" alt="image-20220905214501470"></p>
+<p>每个进程会有一个消息缓冲队列，<strong>消息队列是保存在<font color="red">内核</font>中的消息链表</strong></p>
+<p>通信过程：</p>
+<ol>
+<li><p>如果由另外一个进程向此进程发送消息，这个进程会首先创建好一个<font color="red"><strong>格式化的消息体</strong></font>。</p>
+<p>消息体是用户自定义的数据类型，消息的发送方和接收方要约定好消息体的数据类型，所以每个消息体都是固定大小的存储块，不像管道是无格式的字节流数据。</p>
+</li>
+<li><p>这个消息体会通过<font color="red"><strong>发送原语</strong></font>发送给目标进程。</p>
+</li>
+<li><p>这个消息就会挂到目标进程的<font color="red"><strong>消息缓存队列的队尾</strong></font>。</p>
+</li>
+<li><p>目标进程会通过<font color="red"><strong>接收原语</strong></font>依次把这些队列的消息一个一个取走，处理。</p>
+<p>如果进程从消息队列中读取了消息体，内核就会把这个消息体删除。</p>
+</li>
+</ol>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220905220437109.png" alt="image-20220905220437109"></p>
+<h3 id="消息队列和管道的比较"><a href="#消息队列和管道的比较" class="headerlink" title="消息队列和管道的比较"></a>消息队列和管道的比较</h3><ul>
+<li>生命周期<ul>
+<li><strong>消息队列</strong>生命周期<font color="red">随内核</font>，如果没有释放消息队列或者没有关闭操作系统，消息队列会一直存在</li>
+<li><strong>管道</strong>的生命周期，是<font color="red">随进程的创建而建立，随进程的结束而销毁</font>。</li>
+</ul>
+</li>
+<li>数据格式<ul>
+<li>每个消息体都是固定大小的存储块</li>
+<li>管道是无格式的字节流数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="消息队列的不足"><a href="#消息队列的不足" class="headerlink" title="消息队列的不足"></a>消息队列的不足</h3><p>消息队列这种模型，两个进程之间的通信就像平时发邮件一样，你来一封，我回一封，可以频繁沟通了。</p>
+<p>但邮件的通信方式存在不足的地方有两点，<font color="blue"><strong>一是通信不及时，二是附件也有大小限制</strong></font>，这同样也是消息队列通信不足的点。</p>
+<ul>
+<li><p><strong>消息队列不适合比较大数据的传输</strong></p>
+<p>因为在内核中每个消息体都有一个<font color="red">最大长度的限制</font>，同时所有<font color="red">队列所包含的全部<strong>消息体的总长度</strong>也是有上限</font></p>
+</li>
+<li><p><strong>消息队列通信过程中，存在用户态与内核态之间的<font color="red">数据拷贝开销</font></strong></p>
+<p>进程写入数据到内核中的消息队列时，会发生<strong>从<font color="blue">用户态</font>拷贝数据到<font color="blue">内核态</font>的过程</strong></p>
+<p>另一进程读取内核中的消息数据时，会发生<strong>从<font color="blue">内核态</font>拷贝数据到<font color="blue">用户态</font>的过程</strong>。</p>
+</li>
+</ul>
+<h2 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h2><p>消息队列的读取和写入的过程，都会有发生用户态与内核态之间的消息拷贝过程。那<strong>共享内存</strong>的方式，就很好的解决了这一问题。</p>
+<p>两个进程不能直接访问对方的进程的地址空间。所以操作系统会为两个进程开辟一块<strong>共享空间</strong>。</p>
+<img src="\image\article\操作系统-进程管理\image-20220905221543493.png" alt="image-20220905221543493" style="zoom: 67%;" />
+
+<p><strong>共享内存的机制，就是拿出一块虚拟地址空间来，映射到相同的物理内存中</strong>。</p>
+<p>这样这个进程写入的东西，另外一个进程马上就能看到了，都不需要拷贝来拷贝去，传来传去，大大提高了进程间通信的速度。</p>
+<blockquote>
+<p>需要注意的是：两个进程对共享空间的访问必须的**<font color="red">互斥</font>**的</p>
+<p>当进程A向内存写数据时，进程B是不允许访问共享空间的。</p>
+</blockquote>
+<h1 id="并发与并行"><a href="#并发与并行" class="headerlink" title="并发与并行"></a>并发与并行</h1><p>单核的 CPU 在某一个瞬间，只能运行一个进程。但在 1 秒钟期间，它可能会运行多个进程，这样就产生<strong>并行的错觉</strong>，实际上这是<strong>并发</strong>。</p>
+<p>并发是指能<strong>处理多个同时事件</strong>，并行是指<strong>同时处理两个事件</strong>。</p>
+<p>单核CPU只能并发处理进程，多核CPU才能并行处理多个进程。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907194231325.png" alt="image-20220907194231325" style="zoom: 80%;" />
+
+<h1 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h1><h2 id="为什么要引入线程"><a href="#为什么要引入线程" class="headerlink" title="为什么要引入线程"></a>为什么要引入线程</h2><p>还没有引入线程之前，系统中各个程序只能串行执行。</p>
+<blockquote>
+<p> 如果我们打开一个QQ程序，</p>
+<p>加入没有引入线程：我们要么进行视频聊天，要么进行文字聊天，而且只能和一个人。</p>
+<p>在引入线程之后：我们课进行视频聊天的同时和其他人进行文字聊天。</p>
+</blockquote>
+<p>有的进程可能需要”同时“处理很多事，而传统的进程只能<font color="red"><strong>串行地执行一系列程序代码</strong></font>。为此，引入线程来增加并发度。 </p>
+<p><strong>传统的进程是执行流的最小单位</strong> ，CPU会轮流执行这些进程。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907200326129.png" alt="image-20220907200326129" style="zoom:80%;" />
+
+<p>而引入线程之后，CPU调度的最小单位不再是进程，而是线程。CPU会用一些算法，轮流执行这些线程。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907200631217.png" alt="image-20220907200631217" style="zoom:80%;" />
+
+
+
+<p>引入线程后，<font color="red" size=4><strong>线程成为了程序执行流的最小单位</strong></font></p>
+<p>我们可以把线程理解为“轻量级进程”</p>
+<p>引入线程之后，不仅<font color="blue"><strong>进程之间可以并发执行</strong></font>，<font color="green"><strong>进程间的各个线程之间也可以并发的执行</strong></font>。从而进一步提高了并发度。</p>
+<p>进程只作为除CPU之后的系统资源分配单元。（如打印机、内存地址等都是分配给进程的）</p>
+<blockquote>
+<p><strong>线程是进程当中的一条执行流程。</strong></p>
+<p>同一个进程内多个线程之间可以<font color="red"><strong>共享代码段、数据段、打开的文件等资源</strong></font>，但<font color="blue"><strong>每个线程各自都有一套独立的寄存器和栈</strong></font>，这样可以确保线程的控制流是相对独立的。</p>
+</blockquote>
+<h2 id="线程和进程的比较"><a href="#线程和进程的比较" class="headerlink" title="线程和进程的比较"></a>线程和进程的比较</h2><p>比较如下：</p>
+<ul>
+<li><font color="blue">进程</font>是<font color="blue"><strong>资源分配</strong></font>（包括内存、打开的文件等）的单位，<font color="red">线程</font>是<font color="red"> <strong>CPU 调度</strong></font>的单位；</li>
+<li>【资源方面】进程拥有一个完整的资源平台，而线程只独享必不可少的资源，如<strong>寄存器和栈</strong>；【线程几乎不拥有系统资源】</li>
+<li>【状态方面】线程同样具有就绪、阻塞、执行三种基本状态，同样具有状态之间的转换关系；【状态方面，和进程状态差不多类似】</li>
+<li>【开销方面】线程能<strong>减少并发执行的时间和空间开销</strong>；</li>
+</ul>
+<blockquote>
+<p> 为什么会减少并发执行的<strong>时间和空间开销呢</strong>？</p>
+<ul>
+<li><p><font color="blue">线程的创建时间比进程<u>快</u></font></p>
+<ul>
+<li>进程在创建的过程中，还需要资源管理信息，比如内存管理信息、文件管理信息，</li>
+<li>线程在创建的过程中，不会涉及这些资源管理信息，而是共享它们；</li>
+</ul>
+</li>
+<li><p><font color="blue">线程的终止时间比进程快</font></p>
+<ul>
+<li>线程释放的资源相比进程少很多</li>
+</ul>
+</li>
+<li><p><font color="blue"><strong>同一个进程内的线程</strong>切换比进程切换快</font></p>
+<ul>
+<li>对于同一个进程的线程之间的切换，线程具有相同的地址空间（虚拟内存共享），这意味着在切换的时候不需要切换页表。</li>
+<li>而对于进程之间的切换，切换的时候要把页表给切换掉，而页表的切换过程开销是比较大的；</li>
+</ul>
+</li>
+<li><p><font color="blue"><strong>同一进程的各线程</strong>之间的数据交互效率更高</font></p>
+<ul>
+<li><p>同一进程的各线程间共享内存和文件资源，那么在线程之间数据传递的时候，就不需要经过内核了。</p>
+<p>【由于共享内存地址空间，同一进程中的线程通信甚至无需系统干预】</p>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>同一进程内的线程切换，不需要切换进程环境，系统开销小。</p>
+<p>但是不同进程的线程切换，则需要切换进程，系统开销大。</p>
+<h2 id="线程的实现方式"><a href="#线程的实现方式" class="headerlink" title="线程的实现方式"></a>线程的实现方式</h2><p>线程的实现方式基本有两种：</p>
+<ul>
+<li>用户级线程：在用户空间实现的线程，不是由内核管理的线程，是由用户态的线程库来完成线程的管理；</li>
+<li>内核级线程：在内核中实现的线程，是由内核管理的线程；</li>
+</ul>
+<h3 id="如何理解用户级线程呢？"><a href="#如何理解用户级线程呢？" class="headerlink" title="如何理解用户级线程呢？"></a>如何理解<strong>用户级线程</strong>呢？</h3><p>可以回想一下，进程是如何实现的呢？也就是说进程是如何控制的呢？</p>
+<p>进程的控制是由<strong>原语</strong>实现的，而原语是一段特殊的程序，其中包含 <strong>开&#x2F;关中断</strong> 。而开关中断是特权指令，必须在核心态下执行。</p>
+<p>所以，<strong>进程的控制是由操作系统来实现的。</strong></p>
+<p>而用户级线程是<strong>用函数库来实现线程</strong>。所有的线程管理工作都由<strong>函数库来管理</strong>。</p>
+<blockquote>
+<p>为什么要有用户级线程呢？</p>
+<p>很久很久之前，线程的概念是出现了，但操作系统厂商可不能直接就去修改操作系统的内核，因为对他们来说，<strong>稳定性</strong>是最重要的。贸然把未经验证的东西加入内核，出问题了怎么办？所以想要验证线程的可用性，得另想办法。</p>
+<p>所以，<font color="red">当初 用户级线程的出现是为了<strong>验证线程的稳定性等功能。</strong></font></p>
+<p>那些研究人员就编写了一个关于线程的函数库，<strong>用函数库来实现线程</strong>！</p>
+</blockquote>
+<p>这个函数库实现了线程，还能进行管理。</p>
+<p>比如<strong>创建线程</strong>、<strong>终止线程</strong>等功能放在了这个<strong>线程库</strong>内，用户就可以通过调用这些函数来实现所需要的功能。</p>
+<p><font color="red" size=5>但是！</font></p>
+<p>刚刚我们说的线程库，是位于用户空间的，<strong>操作系统内核对这个库一无所知</strong>，所以从内核的角度看，它还是按正常的方式管理。也就是说<strong>操作系统眼里还是只有进程</strong>，用线程库写的一个多线程进程，只能一次在<strong>一个 CPU 核心</strong>上运行。</p>
+<p>由于操作系统只能看到进程的存在，那如果<strong>某一个线程阻塞</strong>了。在操作系统眼里，是进程阻塞了，那么整个进程就会进入<strong>阻塞态</strong>，在阻塞操作结束前，这个进程都无法得到 CPU 资源。那就相当于，<strong>所有的线程都被阻塞</strong>了。</p>
+<blockquote>
+<p>对于内核级线程，在用户看来，是有多个线程。但是在操作系统看来，并意识不到线程的存在。</p>
+</blockquote>
+<img src="\image\article\操作系统-进程管理\image-20220907214359952.png" alt="image-20220907214359952" style="zoom:80%;" />
+
+<h3 id="内核级线程"><a href="#内核级线程" class="headerlink" title="内核级线程"></a>内核级线程</h3><p>内核级线程的管理工作由操作系统内核完成。<strong>线程调度、切换等工作都由内核负责</strong>，因此内核级的切换必然需要在核心态下才能完成。</p>
+<p>内核级线程的实现，使得操作系统内核知道线程的存在，就可以像调度多个进程一样，把这些线程放在好几个 CPU 核心上，就能做到实际上的<strong>并行</strong>了。</p>
+<p><strong>假如线程 A 阻塞了，与他同属一个进程的线程也不会被阻塞</strong>。这是内核级线程的绝对优势。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907214422818.png" alt="image-20220907214422818" style="zoom: 67%;" />
+
+<h3 id="用户线程和内核线程的对应关系"><a href="#用户线程和内核线程的对应关系" class="headerlink" title="用户线程和内核线程的对应关系"></a>用户线程和内核线程的对应关系</h3><p>有的操作系统中只支持用户级线程，有的操作系统只支持内核级线程。有的操作系统两种都支持。</p>
+<p>在同时支持用户级线程和内核级线程的系统中，可采用二者组合的方式：将n个用户级线程映射到m个内核级线程上。（n&gt;&#x3D;m）</p>
+<blockquote>
+<p>需要注意的是：</p>
+<p>操作系统只看得见内核级线程，所以<font color="red">内核级线程才是处理机分配的单位</font>。</p>
+</blockquote>
+<p>由几个用户级线程映射到几个内核级线程的问题引出了“多线程模型”问题。</p>
+<h4 id="多对一模型"><a href="#多对一模型" class="headerlink" title="多对一模型"></a>多对一模型</h4><p><strong>多对一模型</strong>:多个用户级线程映射到一个内核级线程。<font color="blue"><strong>每个用户进程只对应一个内核级线程</strong></font>。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907215103163.png" alt="image-20220907215103163" style="zoom:67%;" />
+
+<p>优点：用户级线程的切换在用户空间即可完成，<strong>不需要切换到核心态，线程管理的系统开销小，效率高。</strong></p>
+<p>缺点：<strong>当一个用户级线程被阻塞后，整个进程都会被阻塞</strong>，并发度不高。<strong>多个线程不可在多核处理机上<u>并行</u>运行</strong></p>
+<h4 id="一对一模型"><a href="#一对一模型" class="headerlink" title="一对一模型"></a>一对一模型</h4><p><strong>一对一模型</strong>：一个用户及线程映射到一个内核级线程。<font color="blue"><strong>每个用户进程有与用户级线程同数量的内核级线程。</strong></font></p>
+<img src="\image\article\操作系统-进程管理\image-20220907215907528.png" alt="image-20220907215907528" style="zoom:80%;" />
+
+<p>优点：当一个线程被阻塞后，别的线程还可以继续执行，并发能力强。多线程可在多核处理机上并行执行。</p>
+<p>缺点：一个用户进程会占用多个内核级线程，线程切换由操作系统内核完成，需要切换到核心态，因此线程管理的成本高，开销大。</p>
+<h4 id="多对多模型"><a href="#多对多模型" class="headerlink" title="多对多模型"></a>多对多模型</h4><p>多对多模型：n个用户及线程映射到m个内核级线程(n &gt;&#x3D; m） 。每个用户进程对应m个内核级线程。</p>
+<img src="\image\article\操作系统-进程管理\image-20220907215944571.png" alt="image-20220907215944571" style="zoom:80%;" />
+
+<p>克服了多对一模型并发度不高的缺点，又克服了一对一模型中一个用户进程占用太多内核级线程，开销太大的缺点。</p>
+<h3 id="总结用户线程和内核线程"><a href="#总结用户线程和内核线程" class="headerlink" title="总结用户线程和内核线程"></a>总结用户线程和内核线程</h3><ul>
+<li><p>用户线程：</p>
+<p><font color="red">即使多核CPU，多线程也不能并行执行。</font></p>
+<ul>
+<li>优点：<ul>
+<li>每个进程都需要有它私有的线程控制块（TCB）列表，用来跟踪记录它各个线程状态信息（PC、栈指针、寄存器），TCB 由用户级线程库函数来维护，可用于不支持线程技术的操作系统；</li>
+<li>用户线程的切换也是由线程库函数来完成的，无需用户态与内核态的切换，所以速度特别快；</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>由于操作系统不参与线程的调度，如果一个线程发起了系统调用而阻塞，那进程所包含的用户线程都不能执行了。<font color="green">【<strong>一个阻塞，全部阻塞】</strong></font></li>
+<li>当一个线程开始运行后，除非它主动地交出 CPU 的使用权，否则它所在的进程当中的其他线程无法运行，因为用户态的线程没法打断当前运行中的线程，它没有这个特权，只有操作系统才有，但是用户线程不是由操作系统管理的【无法中断线程运行】</li>
+<li>由于时间片分配给进程，故与其他进程比，在多线程执行时，每个线程得到的时间片较少，执行会比较慢；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>内核线程：</p>
+<p><font color="red">在多核CPU中，多线程可以并行执行。</font></p>
+<ul>
+<li>优点：<ul>
+<li>在一个进程当中，如果某个内核线程发起系统调用而被阻塞，并不会影响其他内核线程的运行；<font color="green"><strong>【一个阻塞，其他不影响】</strong></font></li>
+<li>分配给线程，多线程的进程获得更多的 CPU 运行时间；</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>在支持内核线程的操作系统中，由内核来维护进程和线程的上下文信息，如 PCB 和 TCB；</li>
+<li>线程的创建、终止和切换都是通过系统调用的方式来进行，因此对于系统来说，系统开销比较大；【内核态和用户态需要进行转换。】</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://xiaolincoding.com/os/4_process/process_base.html">https://xiaolincoding.com/os/4_process/process_base.html</a></p>
+<p>王道操作系统</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/87272557">用户级线程和内核级线程，你分得清吗？ - 知乎 (zhihu.com)</a></p>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/cf59d18a.html" target="_blank">操作系统-进程管理（一）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/">进程管理</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                        <a href="/post/70577aa4.html" class="prev-prefix">« </a> 上一篇：    <a href="/post/70577aa4.html" title="发布于 2022-09-08 09:50">三大余数定理[算法]</a>
+                        <br>
+                    
+                    
+                        <a href="/post/a748c2b9.html" class="next-prefix">» </a> 下一篇：    <a href="/post/a748c2b9.html" title="发布于 2022-09-02 02:35">HashMap&HashSet源码分析</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

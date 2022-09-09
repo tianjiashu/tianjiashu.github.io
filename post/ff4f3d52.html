@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            操作系统-进程管理（二）
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">操作系统-进程管理（二）</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-09-08
+                        </span>
+                        
+                            <span id="/post/ff4f3d52.html" class="leancloud_visitors" data-flag-title="操作系统-进程管理（二）">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/ff4f3d52.html"></span>
+                        </span>  
+                    </p>
+                    
+                        
+                            <span class="category-color">操作系统</span>
+                        
+                    
+                    
+                        
+                            <span class="tag-color">进程管理</span>
+                        
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="处理机调度"><a href="#处理机调度" class="headerlink" title="处理机调度"></a>处理机调度</h1><p>当有一堆任务要处理，但由于资源有限，这些事情没法同时处理。这就需要<strong>确定某种规则来决定处理这些任务的顺序</strong>，这就是“调度”研究的问题。</p>
+<p>在多道程序系统中，进程的数量往往是多于处理机的个数的，这样不可能同时并行地处理各个进程。处理机调度，就是从就绪队列中按照一定的算法选择一个进程并将处理机分配给它运行，以实现进程的并发执行。</p>
+<h1 id="调度的三个层次"><a href="#调度的三个层次" class="headerlink" title="调度的三个层次"></a>调度的三个层次</h1><h2 id="高级调度-作业调度"><a href="#高级调度-作业调度" class="headerlink" title="高级调度(作业调度)"></a>高级调度(作业调度)</h2><p>在早期的多道批处理操作系统中，用户首先会通过外围机或者外围设备，将多道作业输入到磁盘或者硬盘的<strong>外存空间</strong>上，但是由于内存的地址空间是有限的，并不能将所有作业全部放在内存当中，会装不下，出现了<strong>资源不够的问题</strong>。</p>
+<p>这种情况下，就需要<strong>调度</strong>来解决</p>
+<img src="\image\article\操作系统-进程管理\image-20220908174809571.png" alt="image-20220908174809571" style="zoom:80%;" />
+
+<p>由于内存空间有限，有时无法将用户提交的作业全部放入内存，因此就需要<font color="red"><strong>确定某种规则</strong></font>来决定<font color="red"><strong>将作业调入内存的顺序</strong></font>。</p>
+<p>​		高级调度（作业调度）：按一定的原则从外存上处于后备队列的作业中挑选一个(或多个）作业，给他们分配内存等必要资源，并建立相应的进程（建立PCB），以使它（们）获得竞争处理机的权利。</p>
+<p>​		高级调度是<strong>辅存（外存）与内存</strong>之间的调度。每个作业只调入一次，调出一次。作业调入时会建立相应的PCB，作业调出时才撤销PCB。</p>
+<ul>
+<li><strong>调入的时机</strong>需要<font color="red">操作系统</font>来确定</li>
+<li><strong>调出的时机</strong>必然是<font color="red">作业运行结束</font>才调出。</li>
+</ul>
+<p>因此，<strong>高级调度</strong>主要是指<strong>调入的问题</strong></p>
+<h2 id="中级调度（内存调度"><a href="#中级调度（内存调度" class="headerlink" title="中级调度（内存调度)"></a>中级调度（内存调度)</h2><p>引入了虚拟存储技术之后，可将<font color="red"><strong>暂时不能运行的进程</strong></font>调至<font color="blue"><strong>外存</strong></font>等待。等它重新具备了运行条件且内存又稍有空闲时，再重新调入内存。<br>这么做的目的是为了<strong>提高内存利用率</strong>和<strong>系统吞吐量</strong>。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220908210050565.png" alt="image-20220908210050565"></p>
+<p>暂时调到外存等待的进程状态为<font color="red"><strong>挂起状态</strong></font>。</p>
+<p>值得注意的是：</p>
+<ul>
+<li><p><strong>PCB</strong>【进程控制块】<strong>并不会一起调到外存</strong>，而是会常驻内存。</p>
+<p>PCB中会记录进程数据在外存中的存放位置，进程状态等信息。</p>
+<p>操作系统还需要通过内存中的PCB来保持对各个进程的监控、管理。</p>
+<p>被挂起的进程PCB会被放到的<font color="red"><strong>挂起队列</strong></font>中。</p>
+</li>
+<li><p><strong>进程的程序代码数据</strong>相关的会<strong>调到外存</strong>。</p>
+</li>
+</ul>
+<blockquote>
+<p>中级调度（内存调度)：就是要决定将<strong>哪个处于挂起状态的进程</strong>重新调入内存。</p>
+</blockquote>
+<h3 id="七状态模型"><a href="#七状态模型" class="headerlink" title="七状态模型"></a>七状态模型</h3><p>除了之前五种状态，与挂起有关的还有两个状态：</p>
+<ul>
+<li>阻塞挂起状态：进程<strong>在外存（硬盘）</strong>并等待某个事件的出现；</li>
+<li>就绪挂起状态：进程<strong>在外存（硬盘）</strong>，但只要进入内存，即刻立刻运行；</li>
+</ul>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220908210529729.png" alt="image-20220908210529729"></p>
+<p>导致进程挂起的原因不只是因为进程所使用的内存空间不在物理内存，还包括如下情况：</p>
+<ul>
+<li>通过 <strong>sleep 让进程间歇性挂起</strong>，其工作原理是设置一个定时器，到期后唤醒进程。</li>
+<li><strong>用户希望挂起一个程序的执行</strong>，比如在 Linux 中用 <code>Ctrl+Z</code> 挂起进程；</li>
+</ul>
+<blockquote>
+<p>挂起和阻塞的区别：</p>
+<p>两种状态都是暂时不能获得CPU的服务</p>
+<ul>
+<li><p><strong>挂起态</strong>是将进程映像调到外存去了</p>
+</li>
+<li><p><strong>阻塞态</strong>下进程映像还在内存中。</p>
+<p>有的操作系统会把就绪挂起、阻塞挂起分为两个挂起队列，甚至会根据阻塞原因不同再把阻塞挂起进程进一步细分为多个队列。</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="低级调度（进程调度）"><a href="#低级调度（进程调度）" class="headerlink" title="低级调度（进程调度）"></a>低级调度（进程调度）</h2><p>进程调度是实现并发的基础。</p>
+<p>低级调度（进程调度)，其主要任务是<font color="blue">按照某种方法和策略从就绪队列中选取一个进程，将<strong>处理机</strong>分配给它</font>。</p>
+<p>进程调度是操作系统中<font color="red"><strong>最基本的一种调度</strong></font>，在一般的操作系统中都必须配置进程调度。</p>
+<p>进程调度的频率很高，一般几十毫秒一次。</p>
+<img src="\image\article\操作系统-进程管理\image-20220908211420064.png" alt="image-20220908211420064" style="zoom:80%;" />
+
+<h2 id="三层调度对比"><a href="#三层调度对比" class="headerlink" title="三层调度对比"></a>三层调度对比</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>在谁之间进行调度</th>
+<th>针对谁</th>
+<th>发生频率</th>
+<th>对进程状态影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>高级调度</td>
+<td>内存 和 外存【后备队列 –》 内存】</td>
+<td>作业</td>
+<td>最低</td>
+<td>无–&gt;创建态–&gt;就绪态</td>
+</tr>
+<tr>
+<td>中级调度</td>
+<td>内存 和 外存【挂起队列 –》 内存】</td>
+<td>进程</td>
+<td>中等</td>
+<td>挂起态 –&gt; 就绪态&#x2F;阻塞态</td>
+</tr>
+<tr>
+<td>低级调度</td>
+<td>内存  和  处理机CPU【就绪队列 –》 CPU】</td>
+<td>进程</td>
+<td>最高</td>
+<td>就绪态 –&gt; 运行态</td>
+</tr>
+</tbody></table>
+<h1 id="进程调度的时机"><a href="#进程调度的时机" class="headerlink" title="进程调度的时机"></a>进程调度的时机</h1><p>进程调度（低级调度)，就是<strong>按照某种算法从就绪队列中选择一个进程为其分配处理机。</strong></p>
+<p>那什么时候需要进程调度呢？分为以下两种情况：</p>
+<ul>
+<li>当前运行的进程<font color="red"><strong>主动</strong></font>放弃处理机<ul>
+<li>程序运行结束  或   程序因为异常终止	【<strong>运行态 -&gt; 结束态</strong>】</li>
+<li>进程主动请求进入阻塞（如：等等IO） 【<strong>运行态 -&gt; 阻塞态</strong>】</li>
+</ul>
+</li>
+<li>当前运行的进程<font color="red"><strong>被动</strong></font>放弃处理机<ul>
+<li>分给进程的时间片用完了</li>
+<li>有更紧急的事需要处理（如 IO处理）</li>
+<li>有更高优先级的进程进入队列。</li>
+</ul>
+</li>
+</ul>
+<p>不能进行调度和切换的情况：</p>
+<ul>
+<li>在<font color="blue"><strong>处理中断的过程中</strong></font>。中断处理过程复杂，与硬件密切相关，很难做到在中断处理过程中进行进程切换。</li>
+<li>进程在<font color="blue"><strong>操作系统内核程序临界区中</strong></font>。</li>
+<li>在<font color="blue"><strong>原子操作过程中（原语）</strong></font>。原子操作不可中断，要一气呵成（如之前讲过的修改PCB中进程状态标志，并把PCB放到相应队列)</li>
+</ul>
+<blockquote>
+<p><font color="green"><strong>什么是操作系统内核程序临界区？</strong></font></p>
+<p><strong>临界资源</strong>：<strong>一次仅允许一个进程使用的资源</strong>，各进程需要<font color="red"><strong>互斥地</strong></font>访问临界资源。例如：物理设备中的打印机、输入机和进程之间共享的变量、数据。</p>
+<p><strong>临界区</strong>：每个进程中，<strong>访问临界资源的</strong>那段<strong>代码</strong>。</p>
+<p>内核程序临界区一般是<strong>用来访问某种内核数据结构</strong>的代码，比如进程的就绪队列（由各就绪进程的PCB组成)</p>
+<p><font color="green"><strong>为什么进程在操作系统内核程序临界区不能进程调度？</strong></font></p>
+<img src="\image\article\操作系统-进程管理\image-20220908214508621.png" alt="image-20220908214508621" style="zoom:67%;" />
+
+
+
+<p>如果还没退出临界区（还没解锁)就进行进程调度，但是进程调度相关的程序也需要访问就绪队列，但此时就绪队列被锁住了，因此<br>又无法顺利进行进程调度。</p>
+<p>内核程序临界区访问的临界资源如果不尽快释放的话，极有可能影响到操作系统内核的其他管理工作【比如进程切换】。因此在访问内核程序临界区期间不能进行调度与切换</p>
+<p><strong>进程在内核临界区  —–&gt;   CPU空闲   ——&gt;  内核临届资源被占用 ——&gt; 其他内核管理工作极可能受影响【比如进程切换】</strong> </p>
+<p><strong>如果此时进行进程调度，就极可能受到影响，所以不能进行进程调度。</strong></p>
+<p><font color="green"><strong>为什么进程在操作系统程序【非内核】临界区可以进程调度？</strong></font></p>
+<p>比如，访问打印机。</p>
+<img src="\image\article\操作系统-进程管理\image-20220908215122123.png" alt="image-20220908215122123" style="zoom:80%;" />
+
+<p>在打印机打印完成之前,进程一直处于临界区内，临界资源不会解锁。但<strong>打印机又是慢速设备</strong>，此时如果一直不允许进程调度的话就会导致CPU一直空闲</p>
+<p><strong>进程在普通临界区 —–&gt;  CPU空闲  ——&gt;  临界资源被占用  ——&gt;  CPU一直空闲。</strong></p>
+<p><strong>如果不允许进程调度的话，CPU会一直空闲</strong></p>
+</blockquote>
+<h2 id="进程调度方式"><a href="#进程调度方式" class="headerlink" title="进程调度方式"></a>进程调度方式</h2><ul>
+<li><p><strong>非抢占式调度算法</strong>：</p>
+<p>挑选一个进程，然后让该进程<strong>运行直到被阻塞，或者直到该进程退出，才会调用另外一个进程</strong>。</p>
+<p>特点：实现简单，系统开销小但是无法及时处理紧急任务，适合于早期的批处理系统</p>
+</li>
+<li><p><strong>抢占式调度算法</strong>：</p>
+<p>当一个进程正在处理机上执行时，如果有一个更重要或更紧迫的进程需要使用处理机，则立即暂停正在执行的进程，将处理机分配给更重要紧迫的那个进程。</p>
+<p>特点：可以优先处理更紧急的进程,也可实现让各进程按时间片轮流执行的功能（通过时钟中断）。适合于分时操作系统、实时操作系统</p>
+</li>
+</ul>
+<h2 id="进程切换"><a href="#进程切换" class="headerlink" title="进程切换"></a>进程切换</h2><p>进程切换的过程主要完成了:</p>
+<ol>
+<li>对原来运行进程各种数据的保存</li>
+<li>对新的进程各种数据的恢复<br>(如:程序计数器、程序状态字、各种数据寄存器等处理机现场信息，这些信息一般保存在进程控制块)</li>
+</ol>
+<blockquote>
+<p> 注意：<font color="red">进程切换是有代价的</font>，因此如果<font color="red">过于频繁的</font>进行<font color="red">进程调度、切换</font>，必然会使整个<font color="red">系统的效率降低</font>，使系统大部分时间都花在了进程切换上，而真正用于执行进程的时间减少。【因此要使用合理的调度算法】</p>
+</blockquote>
+<h1 id="调度算法"><a href="#调度算法" class="headerlink" title="调度算法"></a>调度算法</h1><p>调度算法的评价指标：</p>
+<p>CPU利用率：CPU处于忙碌的时间 占 总时间的比例。</p>
+<p>吞吐量：单位时间内完成作业的数量   $系统吞吐量 &#x3D; \frac{总共完成了多少道作业}{总共花了多少时间}$</p>
+<p>周转时间：</p>
+<h2 id="先来先服务算法"><a href="#先来先服务算法" class="headerlink" title="先来先服务算法"></a>先来先服务算法</h2><p>主要从“公平”的角度考虑（类似于我们生活中排队买饭）</p>
+<p>规则：按照作业&#x2F;进程到达的先后顺序进行服务。</p>
+<p>可用于作业调度，也可用于进程调度。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220909140754844.png" alt="image-20220909140754844"></p>
+<p><strong>每次从就绪队列选择最先进入队列的进程，然后一直运行，直到进程退出或被阻塞，才会继续从队列中选择第一个进程接着运行。</strong></p>
+<p>是一种<font color="red"><strong>非抢占式</strong></font>的调度算法。</p>
+<ul>
+<li><p>优点：公平、算法实现简单</p>
+</li>
+<li><p>缺点：排在长作业（进程）后面的短作业需要等待很长时间，带权周转时间很大，对短作业来说用户体验不好。</p>
+<p><strong>FCFS算法对长作业有利，对短作业不利。</strong></p>
+</li>
+</ul>
+<p>适用于 CPU 繁忙型作业的系统，而不适用于 I&#x2F;O 繁忙型作业的系统。</p>
+<p>不会导致<strong>进程饥饿</strong>。</p>
+<h2 id="最短作业优先算法"><a href="#最短作业优先算法" class="headerlink" title="最短作业优先算法"></a>最短作业优先算法</h2><p>追求最少的平均等待时间，最少的平均周转时间、最少的平均平均带权周转时间</p>
+<p>规则：<strong>优先选择<font color="red">运行时间最短</font>的进程来运行</strong>，这有助于提高系统的吞吐量。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220909141357885.png" alt="image-20220909141357885"></p>
+<p>最短作业优先算法默认是非抢占式的，但<strong>也有抢占式的。</strong></p>
+<blockquote>
+<p>抢占式的最短作业优先算法，也称“最短剩余时间优先算法”：</p>
+<p>当有进程加入 –&gt; 导致就绪队列改变 —&gt; 然后需要进行调度。</p>
+<p>如果<strong>新到达的进程剩余时间</strong>比<strong>当前运行的进程剩余时间</strong>更短</p>
+<p>则由新进程抢占处理机，当前运行进程重新回到就绪队列。另外，当一个进程完成时也需要调度</p>
+</blockquote>
+<ul>
+<li><p>优点：“最短的”平均等待时间、平均周转时间</p>
+</li>
+<li><p>缺点：</p>
+<ul>
+<li><p>不公平。<font color="red"><strong>对短作业有利，对长作业不利</strong></font>。</p>
+</li>
+<li><p>可能产生<font color="blue"><strong>饥饿现象</strong></font>。</p>
+<p>一个长作业在就绪队列等待运行，而这个就绪队列有非常多的短作业，那么就会使得长作业不断的往后推，周转时间变长，致使长作业长期不会被运行。如果一直得不到服务，则称为”饿死“</p>
+</li>
+<li><p>作业&#x2F;进程的运行时间是由用户提供的，并不一定真实，不一定能做到真正的短作业优先</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="高响应比优先调度算法"><a href="#高响应比优先调度算法" class="headerlink" title="高响应比优先调度算法"></a>高响应比优先调度算法</h2><p>综合考虑作业&#x2F;进程的<font color="red">等待时间</font>和<font color="red">要求服务的时间</font>。</p>
+<p>前面的「先来先服务调度算法」和「最短作业优先调度算法」都没有很好的权衡短作业和长作业。</p>
+<p>那么，<strong>高响应比优先 （Highest Response Ratio Next, HRRN）调度算法</strong>主要是权衡了短作业和长作业。</p>
+<p>「响应比优先级」的计算公式：<br>$$<br>优先级 &#x3D; \frac{等待时间+要求服务时间}{要求服务时间}{(优先级\geq1)}<br>$$<br>每次进行进程调度时</p>
+<ol>
+<li>先计算「响应比优先级」</li>
+<li>然后把「响应比优先级」<strong>最高</strong>的进程投入运行</li>
+</ol>
+<blockquote>
+<p>现实中，进程要求服务的时间是不可预估的。所以，高响应比优先调度算法是「理想型」的调度算法，现实中是实现不了的。</p>
+</blockquote>
+<p>该算法是<font color="blue"><strong>非抢占式的</strong></font>，因此只有当前运行的作业&#x2F;进程主动放弃处理机时，才需要调度，才需要计算响应比。</p>
+<p>优点：</p>
+<p>综合考虑了等待时间和运行时间（要求服务时间)</p>
+<p>等待时间相同时，要求服务时间短的优先(SJF的优点）</p>
+<p>要求服务时间相同时，等待时间长的优先(FCFS的优点)</p>
+<p>对于长作业来说，随着等待时间越来越久，其响应比也会越来越大，从而避免了长作业饥饿的问题</p>
+<h2 id="时间片轮转调度算法"><a href="#时间片轮转调度算法" class="headerlink" title="时间片轮转调度算法"></a>时间片轮转调度算法</h2><p>按照各进程到达就绪队列的顺序，轮流让各个进程执行一个<font color="red"><strong>时间片（如100ms）</strong></font>。</p>
+<p>若进程未在一个时间片内执行完，则剥夺处理机，将进程重新放到就绪队列队尾重新排队。</p>
+<p><img src="/%5Cimage%5Carticle%5C%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%5Cimage-20220909145213669.png" alt="image-20220909145213669"></p>
+<p>是一种抢占式调度算法，</p>
+<p>若进程未能在时间片内运行完，将被强行剥夺处理机使用权，因此时间片轮转调度算法属于<strong>抢占式的算法</strong>。由时钟装置发出时钟中断来通知CPU时间片已到。</p>
+<blockquote>
+<p>时间片的长度就是一个很关键的点：</p>
+<ul>
+<li><strong>时间片设得太短</strong>：会导致过多的进程上下文切换，降低了 CPU 效率；</li>
+<li><strong>时间片设得太长</strong>：使得每个进程都可以在一个时间片内就完成，则时间片轮转调度算法退化为先来先服务调度算法，并且会增大进程响应时间。因此时间片不能太大。</li>
+</ul>
+<p>一般来说，时间片设为 <code>20ms~50ms</code> 通常是一个比较合理的折中值。</p>
+</blockquote>
+<h2 id="优先级调度算法"><a href="#优先级调度算法" class="headerlink" title="优先级调度算法"></a>优先级调度算法</h2><p>每个作业&#x2F;进程有<strong>各自的优先级</strong>，调度时从就绪队列<strong>选择优先级最高</strong>的作业&#x2F;进程。</p>
+<p>进程的优先级可以分为，<font color="blue"><strong>静态优先级</strong></font>和<font color="blue"><strong>动态优先级</strong></font>：</p>
+<ul>
+<li><p>静态优先级：创建进程时候，就已经确定了优先级了，然后整个运行时间优先级都不会变化；</p>
+</li>
+<li><p>动态优先级：</p>
+<p>根据进程的动态变化调整优先级</p>
+<p>比如如果进程运行时间增加，则降低其优先级，如果进程等待时间（就绪队列的等待时间）增加，则升高其优先级，也就是<strong>随着时间的推移增加等待进程的优先级</strong>。</p>
+</li>
+</ul>
+<p>该算法也有两种处理优先级高的方法，<font color="blue"><strong>非抢占式</strong></font>和<font color="blue"><strong>抢占式</strong></font>：</p>
+<ul>
+<li>非抢占式：当就绪队列中出现优先级高的进程，运行完当前进程，再选择优先级高的进程。</li>
+<li>抢占式：当就绪队列中出现优先级高的进程，当前进程挂起，调度优先级高的进程运行。</li>
+</ul>
+<p>优点和缺点：</p>
+<ul>
+<li>优点：用优先级区分紧急程度、重要程度，适用于实时操作系统。可<strong>灵活地调整对各种作业&#x2F;进程的偏好程度</strong>。</li>
+<li>缺点：若源源不断地有高优先级进程到来，则可能导致饥饿</li>
+</ul>
+<h2 id="多级反馈队列调度算法"><a href="#多级反馈队列调度算法" class="headerlink" title="多级反馈队列调度算法"></a>多级反馈队列调度算法</h2><p><strong>多级反馈队列（*Multilevel Feedback Queue*）调度算法</strong>是「时间片轮转算法」和「最高优先级算法」的综合和发展。</p>
+<ul>
+<li>「多级」表示有多个队列，每个队列优先级从高到低，同时<font color="red"><strong>优先级越高时间片越短</strong></font>。</li>
+<li>「反馈」表示如果有新的进程加入优先级高的队列时，立刻停止当前正在运行的进程，转而去运行优先级高的队列；</li>
+</ul>
+<img src="\image\article\操作系统-进程管理\image-20220909151926863.png" alt="image-20220909151926863" style="zoom:80%;" />
+
+<p>用一个例子来进行说明：</p>
+<p>如下进程：</p>
+<table>
+<thead>
+<tr>
+<th align="center">进程</th>
+<th align="center">到达时间</th>
+<th align="center">运行时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>P1</code></td>
+<td align="center">0</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center"><code>P2</code></td>
+<td align="center">1</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center"><code>P3</code></td>
+<td align="center">5</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<p>多级反馈队列</p>
+<img src="\image\article\操作系统-进程管理\image-20220909152139158.png" alt="image-20220909152139158" style="zoom:67%;" />
+
+<ul>
+<li>第一级就绪队列的时间片大小为1</li>
+<li>第二级就绪队列的时间片大小为2</li>
+<li>第三级就绪队列的时间片大小为4</li>
+</ul>
+<h4 id="0时刻"><a href="#0时刻" class="headerlink" title="0时刻"></a>0时刻</h4><p>P1到达，先放入第一级队列，此时也没有别的进程，由于它在第一级队列，所以它被分配 1 个时间片。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909152420743.png" alt="image-20220909152420743" style="zoom:67%;" />
+
+<p>当过了 1 个时间的时候，P1的时间片用完了。所以它会进入下一级队列的队尾【第2级队列】</p>
+<img src="\image\article\操作系统-进程管理\image-20220909152544695.png" alt="image-20220909152544695" style="zoom:67%;" />
+
+<h4 id="1时刻"><a href="#1时刻" class="headerlink" title="1时刻"></a>1时刻</h4><p>P2到达，进入第一级队列，P1执行完了，P2紧随其后。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909152731253.png" alt="image-20220909152731253" style="zoom:67%;" />
+
+<p>此时第 1 级队列不是空的，所以不会处理第2级队列的进程。因此这个时刻会调度P2这个进程，来进行处理。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909152912292.png" alt="image-20220909152912292" style="zoom:67%;" />
+
+<p>同样的，P2只运行一个单位时间的时间片。运行完后，会放入下一级队列的队尾。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909153027084.png" alt="image-20220909153027084" style="zoom:67%;" />
+
+<h4 id="2时刻"><a href="#2时刻" class="headerlink" title="2时刻"></a>2时刻</h4><p>没有进程到达，且第一级队列为空，所以才会处理第二级队列的进程。为第二级队列的<strong>队头</strong>【即P1】分配一个<strong>2个时间单位</strong>的时间片。</p>
+<p>P1被处理机调度。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909153317696.png" alt="image-20220909153317696" style="zoom:67%;" />
+
+<p>P1执行两个单位时间的时间片后结束。P1的运行时间没有结束，还会放入<strong>下一级队列的队尾</strong>。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909153439751.png" alt="image-20220909153439751" style="zoom:67%;" />
+
+<h4 id="4时刻"><a href="#4时刻" class="headerlink" title="4时刻"></a>4时刻</h4><p>没有进程到达，第一级队列为空，第二级队列不为空，为<strong>第二级队列的队头</strong>分配一个<strong>2个时间单位</strong>的时间片。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909153616819.png" alt="image-20220909153616819" style="zoom:67%;" />
+
+<h4 id="5时刻"><a href="#5时刻" class="headerlink" title="5时刻"></a>5时刻</h4><p>P3进程到达，进入第一级队列。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909153851875.png" alt="image-20220909153851875" style="zoom:67%;" />
+
+<p>此时P3所在队列的<font color="red"><strong>优先级更高</strong></font>，P2还没有运行完，此时P2被剥夺处理机。</p>
+<p><font color="blue">但是，P2的时间片还没有用完，它没有放入下一级队列，而是放回当前<strong>队列的队尾</strong></font>。P3被调度，分配一个单位的时间片。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909154328959.png" alt="image-20220909154328959" style="zoom:67%;" />
+
+<p>P3运行一个单位时间后，P3运行完成。然后被调出内存。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909154426952.png" alt="image-20220909154426952" style="zoom:67%;" />
+
+<h4 id="6时刻"><a href="#6时刻" class="headerlink" title="6时刻"></a>6时刻</h4><p>第一级队列为空，第二级队列的队头，被调度，P2继续运行，P2运行两个单位的时间片。【不是运行上次剩余的一个单位的时间片】</p>
+<img src="\image\article\操作系统-进程管理\image-20220909155131054.png" alt="image-20220909155131054" style="zoom:67%;" />
+
+<p>然后，P2运行结束【总共运行了4个单位的时间片】，被调离内存。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909155233794.png" alt="image-20220909155233794" style="zoom:67%;" />
+
+<h4 id="8时刻"><a href="#8时刻" class="headerlink" title="8时刻"></a>8时刻</h4><p>此时，第1级队列 和 第二级队列 都是空的，此时调度第三级队列的队头元素【P1】。给P1分配 <strong>4 个单位时间的时间片</strong>。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909155357725.png" alt="image-20220909155357725" style="zoom:67%;" />
+
+<h4 id="12时刻"><a href="#12时刻" class="headerlink" title="12时刻"></a>12时刻</h4><p>P1,运行结束，但它所处的队列以及是最低级队列，没法再放入在低一级的了。所以，又放回第三级队列。</p>
+<img src="\image\article\操作系统-进程管理\image-20220909155634897.png" alt="image-20220909155634897" style="zoom:67%;" />
+
+<p>然后只剩它一个了，再次被调度，分配 <strong>4 个单位时间的时间片</strong>。</p>
+<p>用了一个单位时间就结束了。被调离内存。</p>
+<h3 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h3><ol>
+<li><p>设置多级就绪队列，各级队列优先级从高到低，时间片从小到大</p>
+</li>
+<li><p>新进程到达时先进入第1级队列，按FCFS原则排队等待被分配时间片</p>
+<p>若用完时间片进程还未结束，则进程<strong>进入下一级队列队尾</strong>。</p>
+<p>若此时已经是在最下级的队列，则重新放回该队列队尾</p>
+</li>
+<li><p>只有第k级队列为空时，才会为k+1级队头的进程分配时间片</p>
+</li>
+<li><p><font color="red"><strong>抢占式的算法</strong></font>。</p>
+<p>在k级队列的进程运行过程中</p>
+<p>若更上级的队列(1 ~ k-1级）中进入了一个新进程</p>
+<p>则由于新进程处于优先级更高的队列中，因此新进程会抢占处理机，原来运行的进程放回k级队列队尾。</p>
+</li>
+</ol>
+<blockquote>
+<p>对于短作业可能可以在第一级队列很快被处理完。</p>
+<p>对于长作业，如果在第一级队列处理不完，可以移入下次队列等待被执行，虽然等待的时间变长了，但是运行时间也变更长了，所以该算法很好的<strong>兼顾了长短作业，同时有较好的响应时间。</strong></p>
+<p>但该算法，如果遇到有源源不断的短进程到达，会引起<strong>长进程的饥饿</strong></p>
+</blockquote>
+
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/ff4f3d52.html" target="_blank">操作系统-进程管理（二）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                    <div class="category">
+                        分类：
+                        
+                            <a href="/category/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                        
+                    </div>
+                
+                
+                    <div class="tag">
+                        标签：
+                        
+                            <a href="/tag/%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86/">进程管理</a>
+                        
+                    </div>
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/70577aa4.html" class="next-prefix">» </a> 下一篇：    <a href="/post/70577aa4.html" title="发布于 2022-09-08 09:50">三大余数定理[算法]</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
