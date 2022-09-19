@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>
+        
+            操作系统-进程管理（三）
+        
+    </title>
+    <link rel="shortcut icon" href="#"/>
+
+    <link type="text/css" rel="stylesheet" href="/font/LongCang.css">
+    <link type="text/css" rel="stylesheet" href="/font/Monda.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSansSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/NotoSerifSC.css">
+    <link type="text/css" rel="stylesheet" href="/font/Playball.css">
+    <link type="text/css" rel="stylesheet" href="/font/PTMono.css">
+    <link type="text/css" rel="stylesheet" href="/font/Roboto.css">
+    <link type="text/css" rel="stylesheet" href="/font/RobotoSlab.css">
+    <link type="text/css" rel="stylesheet" href="/font/Rosario.css">
+    <link type="text/css" rel="stylesheet" href="/font/UbuntuMono.css">
+
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/code.css">
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Lucky Dog's blogs" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<body>
+    <a id="cover"></a>
+    <link type="text/css" rel="stylesheet" href="/css/post.css">
+<div id="header" class="header">
+    <div class="vertical">
+        <div class="inner">
+            
+                <h1 class="header-subtitle">操作系统-进程管理（三）</h1>
+                <div class="header-subinfo">
+                    <p class="article-info-text">
+                        <span>
+                            <i class="iconfont icon-time"></i> 发表时间：2022-09-11
+                        </span>
+                        
+                            <span id="/post/b2519e00.html" class="leancloud_visitors" data-flag-title="操作系统-进程管理（三）">
+                                <i class="iconfont icon-browse"></i> 阅读：<sapn class="leancloud-visitors-count"></span>
+                            </span>
+                        
+                        <span>
+                            <i class="iconfont icon-interactive"></i> 评论：<span class="valine-comment-count" data-xid="/post/b2519e00.html"></span>
+                        </span>  
+                    </p>
+                    
+                    
+                </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div id="container">
+    
+        <!-- 文章页面 -->
+        <div id="article">
+            <div class="toc"></div>
+            <div class="article-body">
+                <h1 id="进程同步与互斥"><a href="#进程同步与互斥" class="headerlink" title="进程同步与互斥"></a>进程同步与互斥</h1><p>进程具有<strong>异步性</strong>：</p>
+<p>异步性是指<strong>进程以不可预知的速度向前推进</strong>。内存中的每个进程何时执行,何时暂停,以怎样的速度向前推进,每道程序总共需要多少时间才能完成等,都是不可预知的。</p>
+<h2 id="进程同步"><a href="#进程同步" class="headerlink" title="进程同步"></a>进程同步</h2><p>同步亦称<font color="red"><strong>直接制约关系</strong></font>，它是指为完成某种任务而建立的两个或多个进程，这些进程因为需要在某些位置上<font color="red">协调</font>它们的<font color="red">工作次序</font>而产生的制约关系。<strong>进程间的直接制约关系就是源于它们之间的相互合作</strong>。</p>
+<p>举一个生活中的例子：</p>
+<p>例如有两个进程，</p>
+<p>你肚子饿了想要吃饭，你叫妈妈早点做菜，妈妈听到后就开始做菜，但是在妈妈没有做完饭之前，你必须阻塞等待，等妈妈做完饭后，自然会通知你，接着你吃饭的事情就可以进行了。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911100026665.png" alt="image-20220911100026665" style="zoom:80%;" />
+
+<h2 id="进程互斥"><a href="#进程互斥" class="headerlink" title="进程互斥"></a>进程互斥</h2><ul>
+<li><font color="red">临界资源</font>：<strong>一个时间段内只允许一个进程使用的资源</strong>。许多物理设备（比如摄像头、打印机）都属于临界资源。此外还有许多变量、数据、内存缓冲区等都属于临界资源。</li>
+<li><font color="red">临界区</font>：<strong>访问临界资源的代码片段，一定不能给多线程同时执行。</strong></li>
+</ul>
+<p>对临界资源的访问，必须<font color="red"><strong>互斥</strong></font>地进行。</p>
+<p>互斥，亦称<font color="red">间接制约关系</font>。进程互斥指当一个进程访问某临界资源时，另一个想要访问该临界资源的进程必须等待。当前访问临界资源的进程访问结束，释放该资源之后，另一个进程才能去访问临界资源。</p>
+<p>【<strong>也就说保证一个线程在临界区执行时，其他线程应该被阻止进入临界区</strong>】</p>
+<p>对临界区的<strong>互斥访问</strong>，可以在逻辑上分为如下四个部分</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span>&#123;</span><br><span class="line">    entry section;	<span class="comment">//进入区  负责检查是否可进入临界区，若可以，则设置【正在访问临界资源的标志】(上锁)，阻止其他进程访问。</span></span><br><span class="line">    critical section;		<span class="comment">//临界区  访问临界资源的代码</span></span><br><span class="line">    exit section;			<span class="comment">//退出区	负责解除【正在访问临界资源的标志】(解锁)</span></span><br><span class="line">    remainder section;		<span class="comment">//剩余区   其他处理</span></span><br><span class="line">&#125;<span class="keyword">while</span>(<span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+
+<p>为了实现对临界资源的互斥访问，同时保证系统整体性能，需要遵循以下原则:</p>
+<ul>
+<li><font color="blue"><strong>空闲让进</strong></font>：临界区空闲时，可以允许一个请求进入临界区的进程立即进入临界区</li>
+<li><font color="blue"><strong>忙则等待</strong></font>：当已有进程进入临界区时，其他试图进入临界区的进程必须等待;</li>
+<li><font color="blue"><strong>有限等待</strong></font>：对请求访问的进程，应保证能在有限时间内进入临界区（保证不会饥饿）;</li>
+<li><font color="blue"><strong>让权等待</strong></font>：当进程不能进入临界区时，应立即释放处理机，防止进程忙等待。</li>
+</ul>
+<blockquote>
+<p>注意，同步与互斥是两种不同的概念：</p>
+<ul>
+<li>同步就好比：「操作 A 应在操作 B 之前执行」，「操作 C 必须在操作 A 和操作 B 都完成之后才能执行」等；</li>
+<li>互斥就好比：「操作 A 和操作 B 不能在同一时刻执行」</li>
+</ul>
+</blockquote>
+<h1 id="进程互斥的软件实现方法"><a href="#进程互斥的软件实现方法" class="headerlink" title="进程互斥的软件实现方法"></a>进程互斥的软件实现方法</h1><h2 id="单标志法"><a href="#单标志法" class="headerlink" title="单标志法"></a>单标志法</h2><p>两个进程在访问完临界区后会把使用临界区的权限转交给另一个进程。也就是说<strong>每个进程进入临界区的权限只能被另一个进程赋予</strong></p>
+<p>用伪代码表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> turn = <span class="number">0</span>;  <span class="comment">//turn表示当前允许进入临界区的进程号</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911102116198.png" alt="image-20220911102116198"></p>
+<p>分析：</p>
+<ol>
+<li>初始时，<code>turn = 0</code>表示只允许0号进程使用<strong>临界资源</strong>。</li>
+<li>当P0进程到来时，<code>while(turn!=0)</code>循环不成立，就会进入临界区。当P1进程到来时，<code>while(turn!=1)</code>循环成立，就会一直循环，一直等待。</li>
+<li>P0临界区出来以后，进入<strong>退出区</strong>，<code>turn = 1</code>【表示允许1号进程使用临界资源】，P1的<code>while(turn!=1)</code>循环不成立，跳出循环。进入临界区。</li>
+<li>P0临界区出来以后，进入<strong>退出区</strong>，<code>turn = 0</code>【表示允许0号进程使用临界资源】，等0号需要使用的时候，就可以直接使用了。</li>
+</ol>
+<p>缺点：</p>
+<ul>
+<li>对于临界区来说，一定是按P0 –&gt; P1 –&gt; P0 –&gt; P1 … 这样轮流访问的。</li>
+<li>如果<code>turn=0</code>时，P1进程到来，但P0却迟迟不到来，P1就会<strong>占用CPU 一直等待</strong></li>
+</ul>
+<p>存在的问题是：虽然实现了进程互斥访问，但是违背<font color="red"><strong>空闲让进</strong></font>原则。</p>
+<h2 id="双标志先检查法"><a href="#双标志先检查法" class="headerlink" title="双标志先检查法"></a>双标志先检查法</h2><p>设置一个布尔型数组flag[]，数组中各个元素用来<font color="red">标记各进程想进入临界区的意愿</font>。</p>
+<p>比如：“flag[0]&#x3D;ture”意味着0号进程P0现在想要进入临界区。</p>
+<p>每个进程在进入临界区之前：</p>
+<ol>
+<li><strong>先检查</strong>当前有没有别的进程想进入临界区</li>
+<li>如果没有，则把自身对应的标志flag[i]设为true，之后开始访问临界区。</li>
+<li>如果有，则一直等待</li>
+</ol>
+<p>初始：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> flag[<span class="number">2</span>];		<span class="comment">//表示进入临界区意愿的数组</span></span><br><span class="line">flag[<span class="number">0</span>] = <span class="literal">false</span>;</span><br><span class="line">flag[<span class="number">1</span>] = <span class="literal">false</span>;	<span class="comment">//刚开始设置为两个进程都不想进入临界区</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911103620796.png" alt="image-20220911103620796"></p>
+<p>由于是软件的实现，这两个进程是<strong>并发执行</strong>的</p>
+<p>分析：</p>
+<ul>
+<li><p>如果执行顺序是  ①② ⑤ ③④ ⑥⑦⑧</p>
+<ul>
+<li><code>flag[1] = flase</code>;所以①循环不成立，执行②，设<code>flag[0]=true</code>。</li>
+<li>执行到⑤时，<code>while(flag[0])</code>就会一直循环，一直等待。</li>
+<li>直到执行完③【临界区】,在执行④时，<code>flag[0]=false</code>【P0退出临界区】，⑤就会断开循环，然后就可以进入到临界区【P1进入临界区】</li>
+</ul>
+<p>此时就实现了P0,P1互斥访问，当然⑤⑥ ① ⑦⑧ ②③④ 也可以实现互斥访问。</p>
+</li>
+<li><p>如果执行顺序是 ① ⑤ ② ⑥ ….P0 和 P1就会<font color="red">同时进入临界区</font></p>
+<ul>
+<li>初始的时候，<code>flag[0] = false;flag[1] = false;</code>  <ul>
+<li>执行 ①循环不成立，进程P0不会循环等待。</li>
+<li>执行 ⑤循环不成立，进程P1不会循环等待。</li>
+</ul>
+</li>
+<li>②⑥ 分别设置 <code>flag[0]=true;flag[1]=true</code>分别不让对方进。但此时，对方都已经进入了。</li>
+</ul>
+<p>然后P0，P1都进入了临界区。一个时间段内，P0和P1同时访问临界资源。</p>
+</li>
+</ul>
+<p>由此可以看出，存在的问题是违背<font color="red"><strong>忙则等待</strong></font>原则。这是非常危险的</p>
+<h2 id="双标志后检查法"><a href="#双标志后检查法" class="headerlink" title="双标志后检查法"></a>双标志后检查法</h2><p>与双标志先检查不同的是：</p>
+<ul>
+<li>双标志<strong>先</strong>检查法是：先检查 后上锁</li>
+<li>双标志<strong>后</strong>检查法是：先上锁后检查</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> flag[<span class="number">2</span>];		<span class="comment">//表示进入临界区意愿的数组</span></span><br><span class="line">flag[<span class="number">0</span>] = <span class="literal">false</span>;</span><br><span class="line">flag[<span class="number">1</span>] = <span class="literal">false</span>;	<span class="comment">//刚开始设置为两个进程都不想进入临界区</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911110116187.png" alt="image-20220911110116187"></p>
+<p>分析：</p>
+<p>互斥就不分析了，和双标志先检查差不多。我们来分析一下问题所在</p>
+<p>如果执行顺序是 ① ⑤ ② ⑥ ….P0 和 P1就会<font color="red">都进不去临界区</font></p>
+<ul>
+<li>执行 ① 和 ⑤ <code>flag[0]=true;flag[1]=true</code>分别不让对方进。</li>
+<li>执行② ，循环成立，进程P0一直等待。</li>
+<li>执行⑥，循环成立，进程P1一直等待。</li>
+</ul>
+<p>因此，双标志后检查法虽然解决了“忙则等待”的问题，但是又违背了<font color="red">“空闲让进”和“有限等待”</font>原则，会因各进程都长期无法访问临界资源而产生<font color="red">“饥饿”现象</font>。</p>
+<blockquote>
+<p>双标志后检查法 和 双标志先检查法 问题所在 的根本原因是：</p>
+<p><font color="red">检查和上锁不是一气呵成的</font>。</p>
+<p>进程双方的检查和上锁，可能会交替执行。这就是导致问题所在</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911110913902.png" alt="image-20220911110913902" style="zoom:67%;" />
+</blockquote>
+<h2 id="Peterson算法"><a href="#Peterson算法" class="headerlink" title="Peterson算法"></a>Peterson算法</h2><p>双标志后检查法中，两个进程都争着想进入临界区，但是谁也不让谁，最后谁都无法进入临界区。</p>
+<p>Gary L.Peterson想到了一种方法，如果双方都争着想进入临界区，那可以让<font color="red">进程尝试“孔融让梨”，主动让对方先使用临界区。</font></p>
+<p>初始</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> flag[<span class="number">2</span>];	<span class="comment">//表示进入临界区意愿的数组,初始值都是false</span></span><br><span class="line"><span class="type">int</span> turn = <span class="number">0</span>;	<span class="comment">//turn表示优先让哪个进程进入临界区</span></span><br></pre></td></tr></table></figure>
+
+<p>P0进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flag[<span class="number">0</span>] = <span class="literal">true</span>;					<span class="comment">//表示P0自己想进入临界区</span></span><br><span class="line">turn = <span class="number">1</span>;						<span class="comment">//但如果P1想进，愿意让P1先进</span></span><br><span class="line"><span class="keyword">while</span> (flag[<span class="number">1</span>] &amp;&amp; turn==<span class="number">1</span>); 	<span class="comment">//如果P1想进入临界区 且 最终让给了1 就一直循环等待</span></span><br><span class="line">critical section;</span><br><span class="line">flag[<span class="number">0</span>] = <span class="literal">false</span>;</span><br><span class="line">remainder section;</span><br></pre></td></tr></table></figure>
+
+<p>P1进程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">flag[<span class="number">1</span>] = <span class="literal">true</span>;					<span class="comment">//表示P1自己想进入临界区</span></span><br><span class="line">turn = <span class="number">0</span>;						<span class="comment">//但如果P0想进，愿意让P0先进</span></span><br><span class="line"><span class="keyword">while</span> (flag[<span class="number">0</span>] &amp;&amp; turn==<span class="number">0</span>);		<span class="comment">//对方想进，且最后一次是自己“让梨&quot;，那自己就循环等待</span></span><br><span class="line">critical section;</span><br><span class="line">flag[<span class="number">1</span>] = <span class="literal">false</span>;				<span class="comment">//访问完临界区，表示自己已经不想访问临界区了</span></span><br><span class="line">remainder section;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以推理验证，各个操作按照不同顺序穿插执行是可以<strong>实现互斥</strong>的</p>
+<p>可以用举一个生活的例子：</p>
+<p>A 和 B 都想上厕所，但只能一个人进入。</p>
+<ul>
+<li>A：A想用马桶，但B可以先用。【flag[A]&#x3D;true;turn &#x3D; B】</li>
+<li>B：B想用马桶，但A可以先用。【flag[B] &#x3D; true;turn &#x3D; A】</li>
+<li>最终 turn&#x3D;A ，flag都为true。</li>
+<li>A 的<code>while (flag[A] &amp;&amp; turn==A);</code>循环等待</li>
+<li>B 的<code>while (flag[B] &amp;&amp; turn==B);	</code>则放行。B使用了马桶。</li>
+</ul>
+<p>我们可以看到，最终谁能进入，取决于<font color="red">谁是最后一次<strong>被</strong>让梨</font>的</p>
+<p>Peterson算法用软件方法解决了进程互斥问题，遵循了<strong>空闲让进、忙则等待、有限等待</strong>三个原则，但是依然未遵循<font color="red">让权等待</font>的原则。</p>
+<p>因为等待的过程中，一直处于<strong>while循环过程</strong>中。</p>
+<blockquote>
+<p>①②③ 是进入区、④是临界区、⑤是退出区。</p>
+</blockquote>
+<h1 id="进程互斥的硬件实现方法"><a href="#进程互斥的硬件实现方法" class="headerlink" title="进程互斥的硬件实现方法"></a>进程互斥的硬件实现方法</h1><h2 id="中断屏蔽法"><a href="#中断屏蔽法" class="headerlink" title="中断屏蔽法"></a>中断屏蔽法</h2><p>利用”开关中断指令“实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">关中断;</span><br><span class="line">临界区;</span><br><span class="line">开中断;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p><strong>与原语的实现思想相同</strong>，</p>
+<p>在某进程开始访问临界区到结束访问为止都不允许被中断</p>
+<p>不能发生中断 —&gt; 不能发生进程切换 —&gt; 不可能发生<strong>两个同时访问临界区</strong>的情况</p>
+<ul>
+<li>优点：简单高效</li>
+<li>缺点：<ul>
+<li>只适用于<strong>单核CPU</strong>，不适合多核CPU<ul>
+<li>在CPU的一个核里开关中断，这个核不能进行进程切换，也就达到了互斥</li>
+<li>如果，多个核，其他核的进程照样能同时访问<strong>临界资源</strong>。</li>
+</ul>
+</li>
+<li>只适合操作系统内核进程，不适合用户进程【开&#x2F;关中断指令只能运行在<strong>内核态</strong>】</li>
+</ul>
+</li>
+</ul>
+<h2 id="TestAndSet"><a href="#TestAndSet" class="headerlink" title="TestAndSet"></a>TestAndSet</h2><p>简称TS指令，也有地方称 TestAndSetLock指令，或TSL指令</p>
+<p>TSL指令是<font color="red">用硬件实现的</font>，执行的过程<strong>不允许被中断，只能一气呵成</strong>。</p>
+<p>用C语言表述如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> <span class="title function_">TestAndSet</span><span class="params">(<span class="type">bool</span> *lock)</span>&#123;</span><br><span class="line">    <span class="type">bool</span> old;</span><br><span class="line">    old = *lock;	<span class="comment">// old用来存放lock原来的值</span></span><br><span class="line">    *lock = <span class="literal">true</span>;	<span class="comment">//无论之前是否已加锁，都将lock设为true</span></span><br><span class="line">    <span class="keyword">return</span> old;		<span class="comment">//返回lock原来的值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>布尔型共享变量lock表示<strong>当前临界区是否被加锁</strong></p>
+<ul>
+<li>true表示已加锁</li>
+<li>false表示未加锁</li>
+</ul>
+<p>TSL指令实现的 进程互斥的代码逻辑如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(TestAndSet(&amp;lock));  	<span class="comment">//检查 并 “上锁”</span></span><br><span class="line">临界区代码段...</span><br><span class="line">lock = <span class="literal">false</span>;				<span class="comment">//“解锁”</span></span><br><span class="line">剩余区代码段...</span><br></pre></td></tr></table></figure>
+
+<p>相比软件实现方法，</p>
+<p>软件实现的问题所在就是  “上锁” 和 “检查” 不是一气呵成的，是有可能进程间穿插执行的。</p>
+<p>TSL指令<font color="red"><strong>把“上锁”和“检查”操作用硬件的方式变成了一气呵成的原子操作</strong></font>。</p>
+<ul>
+<li>优点：<ul>
+<li>实现简单，无需像软件实现方法那样严格检查是否会有逻辑漏洞</li>
+<li>适用于多处理机环境</li>
+</ul>
+</li>
+<li>缺点：不满足“让权等待”原则，暂时无法进入临界区的进程会占用CPU并循环执行TSL指令，从而<strong>导致“忙等”</strong>。【等待的过程还占用CPU】</li>
+</ul>
+<blockquote>
+<p>TestAndSet 指令，顾名思义，就是 <strong>检查并上锁</strong> 的指令。</p>
+<p>无论临界资源有没有上锁，都会有一个上锁操作。</p>
+</blockquote>
+<h2 id="Swap指令"><a href="#Swap指令" class="headerlink" title="Swap指令"></a>Swap指令</h2><p>Swap指令是用硬件实现的，执行的过程不允许被中断，只能一气呵成。</p>
+<p>用C语言描述如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Swap(<span class="type">bool</span> *a,<span class="type">bool</span> *b)&#123;</span><br><span class="line">    <span class="type">bool</span> temp;</span><br><span class="line">    temp = *a;</span><br><span class="line">    *a = *b;</span><br><span class="line">    *b = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Swap指令的作用是<strong>交换两个变量的值</strong></p>
+<p>用Swap指令实现互斥的算法逻辑如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> old = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">while</span>(old == <span class="literal">true</span>)</span><br><span class="line">    Swap(&amp;lock,&amp;old);</span><br><span class="line">临界区代码段...</span><br><span class="line">lock = <span class="literal">false</span>;</span><br><span class="line">剩余区代码段...</span><br></pre></td></tr></table></figure>
+
+<p><strong>逻辑上来看Swap和TSL并无太大区别</strong></p>
+<ol>
+<li>都是先记录下此时临界区是否已经被上锁（记录在 old变量上)</li>
+<li>再将上锁标记lock设置为true，最后检查old，</li>
+<li>如果old为false则说明之前没有别的进程对临界区上锁，则可跳出循环，进入临界区。</li>
+</ol>
+<p>优点和缺点和TSL指令一样。</p>
+<h1 id="信号量机制"><a href="#信号量机制" class="headerlink" title="信号量机制"></a>信号量机制</h1><p>用户进程可以通过使用操作系统提供的<font color="red"><strong>一对原语</strong></font>来对<font color="red"><strong>信号量</strong></font>进行操作，从而很方便的实现了进程互斥、进程同步。</p>
+<p><font color="red"><strong>信号量</strong></font>其实就是一个<strong>变量</strong>（可以是一个整数，也可以是更复杂的记录型变量),</p>
+<p>可以用<strong>一个信号量</strong>来表示<strong>系统中某种资源的数量</strong>【比如：系统中只有一台打印机，就可以设置一个初值为1的信号量。】</p>
+<blockquote>
+<p>一对原语： <strong>wait(S)原语</strong>和<strong>signal(S)原语</strong></p>
+<p>可以把原语理解为我们自己写的函数，函数名分别为wait和signal，括号里的信号量s其实就是函数调用时传入的一个参数。</p>
+<p>wait、signal原语常简称为<strong>P、v操作</strong>。因此，常把wait(S)、signal(S)两个操作分别写为P(S)、v(S)</p>
+</blockquote>
+<p>有两种信号量机制：</p>
+<ul>
+<li>整型信号量</li>
+<li>记录型信号量</li>
+</ul>
+<p>我们重点说一下记录型信号量</p>
+<p><font color="red">记录型信号量</font>：用记录型数据结构表示的信号量。</p>
+<p>用C语言表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*记录型信号量的定义*/</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> value;<span class="comment">//剩余资源数</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">process</span> *<span class="title">L</span>;</span><span class="comment">//等待队列</span></span><br><span class="line">&#125;semaphore;</span><br></pre></td></tr></table></figure>
+
+<p>某进程需要使用资源时，通过<strong>wait原语</strong>申请。</p>
+<p>wait原语C语言表示如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">wait</span> <span class="params">(semaphore s)</span> &#123;</span><br><span class="line">    s.value--;  	<span class="comment">// 该 临界资源数量-1</span></span><br><span class="line">	<span class="keyword">if</span> (S.value &lt; <span class="number">0</span> ) &#123;  	<span class="comment">//如果 临界区资源数量为负  则表示  没有资源可分配了</span></span><br><span class="line">        block (S.L);		<span class="comment">//将进程挂到 该临界资源的等待队列。</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果剩余资源数不够，使用<strong>block原语</strong>使进程<strong>从运行态进入阻塞态</strong>，并把该进程挂到信号量S的等待队列（即阻塞队列）中</p>
+<p>进程使用资源后，通过 signal 原语释放</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">signal</span> <span class="params">(semaphore s)</span> &#123;</span><br><span class="line">    s.value++;</span><br><span class="line">    <span class="keyword">if</span> (s.value &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        wakeup(S.L);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>释放资源后，若还有别的进程在等待这种资源，则使用<strong>wakeup原语唤醒等待队列中的一个进程，该进程从阻塞态变为就绪态</strong></p>
+<h2 id="互斥例子演示"><a href="#互斥例子演示" class="headerlink" title="互斥例子演示"></a>互斥例子演示</h2><p>某计算机系统中<strong>有2台打印机</strong>…，</p>
+<p>则可在初始化信号量s时</p>
+<ul>
+<li><strong>S.value的值设为2</strong></li>
+<li><strong>队列s.L设置为空</strong></li>
+</ul>
+<img src="image/article/操作系统-进程管理（三）/image-20220911205654143.png" alt="image-20220911205654143" style="zoom:67%;" />
+
+<blockquote>
+<p>你可以把这个 <strong>记录型信号量</strong> 类比为 我们平时写代码时的 <strong>全局变量</strong>。</p>
+</blockquote>
+<p><strong>P0~P3进程。</strong></p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911205815433.png" alt="image-20220911205815433" style="zoom: 67%;" />
+
+<p>刚开始的时候CPU为P0进程服务，执行<code>wait(s)</code>原语。S.value– 。此时S.value &#x3D; 1 &gt; 0。P0进程进入临界区，打印机1分配给P0进程。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911210934023.png" alt="image-20220911210934023" style="zoom:67%;" />
+
+<center><font color="red" face="黑体" size=5>S.value = 1,S.L = null</font></center>
+
+<p>然后CPU为P1进程服务，执行<code>wait(s)</code>原语。S.value– 。此时 S.value &#x3D; 0 &#x3D;&#x3D; 0。P1进程进入临界区，打印机2分配给P1进程。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911211935614.png" alt="image-20220911211935614" style="zoom:67%;" />
+
+<center><font color="red" face="黑体" size=5>S.value = 0,S.L = null【资源恰好分配完】</font></center>
+
+<p>CPU为P2进程服务时，执行<code>wait(s)</code>原语。S.value– 。此时 S.value &#x3D; -1 &lt; 0。该进程被阻塞，由运行态转为阻塞态，然后挂载到信号量S的等待队列中</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911212245388.png" alt="image-20220911212245388" style="zoom:67%;" />
+
+<center><font color="red" face="黑体" size=5>S.value = -1,S.L = [P2]【有一个进程等待】</font></center>
+
+<p>CPU为P3进程服务时，执行<code>wait(s)</code>原语。S.value– 。此时 S.value &#x3D; -2 &lt; 0。该进程被阻塞，由运行态转为阻塞态，然后挂载到信号量S的等待队列中</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911212402389.png" alt="image-20220911212402389" style="zoom:67%;" />
+
+<center><font color="red" face="黑体" size=5>S.value = -2,S.L = [P2,P3]【有两个进程等待】</font></center>
+
+<p>P0在打印机完后，执行<code>signal(S)</code>原语，S.value++。此时 S.value &#x3D; -1 &lt;&#x3D; 0。说明<strong>有进程正在等待临界资源</strong>。</p>
+<p>将信号量的队头取出一个进程【P2】，将<strong>刚刚释放的打印机1资源分配给P2</strong>。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911212844961.png" alt="image-20220911212844961" style="zoom:67%;" />
+
+<center><font color="red" face="黑体" size=5>S.value = -1,S.L = [P3]【有一个进程等待】</font></center>
+
+<p>CPU为P2服务，P2就可以使用打印机资源了。</p>
+<p>使用完成后执行<code>signal(S)</code>原语，S.value++。此时 S.value &#x3D; 0 &lt;&#x3D; 0。说明<strong>有进程正在等待临界资源</strong>。</p>
+<p>将信号量的队头取出一个进程【P4】，将<strong>刚刚释放的打印机1资源分配给P4</strong>。</p>
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911213517242.png" alt="image-20220911213517242"></p>
+<center><font color="red" face="黑体" size=5>S.value = 0,S.L = null</font></center>
+
+<p>核心的差不多说完了，后面的就不说了</p>
+<ul>
+<li><p>对信号量s的<font color="red">一次Р操作</font>意味着<font color="blue">进程请求一个单位的该类资源</font>，</p>
+<p>需要执行S.value–，表示资源数减1，当S.value &lt;0时表示该类资源已分配完毕，因此进程应<font color="red">调用block原语进行自我阻塞</font>（当前运行的进程从<font color="red">运行态→阻塞态</font>），主动放弃处理机，并插入该类资源的等待队列s.L中。可见，该机制<font color="red">遵循了“让权等待”原则</font>,不会出现“忙等”现象。</p>
+</li>
+<li><p>对信号量s的<font color="red">一次V操作</font>意味着<font color="blue">进程释放一个单位的该类资源</font></p>
+<p>需要执行S.value++，表示资源数加1，若加1后仍是S.value &lt;&#x3D;o，表示依然有进程在等待该类资源，因此应<font color="red">调用wakeup原语唤醒等待队列中的第一个进程</font>（被唤醒进程从<font color="red">阻塞态→就绪态</font>）。</p>
+</li>
+</ul>
+<h1 id="用信号量机制实现进程互斥与同步"><a href="#用信号量机制实现进程互斥与同步" class="headerlink" title="用信号量机制实现进程互斥与同步"></a>用信号量机制实现进程互斥与同步</h1><h2 id="进程互斥-1"><a href="#进程互斥-1" class="headerlink" title="进程互斥"></a>进程互斥</h2><ol>
+<li>分析并发进程的关键活动，<strong>划定临界区</strong></li>
+<li>设置互斥信号量 mutex,初始值为 1</li>
+<li>在临界区之前执行<code>P(mutex)</code></li>
+<li>在临界区之后执行<code>V(mutex)</code></li>
+</ol>
+<p>初始化信号量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex = <span class="number">1</span>; <span class="comment">//信号量的简写形式</span></span><br></pre></td></tr></table></figure>
+
+<p>实际上是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> value = <span class="number">1</span>;<span class="comment">//剩余资源数</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">process</span> *<span class="title">L</span>;</span><span class="comment">//等待队列</span></span><br><span class="line">&#125;semaphore;</span><br></pre></td></tr></table></figure>
+
+<img src="image/article/操作系统-进程管理（三）/image-20220911220140702.png" alt="image-20220911220140702" style="zoom:67%;" />
+
+<p><font color="red"><strong>P、V操作必须成对出现</strong></font>。</p>
+<ul>
+<li>缺少<code>P(mutex)</code>就不能保证临界资源的互斥访问</li>
+<li>缺少<code>V(mutex</code>)会导致资源永不被释放，等待进程永不被唤醒。</li>
+</ul>
+<blockquote>
+<p>注意：对<font color="red">不同的临界资源</font>需要设置<font color="red">不同的互斥信号量</font>。</p>
+</blockquote>
+<h2 id="进程同步-1"><a href="#进程同步-1" class="headerlink" title="进程同步"></a>进程同步</h2><p>进程同步：要让各并发进程<strong>按要求有序地推进</strong>。</p>
+<p>比如，P1、P2并发执行，由于存在异步性，因此二者交替推进的次序是<strong>不确定的</strong>。</p>
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911220728425.png" alt="image-20220911220728425"></p>
+<p>若P2的<strong>“代码4”</strong>要基于P1的“代码1”和“代码2”的运行结果才能执行。</p>
+<p>那么我们就必须保证<strong>“代码4”一定是在“代码2”之后才会执行</strong>。</p>
+<p>步骤：</p>
+<ol>
+<li>分析什么地方需要实现“同步关系”，即必须保证“一前一后”执行的两个操作（或两句代码)</li>
+<li>设置同步信号量s,初始为0</li>
+<li>在“前操作”之后执行V(S)</li>
+<li>在“后操作”之前执行P(S)</li>
+</ol>
+<p>初始化信号量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex = <span class="number">0</span>; <span class="comment">//信号量的简写形式</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220911221041233.png" alt="image-20220911221041233"></p>
+<p>代码4  要在 代码 2之后执行。</p>
+<p>代码4之前  P操作，代码2之后V操作。</p>
+<p>注意，初始信号量为0。</p>
+<ul>
+<li><p>如果代码2没有执行完，就不会执行<code>V(S)</code>操作。当要执行代码4之前，必定执行<code>P(S)</code>，s.value– ,<code>s.value&lt;0</code>，P2进程阻塞。</p>
+<p>然后执行到代码2之后的<code>V(S)</code>操作，s.value++。<code>s.value=0;s.value&lt;=0</code>，就会唤醒P2，然后就可以执行代码4了。</p>
+</li>
+<li><p>如果代码2执行结束，然后执行<code>V(S)</code>操作，s.value++。<code>s.value = 1</code>当要执行代码4之前，必定执行<code>P(S)</code>，s.value– ,<code>s.value = 0;s.value&gt;=0</code>，进程不会阻塞，然后就可以执行代码4了。</p>
+</li>
+</ul>
+<h2 id="信号量机制实现前驱关系"><a href="#信号量机制实现前驱关系" class="headerlink" title="信号量机制实现前驱关系"></a>信号量机制实现前驱关系</h2><p>进程P1中有句代码S1，P2中有句代码S2 ..P3…P6中有句代码S6。这些代码要求按如下前驱图所示的顺序来执行:</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220911221928035.png" alt="image-20220911221928035" style="zoom: 50%;" />
+
+<p>每一对前驱关系都是一个进程同步问题。</p>
+<ol>
+<li>要为每一对前驱关系各设置一个同步变量</li>
+<li>在“前操作”之后对相应的同步变量执行v操作</li>
+<li>在“后操作”之前对相应的同步变量执行Р操作</li>
+</ol>
+<img src="image/article/操作系统-进程管理（三）/image-20220911222213226.png" alt="image-20220911222213226" style="zoom:50%;" />
+
+<p>【不完整，可以根据a 、b依次类推】</p>
+<h1 id="经典问题"><a href="#经典问题" class="headerlink" title="经典问题"></a>经典问题</h1><h2 id="生产者消费者问题"><a href="#生产者消费者问题" class="headerlink" title="生产者消费者问题"></a>生产者消费者问题</h2><p>系统中有一组生产者进程和一组消费者进程，生产者进程每次生产一个产品放入缓冲区，消费者进程每次从缓冲区中取出一个产品并使用。（注:这里的“产品”理解为某种数据)</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912151936366.png" alt="image-20220912151936366" style="zoom: 50%;" />
+
+<p>生产者、消费者共享一个初始为空、大小为n的缓存区。</p>
+<ul>
+<li>缓冲区没满时，生产者进程才能把产品放入缓冲区。<font color="red"><strong>【同步问题】</strong></font><ul>
+<li>缓冲区由非满 变为 满时，要阻塞生产者进程。【运行态 ——&gt; 阻塞态】</li>
+<li>缓冲区由满 变为 非满，要唤醒生产者进程。【阻塞态 ——&gt; 就绪态】</li>
+</ul>
+</li>
+<li>缓冲区非空时，消费者才能从缓冲区中取走一个产品。<font color="red"><strong>【同步问题】</strong></font><ul>
+<li>缓冲区从 非空 变为 空，要阻塞消费者进程。【运行态 ——&gt; 阻塞态】</li>
+<li>缓冲区从空 变为非空，要唤醒消费者进程。【阻塞态 ——&gt; 就绪态】</li>
+</ul>
+</li>
+<li>某一时刻，缓冲区只能由一个进程使用。缓冲区属于<strong>临界资源</strong>。<font color="red"><strong>【互斥问题】</strong></font></li>
+</ul>
+<blockquote>
+<p>如何用信号量机制（P、V操作）实现生产者、消费者进程的这些功能呢？</p>
+<p>先回顾一下P、V操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">P</span><span class="params">(semaphore s)</span> &#123;</span><br><span class="line">    s.value--;  	</span><br><span class="line">	<span class="keyword">if</span> (S.value &lt; <span class="number">0</span> ) &#123;  	</span><br><span class="line">        block (S.L);		</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">V</span><span class="params">(semaphore s)</span> &#123;</span><br><span class="line">    s.value++;</span><br><span class="line">    <span class="keyword">if</span> (s.value &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        wakeup(S.L);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每P一下，就要<strong>消耗</strong>一个临界区资源。</p>
+<p>每V一下就要<strong>释放</strong>一个临界区资源。</p>
+</blockquote>
+<p>分析：</p>
+<ul>
+<li><font color="blue"><strong>空闲位置</strong></font>无之前，生产者进程才能放入。生产者每次要消耗一个空闲位置（<font color="red"><strong>P</strong></font>），并生产一个产品（<font color="blue"><strong>V</strong></font>）<ul>
+<li>生产者进程要在 空闲位置 无之前运行，所以是同步问题。</li>
+</ul>
+</li>
+<li><font color="red"><strong>产品数量</strong></font>无之前，消费者进程才能取出。消费者每次要消耗一个产品（<font color="blue"><strong>P</strong></font>），并释放一个空闲位置（<font color="red"><strong>V</strong></font>）<ul>
+<li>消费者进程要在产品数量 无之前运行，所以是同步问题。</li>
+</ul>
+</li>
+<li>往缓冲区放入&#x2F;取走产品需要互斥。</li>
+</ul>
+<blockquote>
+<p>注意 红色的是一对P、V操作。蓝色的是一对P、V操作。</p>
+</blockquote>
+<p>初始化信号量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex = <span class="number">1</span>;			<span class="comment">//互斥信号量，实现对缓冲区的互斥访问</span></span><br><span class="line">semaphore empty = n;			<span class="comment">//同步信号量,表示空闲缓冲区的数量</span></span><br><span class="line">semaphore full = <span class="number">0</span>;				<span class="comment">//同步信号量,表示产品的数量,也即非空缓冲区的数量</span></span><br></pre></td></tr></table></figure>
+
+<p><code>mutex=1</code>是互斥信号量。缓冲区只有一个</p>
+<p>消费者进程在消费一个产品之前，要检查此时缓冲区中，产品数量是否为0。所以要设置信号量<code>full = 0</code>，初始时产品数量为0。</p>
+<p>生产者进程在生产一个产品之前，要检查此时缓冲区中，空闲位置释放为0。所以要设置信号量<code>empty = n</code>，初始时空闲位置为0。</p>
+<p>用伪代码表示<strong>生产者进程</strong>如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">producer()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        生产一个产品;</span><br><span class="line">        P(empty);	<span class="comment">//消耗一个空闲位置</span></span><br><span class="line">        P(mutex);	<span class="comment">//消耗一个缓冲区资源</span></span><br><span class="line">        将产品放入缓冲区;				<span class="comment">//临界区</span></span><br><span class="line">        V(mutex);	<span class="comment">//释放一个缓冲区资源</span></span><br><span class="line">        V(full);	<span class="comment">//增加一个产品</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用伪代码表示<strong>消费者进程</strong>如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">consumter()&#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)&#123;</span><br><span class="line">        P(full);			<span class="comment">//消耗一个产品</span></span><br><span class="line">        P(mutex);			<span class="comment">//消耗一个缓冲区资源</span></span><br><span class="line">        从缓冲区取出一个产品;</span><br><span class="line">        V(mutex);			<span class="comment">//释放一个缓冲区资源</span></span><br><span class="line">        V(empty);			<span class="comment">//释放一个空闲位置</span></span><br><span class="line">        使用产品;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们发现，我们连续使用了两个P操作。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912160505346.png" alt="image-20220912160505346" style="zoom:50%;" />
+
+<ul>
+<li>第一个P操作是用来实现<strong>同步</strong>的</li>
+<li>第二个P操作是用来实现<strong>互斥</strong>的</li>
+</ul>
+<p>那这两个P操作可不可以颠倒位置呢？</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912161202433.png" alt="image-20220912161202433" style="zoom:50%;" />
+
+<p>答案是不能的！</p>
+<p>假如，此时缓冲区已满，即empty &#x3D; 0，full &#x3D; n;</p>
+<p>生产者进程 执行 ①，mutex–，mutex &#x3D; 0，缓冲区临界资源被上锁。</p>
+<p>生产者进程 执行②，empty–，empty&lt;0，<font color="red"><strong>生产者进程被阻塞</strong></font>，挂载到了empty信号量的等待队列上。</p>
+<p>消费者进程 执行③，mutex–，mutex&lt;0,说明此时缓冲区每有空闲的，因此<font color="red"><strong>消费者进程也被阻塞了</strong></font>，挂载到了mutex信号量的等待队列上</p>
+<p>这就产生了<font color="red"><strong>死锁</strong></font>现象。</p>
+<p>即，生产者等待消费者释放空闲缓冲区，而消费者又等待生产者释放临界区的情况，生产者和消费者循环<strong>等待被对方唤醒</strong>。</p>
+<blockquote>
+<p>V操作不会导致进程阻塞，因此两个v操作顺序可以交换。</p>
+<p>如果不实现互斥，两个生产者进程“同时”访问缓冲区，可能会发生<font color="blue"><strong>数据覆盖问题</strong></font>。</p>
+</blockquote>
+<h2 id="多生产者多消费者问题"><a href="#多生产者多消费者问题" class="headerlink" title="多生产者多消费者问题"></a>多生产者多消费者问题</h2><p>桌子上有一只盘子，每次只能向其中放入一个水果。</p>
+<p>爸爸专向盘子中放苹果，妈妈专向盘子中放橘子。</p>
+<p>儿子专等着吃盘子中的橘子，女儿专等着吃盘子中的苹果。</p>
+<p>只有盘子空时，爸爸或妈妈才可向盘子中放一个水果。仅当盘子中有自己需要的水果时，儿子或女儿可以从盘子中取出水果。用PV操作实现上述过程。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912173800328.png" alt="image-20220912173800328" style="zoom:67%;" />
+
+<p>盘子可以看成 <strong>大小为1，初始为空的缓冲区</strong>。</p>
+<ul>
+<li><p>互斥关系：</p>
+<ul>
+<li>对缓冲区（盘子）的访问要互斥进行。</li>
+</ul>
+</li>
+<li><p>同步关系：</p>
+<ul>
+<li>父亲将苹果放入盘子后，女儿才能取苹果</li>
+<li>母亲将橘子放入盘子后，儿子才能取橘子</li>
+<li>只有盘子为空时，父亲或母亲才能放入水果【“盘子为空”的事件可以由儿子或者女儿触发】</li>
+</ul>
+<p>所以需要 <strong>四对PV操作</strong>。</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912174333174.png" alt="image-20220912174333174" style="zoom:67%;" />
+
+<p>初始化信号量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex = <span class="number">1</span>;		<span class="comment">//实现互斥访问盘子（缓冲区)</span></span><br><span class="line">semaphore apple = <span class="number">0</span>;		<span class="comment">//盘子中有几个苹果</span></span><br><span class="line">semaphore orange = <span class="number">0</span>;		<span class="comment">//盘子中有几个橘子</span></span><br><span class="line">semaphore plate = <span class="number">1</span>;		<span class="comment">//盘子中还可以放多少个水果</span></span><br></pre></td></tr></table></figure>
+
+<p>用伪代码表示如下：</p>
+<p><img src="/image/article/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%EF%BC%88%E4%B8%89%EF%BC%89/image-20220912174958114.png" alt="image-20220912174958114"></p>
+<blockquote>
+<p>实际上</p>
+<p>由于盘子缓冲区大小为1，所以其实可以不用mutex互斥信号量也可以实现互斥。</p>
+<p>但如果缓冲区大小大于1，则必须 使用信号量mutex 来实现互斥！</p>
+</blockquote>
+</li>
+</ul>
+<p>在分析<strong>同步问题（一前一后问题）</strong>的时候不能从单个进程行为的角度来分析，要把“一前一后”发生的事<font color="red"><strong>看做是两种“事件”的前后关系</strong></font>。</p>
+<h2 id="读者-写者问题"><a href="#读者-写者问题" class="headerlink" title="读者-写者问题"></a>读者-写者问题</h2><p>「读者-写者」，它为数据库访问建立了一个模型。</p>
+<p>问题描述：</p>
+<p>有<strong>读者</strong>和<strong>写者</strong>两组并发进程，共享一个文件。</p>
+<p>当<strong>两个或两个以上的读进程</strong>同时访问共享数据时不会产生副作用。</p>
+<p>但若某个写进程和其他进程（读进程或写进程）同时访问共享数据时则可能导致数据不一致的错误。</p>
+<p>因此要求：</p>
+<ul>
+<li>「读-读」允许：同一时刻，允许多个读者同时读</li>
+<li>「读-写」互斥：没有写者时读者才能读，没有读者时写者才能写</li>
+<li>「写-写」互斥：没有其他写者时，写者才能写</li>
+</ul>
+<img src="image/article/操作系统-进程管理（三）/image-20220912201334546.png" alt="image-20220912201334546" style="zoom: 67%;" />
+
+<p>两类进程：读进程、写进程。</p>
+<p>互斥关系：写进程 - 写进程、写进程 - 读进程。【读进程 - 读进程 不互斥】</p>
+<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>只设置一个信号量 <code>rw=1</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">semaphore rw = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>写者进程和任何进程都互斥，在<strong>写者</strong>访问共享文件前后分别执行P、v操作。</p>
+<p>读者进程和写者进程也要互斥，因此<strong>读者</strong>访问共享文件前后也要对rw执行P、v操作。</p>
+<p>但这样，也会使【读者 - 读者互斥】，但我们要求 读者 - 读者 要允许共享。</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p><code>P(rw)</code>和<code>V(rw)</code>其实就是对共享文件的“加锁”和“解锁”。</p>
+<p>既然<strong>各个读进程需要同时访问</strong>，而<strong>读进程与写进程又必须互斥访问</strong>。</p>
+<p>可以设置一个<font color="blue">整数变量<strong>count</strong>来记录当前有几个读进程</font>在访问文件。</p>
+<p><font color="red"><strong>第一个访问文件的读进程“加锁”</strong></font>，<font color="red"><strong>让最后一个访问完文件的读进程“解锁”</strong></font>。</p>
+<p>初始化信号量和变量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">semaphore rw = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>读者和写者的实现</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912210020502.png" alt="image-20220912210020502" style="zoom:67%;" />
+
+<p>出现的问题：</p>
+<p>如果有两个读进程；两个读进程并发执行。</p>
+<p>读进程1：执行 <code>if(count==0)</code>成立。</p>
+<p>读进程2：执行<code>if(count==0)</code>成立。</p>
+<p>读进程1：执行<code>P(rw)</code>，共享文件被上锁。</p>
+<p>读进程2：执行<code>P(rw)</code>，读进程2被阻塞。</p>
+<p>原因：<font color="red">count变量的检查和赋值无法一气呵成！</font></p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912210843435.png" alt="image-20220912210843435" style="zoom:67%;" />
+
+<h3 id="方法三"><a href="#方法三" class="headerlink" title="方法三"></a>方法三</h3><p>由于count变量的检查和赋值无法一气呵成！ 于是我们可以设置一个新的互斥变量 <code>rCountMutex</code>，<font color="red">用于保证对count变量的互斥访问</font></p>
+<p>初始化信号量和变量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">semaphore rw = <span class="number">1</span>;</span><br><span class="line"><span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line">semaphore rCountMutex = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>读者和写者的实现</p>
+<img src="image/article/操作系统-进程管理（三）/image-20220912211652420.png" alt="image-20220912211652420" style="zoom:67%;" />
+
+
+
+<h2 id="哲学家就餐问题"><a href="#哲学家就餐问题" class="headerlink" title="哲学家就餐问题"></a>哲学家就餐问题</h2>
+                
+                <p class="end">__END__</p>
+            </div>
+            <div class="article-footer">
+                <div class="suffix-box">
+    <div class="suffix-box-left">
+        <img src="/image/sidebar/avatar.jpg" alt="Lucky Dog">
+    </div>
+    <div class="suffix-box-right">
+        <span class="suffix-box-title">文章作者：</span>Lucky Dog
+        <br>
+        <span class="suffix-box-title">文章出处：</span><a href="/post/b2519e00.html" target="_blank">操作系统-进程管理（三）</a>
+        <br>
+        <span class="suffix-box-title">作者签名：</span>秤砣虽小，能压千斤.
+        <br>
+        <span class="suffix-box-title">关于主题：</span><a href="https://github.com/first19326/Hexo-LiveForCode" target="_blank">Hexo - Live For Code</a>
+        <br>
+        <span class="suffix-box-title">版权声明：</span>文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议，转载请注明出处
+        <br>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+                
+                
+                <div class="article-prev-next">
+                    
+                    
+                        <a href="/post/ff4f3d52.html" class="next-prefix">» </a> 下一篇：    <a href="/post/ff4f3d52.html" title="发布于 2022-09-08 05:31">操作系统-进程管理（二）</a>
+                    
+                </div>
+            </div>
+            
+    <div class="article-comments">
+        
+            <div class="comments-title">
+                评论列表
+            </div>
+        
+        <div class="comments-content"></div>
+    </div>
+
+        </div>
+    
+</div>
+    <div id="footer"></div>
+    <div id="sidebar">
+    <div class="menu-wrap" style="display:none;">
+        
+            <div class="menu-notice">
+                <span class="iconfont icon-notice"></span>
+                <div class="notice">
+                    <span>活着不是靠泪水搏取同情，而是靠汗水获得掌声!</span>
+                </div>
+            </div>
+        
+        <nav class="menu">
+            <div class="menu-introduce"> 
+                <div class="introduce-avatar">
+                    <img src="/image/sidebar/avatar.jpg">
+                </div> 
+                <div class="introduce-info"> 
+                    <div class="introduce-user"><span>Lucky Dog</span></div>
+                </div> 
+            </div> 
+            <div class="menu-list">
+                <ul>
+                    
+                        <li class=""><a href="/" class="" target="_self"><span class="iconfont icon-home-fill"></span>首页</a></li>
+                    
+                        <li class=""><a href="/category" class="" target="_self"><span class="iconfont icon-folder-fill"></span>分类</a></li>
+                    
+                        <li class=""><a href="/tag" class="" target="_self"><span class="iconfont icon-discount-fill"></span>标签</a></li>
+                    
+                        <li class=""><a href="/archive" class="" target="_self"><span class="iconfont icon-calendar-fill"></span>归档</a></li>
+                    
+                        <li class=""><a href="/donate" class="" target="_self"><span class="iconfont icon-heart-fill"></span>赞赏</a></li>
+                    
+                        <li class=""><a href="/about" class="" target="_self"><span class="iconfont icon-about-fill"></span>关于</a></li>
+                    
+                        <li class=""><a href="javascript:;" class="search" target="_self"><span class="iconfont icon-search-menu"></span>搜索</a></li>
+                    
+                        <li class=""><a href="/comment" class="" target="_self"><span class="iconfont icon-comments-fill"></span>留言板</a></li>
+                    
+                        <li class=""><a href="/friend" class="" target="_self"><span class="iconfont icon-link"></span>友情链接&推荐学习网站</a></li>
+                    
+                </ul> 
+            </div> 
+            <div class="menu-link">
+                <div class="box">
+                    <div class="image-box"></div>
+                </div>
+                
+                    <a name="LeetCode" href="https://leetcode.cn/u/im-a-lucky-boy/" class="" target="_blank" data=""><span class="iconfont icon-user-fill"></span></a>
+                
+                    <a name="QQ" href="javascript:;" class="image" target="_self" data="/image/sidebar/QQ.JPG"><span class="iconfont icon-qq"></span></a>
+                
+                    <a name="微信" href="javascript:;" class="image" target="_self" data="/image/sidebar/WeiXin.JPG"><span class="iconfont icon-wechat"></span></a>
+                
+                    <a name="GitHub" href="https://github.com/tianjiashu" class="" target="_blank" data=""><span class="iconfont icon-github"></span></a>
+                
+            </div> 
+        </nav>
+        <button class="menu-button-close"></button>
+        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">
+                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"/>
+            </svg>
+        </div>
+    </div>
+    <button class="menu-button-open">MENU</button>
+    <div class="menu-cover"></div>
+</div>
+    <link type="text/css" rel="stylesheet" href="/css/search.css">
+<script type="text/javascript" src="/js/iscroll.js"></script>
+<script type="text/javascript" src="/js/instantsearch.min.js"></script>
+<div class="search-window">
+    <div class="search-content">
+        <div class="search-content-icon">
+            <i class="iconfont icon-search"></i>
+        </div>
+        <div id="search-input" class="search-input"></div>
+    </div>
+
+    <div class="search-scroll">
+        <div class="search-result">
+            <div id="search-stats" class="search-stats"></div>
+            <div id="search-hits"></div>
+            <div id="search-pagination" class="search-pagination"></div>
+        </div>
+    </div>
+
+    <span class="search-close-icon">
+        <i class="iconfont icon-close"></i>
+    </span>
+</div>
+    <div id="tools">
+    <div class="progressbar-top"></div>
+
+    
+        <link type="text/css" rel="stylesheet" href="/css/APlayer.css">
+        <script type="text/javascript" src="/js/APlayer.min.js"></script>
+        <script type="text/javascript" src="/js/Meting.min.js"></script>
+        <meting-js id="3778678" lrcshow="true" server="netease" type="playlist" fixed="true" autoplay="true" loop="all" order="random" preload="auto" volume="0.67" mutex="true"></meting-js>
+    
+    
+    <div class="wrap-right">
+        <div class="setting">
+            <div class="iconbox favorites" switch="false">
+                <span class="iconfont icon-favorites"></span>
+                <span class="icontext">关注</span>
+            </div>
+            <div class="iconbox mode">
+                <div class="light">
+                    <span class="iconfont icon-daymode"></span>
+                    <span class="icontext">浅色模式</span>
+                </div>
+                <div class="dark">
+                    <span class="iconfont icon-nightmode-fill"></span>
+                    <span class="icontext">深色模式</span>
+                </div>
+            </div>
+            <a href="javascript:;" target="_self" class="search">
+                <div class="iconbox">
+                    <span class="iconfont icon-search-menu"></span>
+                    <span class="icontext">搜索</span>
+                </div>
+            </a>
+            <div class="iconbox bottom">
+                <div style="display: inline-block; transform: rotate(180deg);">
+                    <span class="iconfont icon-top"></span>
+                </div>
+                <span class="icontext">跳至底部</span>
+            </div>
+        </div>
+        <div class="iconbox set">
+            <div style="display: inline-block;">
+                <span class="iconfont icon-setting"></span>
+            </div>
+            <span class="icontext">设置</span>
+        </div>
+        <div class="iconbox top">
+            <span class="iconfont icon-top"></span>
+            <span class="icontext">返回顶部</span>
+        </div>
+    </div>
+    <div class="loading"></div>
+</div>
+    <script>
+    window.config = {
+        GitHubUserName     : "first19326",
+        GitHubRepositories : "Hexo-LiveForCode",
+
+        User             : "Lucky Dog",
+        UserAvatar       : "/image/sidebar/avatar.jpg",
+        WebsiteStartDate : "2022-07-30",
+
+        WebsiteTitleBlur         : "(◍´꒳`◍) Hi, Live For Code",
+        WebsiteTitleBlurTimeOut  : 500,
+        WebsiteTitleFocus        : "(*´∇｀*) 欢迎回来!",
+        WebsiteTitleFocusTimeOut : 1000,
+        WebsiteFavicon           : "/image/website/logo.png",
+
+        ProgressBar : {
+            id       : "topProgressBar",
+            color    : "#77B6FF",
+            height   : "2px",
+            duration : 0.2
+        },
+
+        Loading: {
+            rebound : {
+                tension  : 16,
+                friction : 5
+            },
+            spinner : {
+                id     : "spinner",
+                radius : 90,
+                sides  : 3,
+                depth  : 4,
+                colors : {
+                    background : "#F0F0F0",
+                    stroke     : "#272633",
+                    base       : "",
+                    child      : "#272633"
+                },
+                alwaysForward : true,
+                restAt        : 0.5,
+                renderBase    : false
+            }
+        },
+
+        HomeHeaderAnimationRendered : true,
+        HomeHeaderAnimation         : {
+            radius      : 15,
+            density     : 0.2,
+            color       : "random",
+            clearOffset : 0.3
+        },
+
+        BackAnimationRendered          : true,
+        IEBrowserBackAnimationRendered : false,
+        BackAnimation                  : {
+            colorSaturation  : "60%",
+            colorBrightness  : "50%",
+            colorAlpha       : 0.5,
+            colorCycleSpeed  : 5,
+            verticalPosition : "random",
+            horizontalSpeed  : 200,
+            ribbonCount      : 3,
+            strokeSize       : 0,
+            parallaxAmount   : -0.2,
+            animateSections  : true
+        },
+
+        HomeHeaderImage : [
+            
+                "/image/header/home.jpg",
+            
+                "/image/header/home1.jpg",
+            
+                "/image/header/home2.jpg",
+            
+                "/image/header/home3.jpg",
+            
+                "/image/header/home4.jpg",
+            
+                "/image/header/home5.jpg",
+            
+        ],
+        HomeBannerText  : "人生充满了起起落落，关键在于，在顶端时要好好享受，在低谷时不失勇气！",
+
+        ArticleHeaderImage : [
+            
+                "/image/header/article.jpg",
+            
+                "/image/header/article1.png",
+            
+                "/image/header/article2.jpg",
+            
+                "/image/header/article3.jpg",
+            
+                "/image/header/article4.jpg",
+            
+                "/image/header/article5.jpg",
+            
+        ],
+
+        OtherBannerText : "人生如行路，一路艰辛，一路风景，你的目光所及，就是你的人生境界。",
+
+        Error : {
+            icon    : "icon-swimming",
+            title   : "PAGE NOT FOUND",
+            content : [
+                
+                    "很抱歉，您访问的页面不存在！",
+                
+                    "可能是输入地址有误或该地址已变更。",
+                
+            ],
+            buttons : [
+                
+                    {
+                        icon  : "icon-home",
+                        text  : "返回首页",
+                        href  : "/",
+                        class : ""
+                    },
+                
+            ]
+        },
+
+        MenuNotice : {
+            enable : true,
+            notice : "活着不是靠泪水搏取同情，而是靠汗水获得掌声!",
+            speed  : 20
+        },
+        MenuList : [
+            
+                {
+                    name   : "首页",
+                    icon   : "icon-home-fill",
+                    href   : "/",
+                    type   : "index",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "分类",
+                    icon   : "icon-folder-fill",
+                    href   : "/category",
+                    type   : "category",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "标签",
+                    icon   : "icon-discount-fill",
+                    href   : "/tag",
+                    type   : "tag",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "归档",
+                    icon   : "icon-calendar-fill",
+                    href   : "/archive",
+                    type   : "archive",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "赞赏",
+                    icon   : "icon-heart-fill",
+                    href   : "/donate",
+                    type   : "donate",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "关于",
+                    icon   : "icon-about-fill",
+                    href   : "/about",
+                    type   : "about",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "搜索",
+                    icon   : "icon-search-menu",
+                    href   : "javascript:;",
+                    type   : "",
+                    class  : "search",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "留言板",
+                    icon   : "icon-comments-fill",
+                    href   : "/comment",
+                    type   : "comment",
+                    class  : "",
+                    target : "_self"
+                },
+            
+                {
+                    name   : "友情链接&推荐学习网站",
+                    icon   : "icon-link",
+                    href   : "/friend",
+                    type   : "friend",
+                    class  : "",
+                    target : "_self"
+                },
+            
+        ],
+        MenuLink : [
+            
+                
+                    {
+                        name   : "LeetCode",
+                        icon   : "icon-user-fill",
+                        href   : "https://leetcode.cn/u/im-a-lucky-boy/",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+                    {
+                        name   : "QQ",
+                        icon   : "icon-qq",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/QQ.JPG"
+                    },
+                
+                    {
+                        name   : "微信",
+                        icon   : "icon-wechat",
+                        href   : "javascript:;",
+                        class  : "image",
+                        target : "_self",
+                        image  : "/image/sidebar/WeiXin.JPG"
+                    },
+                
+                    {
+                        name   : "GitHub",
+                        icon   : "icon-github",
+                        href   : "https://github.com/tianjiashu",
+                        class  : "",
+                        target : "_blank",
+                        image  : ""
+                    },
+                
+            
+        ],
+
+        FooterStyle : 2,
+        BottomText  : "<div><span class='face'>ღゝ◡╹)ノ♡</span></div><div>【人生若只如初见<span><i class='iconfont icon-like-fill'></i></span>何事秋风悲画扇】</div><div>&copy; 2020-2022 WorstOne. All Rights Reserved.</div>",
+
+        ConsoleList : [
+            
+                
+                    [
+                        
+                            
+                                "Based on cnblogs theme SimpleMemory.",
+                            
+                                "",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "SimpleMemory Author:",
+                            
+                                "BNDong",
+                            
+                        
+                    ],
+                
+                    [
+                        
+                            
+                                "Theme:",
+                            
+                                "LiveForCode",
+                            
+                        
+                    ],
+                
+            
+        ],
+
+        FontIconExtend : "",
+
+        Donate : {
+            paypal  : "",
+            bitcoin : "",
+            alipay  : "/image/donate/alipay.png",
+            wechat  : "/image/donate/wechat.png"
+        },
+
+        Search : {
+            applicationID : "JY5JWO3MYE",
+            apiKey        : "ddd7a0642c0bf6e72b639cd03f4bf96a",
+            indexName     : "Lucky",
+            hits          : {
+                page : 10
+            },
+            labels        : {
+                placeholder : "搜索",
+                empty       : "未发现与 「${query}」 相关的内容",
+                stats       : "${hits} 条相关条目，使用了 ${time} 毫秒",
+            }
+        }, 
+
+        Valine : {
+            switch         : true,
+            el             : ".comments-content",
+            appId          : "EuIzSBriGKjMqYoTkIprHVf3-gzGzoHsz",
+            appKey         : "m46Te8j9MUw7OH9Qr4PVC90Q",
+            serverURLs     : "",
+            placeholder    : "你是我一生只会遇见一次的惊喜...",
+            avatar         : "mm",
+            meta           : "nick,mail,link",
+            requiredFields : "nick,mail",
+            pageSize       : 5,
+            lang           : "zh-cn",
+            visitor        : true,
+            enableQQ       : true
+        },
+
+        Tocbot : {
+            switch                : true,
+            tocSelector           : ".toc",
+            contentSelector       : ".article-body",
+            headingSelector       : "h1, h2, h3, h4, h5",
+            headingsOffset        : 0,
+            scrollSmooth          : true,
+            scrollSmoothOffset    : -5,
+            positionFixedSelector : ".toc",
+            positionFixedClass    : "toc-fixed",
+            fixedSidebarOffset    : "",
+        },
+
+        Require : {
+            baseUrl     : "/js/",
+            waitSeconds : 100
+        },
+
+        Music : {
+            type : ""
+        },
+        APlayer : {
+            container : ".aplayer",
+            fixed     : true,
+            autoplay  : true,
+            loop      : "all",
+            order     : "random",
+            preload   : "auto",
+            volume    : 0.67,
+            mutex     : true,
+            lrcType   : 3,
+            audio     : [
+                
+                    {
+                        name   : "Endless Tears",
+                        artist : "CLIFF EDGE",
+                        cover  : "/music/cover/Endless Tears.jpg",
+                        url    : "/music/song/Endless Tears.mp3",
+                        lrc    : "/music/lrc/Endless Tears.lrc"
+                    },
+                
+            ]
+        },
+        Meting : {
+            id       : "3778678", 
+            lrcshow  : true, 
+            server   : "netease", 
+            type     : "playlist", 
+            fixed    : true, 
+            autoplay : true, 
+            loop     : "all", 
+            order    : "random", 
+            preload  : "auto", 
+            volume   : 0.67, 
+            mutex    : true
+        },
+
+        Mouse : {
+            enable  : true,
+            options : {
+                size  : 6,
+                sizeF : 24
+            }
+        },
+
+        LazyLoad : {
+            default : "/image/website/lazyload.svg"
+        },
+  
+        Style : {
+            aplayer          : "/css/APlayer.css",
+            archive          : "/css/archive.css",
+            base             : "/css/base.css",
+            clipboard        : "/css/clipboard.css",
+            code             : "/css/code.css",
+            donate           : "/css/donate.css",
+            fancybox         : "/css/jquery.fancybox.css",
+            footer           : "/css/footer.css",
+            iconfont         : "/iconfont/iconfont.css",
+            index            : "/css/index.css",
+            menuBubble       : "/css/menu-bubble.css",
+            mouse            : "/css/mouse.css",
+            page             : "/css/page.css",
+            post             : "/css/post.css",
+            search           : "/css/search.css",
+            tocbot           : "/css/tocbot.css",
+            valine           : "/css/valine.css"
+        },
+
+        Script: {
+            aplayer          : "/js/APlayer.min.js",
+            config           : "/js/require.config.js",
+            index            : "/js/index.js",
+            instantSearch    : "/js/instantsearch.min.js",
+            iscroll          : "/js/iscroll.js",
+            jQuery           : "/js/jquery-3.4.1.min.js",
+            loading          : "/js/loading.js",
+            meting           : "/js/Meting.min.js",
+            require          : "/js/require.min.js"
+        },
+
+        Font: {
+            LongCang    : "/font/LongCang.css",
+            Monda       : "/font/Monda.css",
+            NotoSansSC  : "/font/NotoSansSC.css",
+            NotoSerifSC : "/font/NotoSerifSC.css",
+            Playball    : "/font/Playball.css",
+            PTMono      : "/font/PTMono.css",
+            Roboto      : "/font/Roboto.css",
+            RobotoSlab  : "/font/RobotoSlab.css",
+            Rosario     : "/font/Rosario.css",
+            UbuntuMono  : "/font/UbuntuMono.css"
+        },
+
+        Suffix : {
+            about : "秤砣虽小，能压千斤."
+        },
+            
+        Theme : {
+            url  : "https://github.com/first19326/Hexo-LiveForCode",
+            name : "Hexo - Live For Code"
+        }  
+    };
+</script>
+    <script type="text/javascript" src="/js/index.js"></script>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hibiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
